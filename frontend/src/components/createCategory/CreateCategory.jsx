@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import InputBox from "../ui/inputBox/InputBox";
 import Container from "../ui/container/Container";
 import Title from "../ui/title/Title";
+import Button from "../ui/button/Button";
 
 export default function CreateCategory() {
   const [form, setFrom] = useState({
