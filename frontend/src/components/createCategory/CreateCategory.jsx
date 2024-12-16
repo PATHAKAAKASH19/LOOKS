@@ -2,40 +2,93 @@ import React, { useEffect, useState } from "react";
 import InputBox from "../ui/inputBox/InputBox";
 import Container from "../ui/container/Container";
 import Title from "../ui/title/Title";
-import Button from "../ui/button/Button";
+import { MdDelete } from "react-icons/md";
 
 export default function CreateCategory() {
-  const [form, setFrom] = useState({
+  // this state stores all form data
+  const [form, setForm] = useState({
     category: "",
     trending: false,
-    subCategory: "",
+    subCategory: "topwear",
   });
 
-  const [image, setImage] = useState(null);
+  // store preview img
 
+  const [img, setImg] = useState(null);
+  const [previewImg, setPreviewImg] = useState("");
   const [categoryData, setCategoryData] = useState(null);
+  const [change, setChange] = useState(null);
+  const [update, setUpdate] = useState(false);
 
   // handle text input box
-  const handleTextInput = (e) => {
-    console.log(e.target.value);
-    setFrom((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    console.log(form);
+  const handleInput = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // handle files input box
-  const handleImageInput = (e) => {
-    setImage(e.target.files[0]);
+  const handleImg = (e) => {
+    const file = e.target.files[0];
+
+    setImg(file);
+
+    const url = URL.createObjectURL(file);
+
+    setPreviewImg(url);
   };
 
   const handleFormSubmit = async (e) => {
-    e.prevantDefault();
-
+    e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("category", form.category);
+      formData.append("trending", form.trending);
+      formData.append("subCategory", form.subCategory);
+      formData.append("categoryImg", img);
+
+      const res = await fetch("http://localhost:3000/api/category/create", {
+        method: "POST",
+        body: formData,
+      });
+
+      const msg = await res.json()
+
+      if (res.status === 200) {
+        setChange(msg);
+     }
     } catch (error) {
       console.log("error", error);
     }
   };
 
+  // delete img from both state
+  const handleImgDelete = () => {
+    setImg(null);
+    setPreviewImg("");
+  };
+
+  // delete category data
+  const deleteCategory = async (category) => {
+    try {
+     
+      const res = await fetch("http://localhost:3000/api/category/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(category),
+      });
+
+      const msg = await res.json()
+
+      if (res.status === 200) {
+        setChange(msg);
+        
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  // fetch category data from backend
   useEffect(() => {
     const getAllCategory = async () => {
       try {
@@ -51,7 +104,28 @@ export default function CreateCategory() {
     };
 
     getAllCategory();
-  }, []);
+  }, [change]);
+
+  // update category
+  const updateCategory = (category) => {
+    setUpdate(true);
+    setPreviewImg(category.imgUrl);
+    console.log(category);
+    setForm(category);
+  };
+
+  const cancleCategoryUpdate = () => {
+    setForm({
+      category: "",
+      trending: false,
+      subCategory: "topwear",
+    });
+
+    setImg(null);
+    setPreviewImg(null);
+    setUpdate(false);
+  };
+
   return (
     <Container className="admin-panel">
       <Container className="create-category">
@@ -65,7 +139,7 @@ export default function CreateCategory() {
               type="text"
               name="category"
               value={form.category}
-              onChange={handleTextInput}
+              onChange={handleInput}
               placeholder="enter category name"
             ></InputBox>
           </Container>
@@ -74,7 +148,12 @@ export default function CreateCategory() {
             <label htmlFor="trending" style={{ alignSelf: "center" }}>
               trending
             </label>
-            <select id="trending" name="trending" onChange={handleTextInput}>
+            <select
+              id="trending"
+              name="trending"
+              onChange={handleInput}
+              value={form.trending}
+            >
               <option value={false}>false</option>
               <option value={true}>true</option>
             </select>
@@ -87,7 +166,8 @@ export default function CreateCategory() {
             <select
               id="sub-category"
               name="subCategory"
-              onChange={handleTextInput}
+              value={form.subCategory}
+              onChange={handleInput}
             >
               <option value="topwear">topwear</option>
               <option value="bottomwear">bottomwear</option>
@@ -103,15 +183,41 @@ export default function CreateCategory() {
               <InputBox
                 type="file"
                 name="image"
-                value={image ? image : undefined}
-                onChange={handleImageInput}
-                placeholder="upload a image"
+                accept="image/*"
+                onChange={handleImg}
                 className="uploadbox"
+                key={img ? img.name : "file-input"}
               ></InputBox>
             </label>
           </Container>
 
-          <button type="submit">submit</button>
+          {previewImg ? (
+            <Container className="prevImg">
+              <img src={previewImg} />
+              <MdDelete onClick={handleImgDelete} />
+            </Container>
+          ) : null}
+
+          {!update ? (
+            <button type="submit">submit</button>
+          ) : (
+            <Container className="btn">
+              <button
+                type="submit"
+                className="update"
+                onClick={() => updateCategory(category)}
+              >
+                update
+              </button>
+              <button
+                type="button"
+                className="delete"
+                onClick={() => cancleCategoryUpdate()}
+              >
+                cancle
+              </button>
+            </Container>
+          )}
         </form>
       </Container>
       <Container className="show-category">
@@ -135,10 +241,19 @@ export default function CreateCategory() {
                   <img src={`${category.imgUrl}`} />
                 </Container>
                 <Container className="btn">
-                  <button type="submit" className="update">
+                  <button
+                    type="submit"
+                    className="update"
+                    onClick={() => updateCategory(category)}
+                  >
                     update
                   </button>
-                  <button type="submit">delete</button>
+                  <button
+                    type="submit"
+                    onClick={() => deleteCategory(category)}
+                  >
+                    delete
+                  </button>
                 </Container>
               </Container>
             );
