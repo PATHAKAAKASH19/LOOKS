@@ -6,9 +6,9 @@ import fs from "fs";
 // use to get all the category
 async function getAllCategory(req, res) {
   const category = await Category.find();
-  
+
   if (category.length !== 0) {
-    return res.status(200).json( category);
+    return res.status(200).json(category);
   }
 
   return res.status(404).json({ err: "no category found" });
@@ -30,27 +30,22 @@ async function createCategory(req, res) {
     fs.unlink(req.file.path, (err) => {
       if (err) console.log(err);
       else {
-        console.log("\nDeleted file: example_file.txt");
+        console.log("\nDeleted file");
       }
     });
-    return res.status(200).json({ message: "category created successfully" });
+    res.status(200).json({ message: "category created successfully" });
   } catch (error) {
-
     fs.unlink(req.file.path, (err) => {
       if (err) console.log(err);
       else {
         console.log("\nDeleted file: example_file.txt");
       }
-    })
+    });
     return res
       .status(400)
       .json({ message: "category is not created", details: error });
   }
 }
-
-
-
-
 
 // use to update an category
 async function updateCategory(req, res) {
@@ -82,23 +77,20 @@ async function updateCategory(req, res) {
 
     res.status(200).json({ message: "sucessfully updated", category });
   } catch (error) {
-
     fs.unlink(req.file.path, (err) => {
       if (err) console.log(err);
       else {
         console.log("\nDeleted file: example_file.txt");
       }
-    })
+    });
     res.status(500).json({ err: "category update failed", details: error });
   }
 }
 
-
-
 // use to delete an category
 async function deleteCategory(req, res) {
   const secure_url = req.body.imgUrl;
- 
+
   if (!secure_url) {
     res.status(400).json({ err: "please provide img url" });
   }
