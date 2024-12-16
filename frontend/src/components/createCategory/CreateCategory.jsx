@@ -38,22 +38,61 @@ export default function CreateCategory() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append("category", form.category);
-      formData.append("trending", form.trending);
-      formData.append("subCategory", form.subCategory);
-      formData.append("categoryImg", img);
+      if (!update) {
+        const formData = new FormData();
+        formData.append("category", form.category);
+        formData.append("trending", form.trending);
+        formData.append("subCategory", form.subCategory);
+        formData.append("categoryImg", img);
 
-      const res = await fetch("http://localhost:3000/api/category/create", {
-        method: "POST",
-        body: formData,
-      });
+        const res = await fetch("http://localhost:3000/api/category/create", {
+          method: "POST",
+          body: formData,
+        });
 
-      const msg = await res.json()
+        const msg = await res.json();
 
-      if (res.status === 200) {
-        setChange(msg);
-     }
+        if (res.status === 200) {
+          setChange(msg);
+          setForm({
+            category: "",
+            trending: false,
+            subCategory: "topwear",
+          });
+          setPreviewImg("");
+          setImg(null);
+        }
+      } else {
+        console.log("hellow workd");
+        const formData = new FormData();
+        formData.append("category", form.category);
+        formData.append("trending", form.trending);
+        formData.append("subCategory", form.subCategory);
+        formData.append("imgUrl", form.imgUrl);
+        formData.append("categoryImg", img);
+
+        const res = await fetch(
+          `http://localhost:3000/api/category/update/${form._id}`,
+          {
+            method: "PUT",
+            body: formData,
+          }
+        );
+
+        const msg = await res.json();
+
+        if (res.status === 200) {
+          setChange(msg);
+          setForm({
+            category: "",
+            trending: false,
+            subCategory: "topwear",
+          });
+          setPreviewImg("");
+          setImg(null);
+          setUpdate(false);
+        }
+      }
     } catch (error) {
       console.log("error", error);
     }
@@ -68,7 +107,6 @@ export default function CreateCategory() {
   // delete category data
   const deleteCategory = async (category) => {
     try {
-     
       const res = await fetch("http://localhost:3000/api/category/delete", {
         method: "DELETE",
         headers: {
@@ -77,11 +115,10 @@ export default function CreateCategory() {
         body: JSON.stringify(category),
       });
 
-      const msg = await res.json()
+      const msg = await res.json();
 
       if (res.status === 200) {
         setChange(msg);
-        
       }
     } catch (error) {
       console.log("error", error);
@@ -110,7 +147,6 @@ export default function CreateCategory() {
   const updateCategory = (category) => {
     setUpdate(true);
     setPreviewImg(category.imgUrl);
-    console.log(category);
     setForm(category);
   };
 
@@ -194,7 +230,7 @@ export default function CreateCategory() {
           {previewImg ? (
             <Container className="prevImg">
               <img src={previewImg} />
-              <MdDelete onClick={handleImgDelete} />
+              <MdDelete onClick={handleImgDelete} className="icon" />
             </Container>
           ) : null}
 
@@ -205,7 +241,7 @@ export default function CreateCategory() {
               <button
                 type="submit"
                 className="update"
-                onClick={() => updateCategory(category)}
+                onClick={handleFormSubmit}
               >
                 update
               </button>
