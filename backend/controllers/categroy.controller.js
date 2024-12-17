@@ -63,19 +63,22 @@ async function updateCategory(req, res) {
       { public_id: publicId, overwrite: true }
     );
 
-    const category = await Category.findOneAndUpdate(req.params.id, {
-      ...req.body,
-      imgUrl: imgDataFromCloudinary.secure_url,
-    });
+    const category = await Category.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        ...req.body,
+        imgUrl: imgDataFromCloudinary.secure_url,
+      }
+    );
 
     fs.unlink(req.file.path, (err) => {
       if (err) console.log(err);
       else {
-        console.log("\nDeleted file: example_file.txt");
+        console.log("\nDeleted file");
       }
     });
 
-    res.status(200).json({ message: "sucessfully updated", category });
+    res.status(200).json({ message: "sucessfully updated" });
   } catch (error) {
     fs.unlink(req.file.path, (err) => {
       if (err) console.log(err);

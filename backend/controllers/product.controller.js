@@ -12,10 +12,10 @@ import { constants } from "buffer";
 //  get all the products
 async function getAllProducts(req, res) {
   const { category, price, color, size, materialType } = req.query;
-  const categoryDocument = await Category.findOne({category:category});
-  
+  const categoryDocument = await Category.findOne({ category: category });
+
   const query = {};
-  
+
   if (size) query.color = { $in: Array.isArray(size) ? size : [size] };
   if (color) query.color = { $in: Array.isArray(color) ? color : [color] };
   if (price) query.price = { $in: Array.isArray(price) ? price : [price] };
@@ -24,17 +24,12 @@ async function getAllProducts(req, res) {
       $in: Array.isArray(materialType) ? materialType : [materialType],
     };
 
-   
-
-
   const product = await Product.find(
-   
-      
-     {
+    {
       category: categoryDocument._id,
-      ...query
-     },
-   
+      ...query,
+    },
+
     {
       name: 1,
       price: 1,
@@ -69,18 +64,26 @@ async function getOneProduct(req, res) {
 // use to create a product
 async function addProduct(req, res) {
   const files = req.files;
-
+  console.log(req.body);
+  console.log(files);
+  console.log(typeof req.body.price);
+  console.log(typeof req.body.stock);
   try {
     const {
       name,
       description,
-      stock,
       sizes,
-      price,
-      category,
+      categoryId,
       materialType,
       styleType,
+      color,
     } = req.body;
+
+    const stock = parseFloat(req.body.stock)
+    const price = parseFloat(req.body.price)
+
+    console.log(price);
+    console.log(stock);
     const productId = new mongoose.Types.ObjectId();
 
     const sizeArray = Array.isArray(sizes) ? sizes : [sizes];
@@ -93,9 +96,10 @@ async function addProduct(req, res) {
       stock,
       sizes: sizeArray,
       price,
-      category,
+      categoryId, 
       materialType,
       styleType,
+      color,
       productImgUrls,
     });
 
