@@ -502,7 +502,7 @@ img {
     border-radius: none;
     width: 20%;
     height: 85%;
-
+    display: flex;
 }
 
 
@@ -840,12 +840,13 @@ form button {
     align-items: center;
     width: 55%;
     height: 80%;
-
+    margin-left: 20px;
 }
 
 .create-category {
     margin-top: 5%;
     width: 60vw;
+
 
 }
 
@@ -854,9 +855,11 @@ form button {
     flex-direction: column;
     justify-content: space-evenly;
     width: 100%;
-    height: 40vh;
+    height: 50vh;
     font-size: 2vmin;
     padding: 0% 5%;
+
+
 }
 
 .create-category form label {
@@ -864,7 +867,7 @@ form button {
 }
 
 .input {
-    height: 15%;
+    height: 10%;
     padding: 0px 5%;
     display: flex;
     justify-content: space-between;
@@ -879,26 +882,32 @@ form button {
     padding: 0% 2%;
     font-size: 1.8vmin;
     background-color: white;
+
 }
 
 .uploadbox {
     display: none;
+
 }
+
+
 
 .upload {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 15%;
+    height: 6%;
     margin: 0% 5%;
     border-radius: 0.5em;
     border: none;
     background-color: lightSkyblue;
-    width: 45%;
+    width: 30%;
     align-self: center;
+
     text-align: center;
 
 }
+
 
 .upload:hover {
     background-color: #0056b3;
@@ -907,15 +916,43 @@ form button {
 
 }
 
+.upload1 {
+   
+    height: 10%;
+}
+
+
+
+
+
+.prevImg {
+    width: 20%;
+    height: 30%;
+    align-self: center;
+    position: relative;
+}
+
+.prevImg img {
+    object-fit: contain;
+}
+
+.prevImg .icon {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    bottom: 0px;
+}
+
 
 
 .create-category button {
 
-    width: 45%;
+    width: 30%;
+    height: 10%;
     align-self: center;
     font-size: 2vmin;
     font-weight: 600;
-
+    cursor: pointer;
 }
 
 
@@ -981,13 +1018,18 @@ form button {
 
 
 
-.row .btn {
+.btn {
     width: 20%;
     height: 10vmin;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
 }
+
+
+
 
 .btn button {
     width: 80%;
@@ -1000,8 +1042,107 @@ form button {
     font-weight: 400;
     cursor: pointer;
     font-size: 1.8vmin;
+
 }
 
 .btn .update {
     background-color: green;
+
+}
+
+.create-category h1 {
+    text-align: center;
+    font-size: 3.5vmin;
+    letter-spacing: 0.1em;
+    font-weight: 300;
+}
+
+.create-product .product-form {
+    height: 100vh;
+
+
+}
+
+.product-form .box {
+    border: 1px solid black;
+    display: flex;
+   height: 6%;
+    border-radius: 0.5em;
+}
+
+.box input,
+.box select,
+.box textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.8vmin;
+    border-radius: 0.5em;
+    border: 1px solid black;
+
+}
+
+.product-box {
+    display: flex;
+    height: fit-content;
+    width: 100%;
+    justify-content: space-evenly;
+    gap: 20px
+}
+
+.product-img {
+    display: flex;
+    width: 18%;
+
+}
+
+.product-img img {
+    border-radius: 0em;
+    object-fit: cover;
+    position: relative;
+}
+
+.create-product button {
+    height: 6%;
+    width: 20%;
+}
+
+.product-img .icon {
+    position: absolute;
+    cursor: pointer;
+    color: black;
+}
+
+.sizes-con {
+     display:  flex;
+     
+     width: 100%;
+     justify-content: space-evenly;
+     align-items: center;
+     font-size: 5vmin;
+}
+
+.sizes-con h2 {
+    font-size: 3vmin;
+    font-weight: 400;
+}
+
+.sizes-con .size1 {
+  
+   display: flex;
+   width: 9%;
+   justify-content: space-evenly;
+   gap: 8px;
+   align-items: center;
+   
+}
+ 
+.size1 .checkbox {
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.size1 .label {
+    font-size: 2.2vmin;
+    font-weight: 300;
 }

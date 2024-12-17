@@ -165,6 +165,7 @@ export default function CreateCategory() {
   return (
     <Container className="admin-panel">
       <Container className="create-category">
+      <h1>Create Category</h1>
         <form onSubmit={handleFormSubmit}>
           <Container className="input">
             <label htmlFor="category" style={{ alignSelf: "center" }}>
@@ -213,9 +214,9 @@ export default function CreateCategory() {
             </select>
           </Container>
 
-          <Container className="upload" style={{ alignSelf: "center" }}>
+          <Container className="upload upload1" style={{ alignSelf: "center" }}>
             <label>
-              upload category image
+              upload image
               <InputBox
                 type="file"
                 name="image"
