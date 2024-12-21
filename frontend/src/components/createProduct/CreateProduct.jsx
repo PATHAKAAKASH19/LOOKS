@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Container from "../ui/container/Container";
 import InputBox from "../ui/inputBox/InputBox";
 import { MdDelete } from "react-icons/md";
-import Category from "../../../../backend/models/category.model";
 
 export default function CreateProduct() {
   const [productDetail, setProductDetail] = useState({
@@ -14,6 +13,7 @@ export default function CreateProduct() {
     styleType: "",
     color: "",
     categoryId: "",
+    category:""
   });
 
   const [size, setSize] = useState([]);
@@ -21,14 +21,17 @@ export default function CreateProduct() {
   const [productImages, setProductImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
 
-  const sizes = ["S", "M", "L", "XL", "XLL"];
+  const sizes = ["S", "M", "L", "XL", "XXL"];
   const MAX_IMAGES = 5;
 
   const handleInput = (e) => {
     if (e.target.name === "category") {
-      const result = category.find((ele) => e.target.value === ele.category);
-
-      setProductDetail((prev) => ({ ...prev, categoryId: result._id }));
+      if (e.target.value) {
+        const result = category.find((ele) => e.target.value === ele.category);
+        setProductDetail((prev) => ({ ...prev, categoryId: result._id , [e.target.name]:e.target.value}));
+      } else {
+        return;
+      }
     } else {
       setProductDetail((prev) => {
         return { ...prev, [e.target.name]: e.target.value };
@@ -52,18 +55,18 @@ export default function CreateProduct() {
 
       formData.append("name", productDetail.name);
       formData.append("description", productDetail.description);
-      formData.append("stock", Number(productDetail.stock));
-      
-      formData.append("price", Number(productDetail.price));
+      formData.append("stock", productDetail.stock);
+
+      formData.append("price", productDetail.price);
       formData.append("categoryId", productDetail.categoryId);
+      console.log(productDetail.categoryId);
       formData.append("materialType", productDetail.materialType);
       formData.append("styleType", productDetail.styleType);
       formData.append("color", productDetail.color);
 
-      
-      size.forEach((obj, index )=> { 
+      size.forEach((obj, index) => {
         formData.append(`sizes[${index}]`, obj);
-      })
+      });
       productImages.forEach((file) => {
         formData.append(`productImages`, file);
       });
@@ -73,11 +76,24 @@ export default function CreateProduct() {
         body: formData,
       });
 
-      console.log("akash");
       const msg = await res.json();
 
-      if (res.status === 200) {
+      if (res.status === 201) {
         alert("product created successfully");
+        setProductDetail({
+          name: "",
+          description: "",
+          stock: "",
+          price: "",
+          materialType: "",
+          styleType: "",
+          color: "",
+          categoryId: "",
+          category:""
+        });
+        setPreviewImages([]);
+        setProductImages([]);
+        setSize([]);
       }
     } catch (error) {
       console.log("error : ", error);
@@ -86,7 +102,7 @@ export default function CreateProduct() {
 
   const handleImages = (e) => {
     const files = e.target.files;
-    const arrayFIles = Array.from(files)
+    const arrayFIles = Array.from(files);
     if (productImages.length + files.length > MAX_IMAGES) {
       alert("can only add 5 images");
       return;
@@ -96,12 +112,11 @@ export default function CreateProduct() {
       alert("add five images for product ");
     }
 
-    setProductImages((prev) => ([...prev, ...files]));
+    setProductImages((prev) => [...prev, ...files]);
     const urls = arrayFIles.map((file) => URL.createObjectURL(file));
     console.log(urls);
-    console.log(productImages)
+    console.log(productImages);
     setPreviewImages((prev) => [...prev, ...urls]);
-
   };
 
   const handleImgDelete = (index) => {
@@ -126,6 +141,14 @@ export default function CreateProduct() {
     getCategory();
   }, []);
 
+  const checkSizePresent = (sizeValue) => {
+    if (size.includes(sizeValue)) {
+      return true
+    }else{
+      return false
+    }
+  };
+
   return (
     <Container className="admin-panel">
       <Container className="create-category create-product">
@@ -142,7 +165,7 @@ export default function CreateProduct() {
             />
           </Container>
 
-          <Container className="box textarea">
+          <Container className="box" id="textarea1">
             <textarea
               placeholder="Enter product description"
               name="description"
@@ -156,6 +179,7 @@ export default function CreateProduct() {
             <InputBox
               type="number"
               placeholder="Enter product quantity"
+              min={10}
               name="stock"
               value={productDetail.stock}
               onChange={handleInput}
@@ -167,6 +191,7 @@ export default function CreateProduct() {
             <InputBox
               type="number"
               placeholder="Enter product price"
+              min={0}
               name="price"
               value={productDetail.price}
               onChange={handleInput}
@@ -208,11 +233,10 @@ export default function CreateProduct() {
           </Container>
 
           <Container className="box">
-            <select
-              name="category"
-              placeholder="select category"
-              onChange={handleInput}
-            >
+            <select name="category" onChange={handleInput}  value={productDetail.category}>
+              <option value="" disabled>
+                Select an option
+              </option>
               {category &&
                 category.map((ctg, i) =>
                   ctg.category === "banner" ||
@@ -227,17 +251,18 @@ export default function CreateProduct() {
 
           <Container className="sizes-con">
             <h2>sizes</h2>
-            {sizes.map((size, i) => (
+            {sizes.map((s, i) => (
               <Container className="size1" key={i}>
                 <InputBox
                   type="checkbox"
-                  id={size}
-                  name={size}
+                  id={s}
+                  name={s}
+                  checked={size.includes(s)}
                   onChange={handleSizeInput}
                   className="checkbox"
                 />
-                <label htmlFor={size} className="label">
-                  {size}
+                <label htmlFor={s} className="label">
+                  {s}
                 </label>
               </Container>
             ))}

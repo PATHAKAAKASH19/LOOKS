@@ -12,12 +12,13 @@ export default function ProductListPage() {
 
   useEffect(() => {
     const fetchProductsImage = async () => {
+
       try {
         const res = await fetch(
           `http://localhost:3000/api/product/get?category=${category}`
         );
         const productsImage = await res.json();
-      
+        console.log("product",productsImage)
         if (productsImage !== null) {
           console.log(productsImage)
           setProduct(productsImage);

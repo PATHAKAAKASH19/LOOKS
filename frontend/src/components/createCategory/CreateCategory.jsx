@@ -39,6 +39,7 @@ export default function CreateCategory() {
     e.preventDefault();
     try {
       if (!update) {
+        console.log("hey")
         const formData = new FormData();
         formData.append("category", form.category);
         formData.append("trending", form.trending);
@@ -52,7 +53,8 @@ export default function CreateCategory() {
 
         const msg = await res.json();
 
-        if (res.status === 200) {
+        if (res.status === 201) {
+          console.log("hellow workd");
           setChange(msg);
           setForm({
             category: "",
@@ -63,14 +65,15 @@ export default function CreateCategory() {
           setImg(null);
         }
       } else {
-        console.log("hellow workd");
         const formData = new FormData();
         formData.append("category", form.category);
         formData.append("trending", form.trending);
         formData.append("subCategory", form.subCategory);
-        formData.append("imgUrl", form.imgUrl);
-        formData.append("categoryImg", img);
 
+        if (img) {
+          formData.append("imgUrl", form.imgUrl);
+          formData.append("categoryImg", img);
+        }
         const res = await fetch(
           `http://localhost:3000/api/category/update/${form._id}`,
           {
@@ -165,7 +168,7 @@ export default function CreateCategory() {
   return (
     <Container className="admin-panel">
       <Container className="create-category">
-      <h1>Create Category</h1>
+        <h1>Create Category</h1>
         <form onSubmit={handleFormSubmit}>
           <Container className="input">
             <label htmlFor="category" style={{ alignSelf: "center" }}>
