@@ -7,67 +7,106 @@ import {
 } from "../utils/uploadMultipleImagesToClodinary.util.js";
 import fs from "fs";
 import mongoose from "mongoose";
-import { constants } from "buffer";
 
-//  get all the products
+// get all the products created by seller
 async function getAllProducts(req, res) {
-  const { category, price, color, size, materialType } = req.query;
-  const categoryDocument = await Category.findOne({ category: category });
+  try {
+    const allProducts = await Product.find();
 
-  const query = {};
-
-  if (size) query.color = { $in: Array.isArray(size) ? size : [size] };
-  if (color) query.color = { $in: Array.isArray(color) ? color : [color] };
-  if (price) query.price = { $in: Array.isArray(price) ? price : [price] };
-  if (materialType)
-    query.materialType = {
-      $in: Array.isArray(materialType) ? materialType : [materialType],
-    };
-
-  const product = await Product.find(
-    {
-      category: categoryDocument._id,
-      ...query,
-    },
-
-    {
-      name: 1,
-      price: 1,
-      sizes: 1,
-      category: 1,
-      materialType: 1,
-      styleType: 1,
-      productImgUrls: { $slice: 1 },
+    if (allProducts) {
+      return res.status(200).json(allProducts);
     }
-  ).populate("category", "category trending subCategory");
 
-  if (product.length !== 0) {
-    return res.status(200).json(product);
-  } else {
-    return res.status(404).json({ err: "product not found" });
+    return res
+      .status(204)
+      .json({ success: false, message: "no product present" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "error in getting product", error });
+  }
+}
+
+//  get all the products by category
+async function getProductsByCategory(req, res) {
+  try {
+    let query = {};
+
+    const { category, price, color, size, materialType } = req.query;
+    const categoryDocument = await Category.findOne({ category: category });
+
+    if (!categoryDocument) {
+      return res.status(404).json({ message: "Category not exist" });
+    }
+    if (size) query.size = { $in: Array.isArray(size) ? size : [size] };
+    if (color) query.color = { $in: Array.isArray(color) ? color : [color] };
+    if (price) query.price = { $in: Array.isArray(price) ? price : [price] };
+    if (materialType)
+      query.materialType = {
+        $in: Array.isArray(materialType) ? materialType : [materialType],
+      };
+
+    const product = await Product.find(
+      {
+        category: categoryDocument._id,
+        ...query,
+      },
+
+      {
+        name: 1,
+        price: 1,
+        sizes: 1,
+        category: 1,
+        materialType: 1,
+        styleType: 1,
+        productImgUrls: { $slice: 1 },
+      }
+    ).populate("category", "category trending subCategory");
+
+    if (product.length !== 0) {
+      return res.status(200).json(product);
+    } else {
+      return res
+        .status(204)
+        .json({ success: false, message: "this category has no product" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "error in getting product by category",
+      error,
+    });
   }
 }
 
 //  get one product at a time
 async function getOneProduct(req, res) {
-  const id = req.params.productId;
+  try {
+    const id = req.params.productId;
 
-  const product = await Product.findById(id);
+    const product = await Product.findById(id);
 
-  if (product.length !== 0) {
-    return res.status(200).json(product);
-  } else {
-    return res.status(404).json({ err: "product not found" });
+    if (product.length !== 0) {
+      return res.status(200).json(product);
+    } else {
+      return res
+        .status(204)
+        .json({ success: false, message: "product not present" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "error in getting product", error });
   }
 }
 
 // use to create a product
 async function addProduct(req, res) {
   const files = req.files;
-  console.log(req.body);
-  console.log(files);
-  console.log(typeof req.body.price);
-  console.log(typeof req.body.stock);
+
   try {
     const {
       name,
@@ -78,15 +117,12 @@ async function addProduct(req, res) {
       styleType,
       color,
     } = req.body;
+    console.log(categoryId)
+    const stock = parseFloat(req.body.stock);
+    const price = parseFloat(req.body.price);
 
-    const stock = parseFloat(req.body.stock)
-    const price = parseFloat(req.body.price)
-
-    console.log(price);
-    console.log(stock);
     const productId = new mongoose.Types.ObjectId();
 
-    const sizeArray = Array.isArray(sizes) ? sizes : [sizes];
     const productImgUrls = await uploadImagesToCloudinary(files, productId);
 
     const newProduct = await Product.create({
@@ -94,9 +130,9 @@ async function addProduct(req, res) {
       name,
       description,
       stock,
-      sizes: sizeArray,
+      sizes,
       price,
-      categoryId, 
+      categoryId,
       materialType,
       styleType,
       color,
@@ -104,29 +140,38 @@ async function addProduct(req, res) {
     });
 
     const populateProduct = await Product.findById(productId).populate(
-      "category",
+      "categoryId",
       "category trending subCategory"
     );
+
     for (const file of files) {
       fs.unlink(file.path, (err) => {
-        if (err) console.log(err);
-        else {
-          console.log("photos deleted successfully from upload folder");
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          console.log("photos deleted successfully");
         }
       });
     }
-    return res.status(200).json({ message: "product is created successfully" });
+
+    return res.status(201).json({ message: "product is created successfully" });
   } catch (error) {
+    console.log(error);
     for (const file of files) {
       fs.unlink(file.path, (err) => {
-        if (err) console.log(err);
-        else {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
           console.log("photos deleted successfully from upload folder");
         }
       });
     }
 
-    res.status(400).json({ err: "error in product", details: error });
+    return res
+      .status(500)
+      .json({ success: false, message: "error in product", error });
   }
 }
 
@@ -136,7 +181,7 @@ async function updateProduct(req, res) {
   try {
     const productId = req.params.id;
     const { replacingIndex, sizes, ...rest } = req.body;
-    const product = Product.findById(productId);
+    const product = await Product.findById(productId);
 
     const sizeArray = Array.isArray(sizes) ? sizes : [sizes];
     const imgUrls = [...product.productImgUrls];
@@ -151,8 +196,10 @@ async function updateProduct(req, res) {
         imgUrls[replacingIndex] = updatedUrl;
 
         fs.unlink(file.path, (err) => {
-          if (err) console.log(err);
-          else {
+          if (err) {
+            console.log(err);
+            return;
+          } else {
             console.log("photos deleted successfully from upload folder");
           }
         });
@@ -165,20 +212,22 @@ async function updateProduct(req, res) {
       productImgUrls: imgUrls,
     });
 
-    res.status(200).json({
-      message: "product is updated successfully",
-      details: updateProduct,
-    });
+    return res.status(200).json({ message: "product is updated successfully" });
   } catch (error) {
+    console.log(error);
     for (const file of files) {
       fs.unlink(file.path, (err) => {
-        if (err) console.log(err);
-        else {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
           console.log("photos deleted successfully from upload folder");
         }
       });
     }
-    res.status(500).json({ message: "internal error", details: error });
+    return res
+      .status(500)
+      .json({ success: false, message: "error in updating product", error });
   }
 }
 
@@ -194,15 +243,19 @@ async function deleteProduct(req, res) {
       `e-commerce-shop/product-page-images/${productId}`
     );
     await Product.findByIdAndDelete(productId);
-    res.status(200).json({ message: "product deleted successfully" });
+    return res.status(200).json({ message: "product deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "error", details: error });
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "error in product deletion", error });
   }
 }
 
 export {
-  getOneProduct,
   getAllProducts,
+  getOneProduct,
+  getProductsByCategory,
   addProduct,
   updateProduct,
   deleteProduct,

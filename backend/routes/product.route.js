@@ -1,13 +1,15 @@
 import express from "express"
 import upload from "../utils/multer.util.js"
-import { getOneProduct, getAllProducts, addProduct, deleteProduct, updateProduct } from "../controllers/product.controller.js"
+import { getOneProduct, getAllProducts, addProduct, deleteProduct, updateProduct, getProductsByCategory } from "../controllers/product.controller.js"
 const router = express.Router()
 
 
 
 
 
-router.get("/get", getAllProducts)
+router.get("/get-all-product", getAllProducts)
+
+router.get("/get" , getProductsByCategory)
 
 router.get("/search/:productId", getOneProduct)
 

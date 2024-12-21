@@ -5,13 +5,22 @@ import fs from "fs";
 
 // use to get all the category
 async function getAllCategory(req, res) {
-  const category = await Category.find();
+  try {
+    const category = await Category.find();
 
-  if (category.length !== 0) {
-    return res.status(200).json(category);
+    if (category.length !== 0) {
+      return res.status(200).json(category);
+    }
+
+    return res.status(204).json({ err: "no category found" });
+  } catch (error) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: "Error while geting orders",
+      error,
+    });
   }
-
-  return res.status(404).json({ err: "no category found" });
 }
 
 // use to create an category
@@ -28,65 +37,81 @@ async function createCategory(req, res) {
     });
 
     fs.unlink(req.file.path, (err) => {
-      if (err) console.log(err);
-      else {
-        console.log("\nDeleted file");
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log("photos of category deleted from server successfully");
       }
     });
-    res.status(200).json({ message: "category created successfully" });
+    return res.status(201).json({ message: "category created successfully" });
   } catch (error) {
+    console.log(error);
     fs.unlink(req.file.path, (err) => {
-      if (err) console.log(err);
-      else {
-        console.log("\nDeleted file: example_file.txt");
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log("photos of category deleted");
       }
     });
     return res
-      .status(400)
-      .json({ message: "category is not created", details: error });
+      .status(500)
+      .json({ success: false, message: "error in creating category", error });
   }
 }
 
 // use to update an category
 async function updateCategory(req, res) {
-  const secure_url = req.body.imgUrl;
-
-  if (!secure_url) {
-    return res.status(400).json({ err: "please provide img url" });
-  }
-
   try {
-    const publicId = extractPublicId(secure_url);
+    const secure_url = req.body.imgUrl;
+    if (secure_url) {
+      const publicId = extractPublicId(secure_url);
 
-    const imgDataFromCloudinary = await cloudinary.uploader.upload(
-      req.file.path,
-      { public_id: publicId, overwrite: true }
-    );
+      const imgDataFromCloudinary = await cloudinary.uploader.upload(req.file.path, {
+        public_id: publicId,
+        overwrite: true,
+      });
 
-    const category = await Category.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        ...req.body,
-        imgUrl: imgDataFromCloudinary.secure_url,
-      }
-    );
+      const category = await Category.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          ...req.body,
+          imgUrl: imgDataFromCloudinary.secure_url,
+        }
+      );
 
-    fs.unlink(req.file.path, (err) => {
-      if (err) console.log(err);
-      else {
-        console.log("\nDeleted file");
-      }
-    });
+      fs.unlink(req.file.path, (err) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          console.log("\ncategory photo updated successfully");
+        }
+      });
+    } else {
+      const category = await Category.findOneAndUpdate(
+        { _id: req.params.id },
+        {
+          ...req.body,
+        }
+      );
+    }
 
-    res.status(200).json({ message: "sucessfully updated" });
+    return res.status(200).json({ message: "category updated sucessfully" });
   } catch (error) {
+    console.log(error);
     fs.unlink(req.file.path, (err) => {
-      if (err) console.log(err);
-      else {
-        console.log("\nDeleted file: example_file.txt");
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log("\n category photo did not updated");
       }
     });
-    res.status(500).json({ err: "category update failed", details: error });
+    return res
+      .status(500)
+      .json({ success: false, message: "category update failed", error });
   }
 }
 
@@ -95,15 +120,18 @@ async function deleteCategory(req, res) {
   const secure_url = req.body.imgUrl;
 
   if (!secure_url) {
-    res.status(400).json({ err: "please provide img url" });
+    return res.status(400).json({ err: "please provide img url" });
   }
   try {
     const publicId = extractPublicId(secure_url);
     const imgDataFromCloudinary = await cloudinary.uploader.destroy(publicId);
     const deleteCategory = await Category.findOneAndDelete(req.body);
-    res.status(200).json({ message: "category deleted successfully " });
+    return res.status(200).json({ message: "category deleted successfully " });
   } catch (error) {
-    res.status(500).json({ err: "not deleted", details: error });
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "error in category deletion", error });
   }
 }
 

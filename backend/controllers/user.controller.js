@@ -27,15 +27,14 @@ async function register(req, res) {
       password: hashPassword,
     });
 
-    res.status(200).json({ message: "user register successfully" });
+    return res.status(200).json({ message: "user register successfully" });
   } catch (error) {
-    res.status(500).json({ message: "internal error" });
+    return res.status(500).json({ message: "internal error" });
   }
 }
 
 async function login(req, res) {
   try {
-    
     const { email, password } = req.body;
 
     const userExist = await User.findone({ email: email });
@@ -91,9 +90,9 @@ async function login(req, res) {
       });
     }
 
-    res.status(200).json({ message: "user already login" });
+    return res.status(200).json({ message: "user already login" });
   } catch (error) {
-    res.status(500).json({ message: "internal server error", err: error });
+   return res.status(500).json({ message: "internal server error", err: error });
   }
 }
 
@@ -154,9 +153,9 @@ async function singOut(params) {
     });
     res.clearCookie("refreshToken");
 
-    res.status(200).json({ messgae: "logout successfully" });
+    return res.status(200).json({ messgae: "logout successfully" });
   } catch (error) {
-    res.status(500).json({ message: "internal server error" });
+    return res.status(500).json({ message: "internal server error" });
   }
 }
 
