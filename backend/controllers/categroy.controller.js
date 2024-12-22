@@ -14,7 +14,7 @@ async function getAllCategory(req, res) {
 
     return res.status(204).json({ err: "no category found" });
   } catch (error) {
-    console.log(err);
+    console.log(error);
     return res.status(500).json({
       success: false,
       message: "Error while geting orders",

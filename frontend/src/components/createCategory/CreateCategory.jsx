@@ -3,6 +3,7 @@ import InputBox from "../ui/inputBox/InputBox";
 import Container from "../ui/container/Container";
 import Title from "../ui/title/Title";
 import { MdDelete } from "react-icons/md";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function CreateCategory() {
   // this state stores all form data
@@ -39,7 +40,6 @@ export default function CreateCategory() {
     e.preventDefault();
     try {
       if (!update) {
-        console.log("hey")
         const formData = new FormData();
         formData.append("category", form.category);
         formData.append("trending", form.trending);
@@ -54,7 +54,6 @@ export default function CreateCategory() {
         const msg = await res.json();
 
         if (res.status === 201) {
-          console.log("hellow workd");
           setChange(msg);
           setForm({
             category: "",
@@ -63,6 +62,8 @@ export default function CreateCategory() {
           });
           setPreviewImg("");
           setImg(null);
+          console.log("akasj")
+          toast.success(`${msg.message}`);
         }
       } else {
         const formData = new FormData();
@@ -170,6 +171,9 @@ export default function CreateCategory() {
       <Container className="create-category">
         <h1>Create Category</h1>
         <form onSubmit={handleFormSubmit}>
+          <Container>
+            <Toaster />
+          </Container>
           <Container className="input">
             <label htmlFor="category" style={{ alignSelf: "center" }}>
               category

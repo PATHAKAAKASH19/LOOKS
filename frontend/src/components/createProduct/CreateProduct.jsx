@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import Container from "../ui/container/Container";
 import InputBox from "../ui/inputBox/InputBox";
 import { MdDelete } from "react-icons/md";
+import toast, { Toaster } from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
 export default function CreateProduct() {
+  const location = useLocation();
+  const product = location.state || null;
   const [productDetail, setProductDetail] = useState({
     name: "",
     description: "",
@@ -13,22 +17,27 @@ export default function CreateProduct() {
     styleType: "",
     color: "",
     categoryId: "",
-    category:""
+    category: "",
   });
 
   const [size, setSize] = useState([]);
   const [category, setCategory] = useState([]);
   const [productImages, setProductImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
+  const [update, setUpdate] = useState(false);
 
-  const sizes = ["S", "M", "L", "XL", "XXL"];
+  const sizesArray = ["S", "M", "L", "XL", "XXL"];
   const MAX_IMAGES = 5;
 
   const handleInput = (e) => {
     if (e.target.name === "category") {
       if (e.target.value) {
         const result = category.find((ele) => e.target.value === ele.category);
-        setProductDetail((prev) => ({ ...prev, categoryId: result._id , [e.target.name]:e.target.value}));
+        setProductDetail((prev) => ({
+          ...prev,
+          categoryId: result._id,
+          [e.target.name]: e.target.value,
+        }));
       } else {
         return;
       }
@@ -50,50 +59,57 @@ export default function CreateProduct() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+
+    formData.append("name", productDetail.name);
+    formData.append("description", productDetail.description);
+    formData.append("stock", productDetail.stock);
+
+    formData.append("price", productDetail.price);
+    formData.append("categoryId", productDetail.categoryId);
+    formData.append("materialType", productDetail.materialType);
+    formData.append("styleType", productDetail.styleType);
+    formData.append("color", productDetail.color);
+
+    size.forEach((obj, index) => {
+      formData.append(`sizes[${index}]`, obj);
+    });
+    productImages.forEach((file) => {
+      formData.append(`productImages`, file);
+    });
     try {
-      const formData = new FormData();
-
-      formData.append("name", productDetail.name);
-      formData.append("description", productDetail.description);
-      formData.append("stock", productDetail.stock);
-
-      formData.append("price", productDetail.price);
-      formData.append("categoryId", productDetail.categoryId);
-      console.log(productDetail.categoryId);
-      formData.append("materialType", productDetail.materialType);
-      formData.append("styleType", productDetail.styleType);
-      formData.append("color", productDetail.color);
-
-      size.forEach((obj, index) => {
-        formData.append(`sizes[${index}]`, obj);
-      });
-      productImages.forEach((file) => {
-        formData.append(`productImages`, file);
-      });
-
-      const res = await fetch("http://localhost:3000/api/product/create", {
-        method: "POST",
-        body: formData,
-      });
-
-      const msg = await res.json();
-
-      if (res.status === 201) {
-        alert("product created successfully");
-        setProductDetail({
-          name: "",
-          description: "",
-          stock: "",
-          price: "",
-          materialType: "",
-          styleType: "",
-          color: "",
-          categoryId: "",
-          category:""
+      if (!update) {
+        const res = await fetch("http://localhost:3000/api/product/create", {
+          method: "POST",
+          body: formData,
         });
-        setPreviewImages([]);
-        setProductImages([]);
-        setSize([]);
+
+        const msg = await res.json();
+
+        if (res.status === 201) {
+          setProductDetail({
+            name: "",
+            description: "",
+            stock: "",
+            price: "",
+            materialType: "",
+            styleType: "",
+            color: "",
+            categoryId: "",
+            category: "",
+          });
+          setPreviewImages([]);
+          setProductImages([]);
+          setSize([]);
+
+          toast(`${msg.message}`);
+        } else {
+    
+          const res = await fetch(`http://localhost:3000/api/product/update/${productDetail._id}`, {
+            method:"PUT",
+            body:formData
+          })
+        }
       }
     } catch (error) {
       console.log("error : ", error);
@@ -124,6 +140,18 @@ export default function CreateProduct() {
     setPreviewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const updateProductDetail = () => {
+    const categoryData = category.find(
+      (ctgObj) => ctgObj._id === product.categoryId
+    );
+
+    setProductDetail({ ...product, category: categoryData.category });
+
+    setSize(product.sizes);
+    setPreviewImages(product.productImgUrls);
+    setUpdate(true);
+  };
+
   useEffect(() => {
     const getCategory = async () => {
       try {
@@ -141,18 +169,18 @@ export default function CreateProduct() {
     getCategory();
   }, []);
 
-  const checkSizePresent = (sizeValue) => {
-    if (size.includes(sizeValue)) {
-      return true
-    }else{
-      return false
+  useEffect(() => {
+    if (product && category.length > 0) {
+      updateProductDetail();
+    } else {
+      return;
     }
-  };
+  }, [category]);
 
   return (
     <Container className="admin-panel">
       <Container className="create-category create-product">
-        <h1>Create Product</h1>
+        {update ? <h1>Update Product</h1> : <h1>Create Product</h1>}
         <form onSubmit={handleFormSubmit} className="product-form">
           <Container className="box">
             <InputBox
@@ -233,7 +261,11 @@ export default function CreateProduct() {
           </Container>
 
           <Container className="box">
-            <select name="category" onChange={handleInput}  value={productDetail.category}>
+            <select
+              name="category"
+              onChange={handleInput}
+              value={productDetail.category}
+            >
               <option value="" disabled>
                 Select an option
               </option>
@@ -251,7 +283,7 @@ export default function CreateProduct() {
 
           <Container className="sizes-con">
             <h2>sizes</h2>
-            {sizes.map((s, i) => (
+            {sizesArray.map((s, i) => (
               <Container className="size1" key={i}>
                 <InputBox
                   type="checkbox"
@@ -298,8 +330,28 @@ export default function CreateProduct() {
               })}
           </Container>
 
-          <button type="submit">submit</button>
+          {!update ? (
+            <button type="submit">submit</button>
+          ) : (
+            <Container className="productBtn">
+              <button
+                type="submit"
+                className="update "
+                onClick={handleFormSubmit}
+              >
+                update
+              </button>
+              <button
+                type="button"
+                className="delete "
+                onClick={() => cancleCategoryUpdate()}
+              >
+                cancle
+              </button>
+            </Container>
+          )}
         </form>
+        <Toaster />
       </Container>
     </Container>
   );

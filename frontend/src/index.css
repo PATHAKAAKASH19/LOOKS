@@ -323,7 +323,7 @@ img {
 .name {
     font-weight: 500;
 
-    font-size: px;
+
     letter-spacing: 0.1em;
     word-spacing: 0.2em;
 }
@@ -795,14 +795,13 @@ form button {
     width: 18%;
     height: 25vmin;
     border: 2px solid;
-    border-radius: 1em;
+
     font-size: 12px;
     margin-top: 5%;
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: space-evenly;
-
 }
 
 
@@ -816,7 +815,7 @@ form button {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    border-radius: 1em;
+
     font-size: 1vmin;
 }
 
@@ -1157,4 +1156,27 @@ form button {
 #textarea1 textarea {
     height: 16vh;
     resize: none;
+}
+
+.productBtn {
+    
+    height: 12vmin;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    
+}
+
+
+.productBtn .update {
+    height: 5vmin;
+    background-color: green;
+   font-weight: 400;
+
+}
+
+.productBtn .delete {
+    height: 5vmin;
+    background-color: red;
+    font-weight: 400;
 }

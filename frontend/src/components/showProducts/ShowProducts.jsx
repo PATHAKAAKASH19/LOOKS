@@ -27,10 +27,10 @@ export default function ShowProducts() {
   return (
     <Container className="admin-panel">
       {productList && productList.length > 0 ? (
-        productList.map((product, index) => {
+        productList.map((product) => {
           return (
             <Container key={product._id}>
-              <Link to="">
+              <Link to={`../update-product/${product._id}`} state={product}>
                 <Container>
                   <img src={`${product.productImgUrls[0]}`} alt="" />
                 </Container>

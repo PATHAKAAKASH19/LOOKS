@@ -117,7 +117,7 @@ async function addProduct(req, res) {
       styleType,
       color,
     } = req.body;
-    console.log(categoryId)
+    console.log(categoryId);
     const stock = parseFloat(req.body.stock);
     const price = parseFloat(req.body.price);
 
@@ -180,10 +180,9 @@ async function updateProduct(req, res) {
   const files = req.files;
   try {
     const productId = req.params.id;
-    const { replacingIndex, sizes, ...rest } = req.body;
+    const { replacingIndex, ...rest } = req.body;
     const product = await Product.findById(productId);
 
-    const sizeArray = Array.isArray(sizes) ? sizes : [sizes];
     const imgUrls = [...product.productImgUrls];
 
     if (files.length > 0) {

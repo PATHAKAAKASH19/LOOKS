@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import ErrorPage from "./pages/errorPage/ErrorPage.jsx";
 import App from "./App.jsx";
@@ -67,23 +67,36 @@ const router = createBrowserRouter([
 
       {
         path: "seller-dashboard",
-        element:<SellerPage></SellerPage>,
+        element: <SellerPage></SellerPage>,
         children: [
           {
-            path:"create-category",
-            element:<CreateCategory></CreateCategory>
-          }
-          ,
+            index: true,
+            element: <Navigate to="products" replace />, // Placeholder content
+          },
           {
-            path:"create-product",
-            element:<CreateProduct></CreateProduct>
+            path: "create-category",
+            element: <CreateCategory></CreateCategory>,
+          },
+          {
+            path: "create-product",
+            element: <CreateProduct></CreateProduct>,
           },
 
           {
-            path:"products",
-            element:<ShowProducts></ShowProducts>
+            path: "products",
+            element: <ShowProducts></ShowProducts>,
+          },
+
+          {
+            path: "update-product",
+            children: [
+              {
+                path:":id",
+                element: <CreateProduct></CreateProduct>
+              }
+            ]
           }
-        ]
+        ],
       },
     ],
   },
