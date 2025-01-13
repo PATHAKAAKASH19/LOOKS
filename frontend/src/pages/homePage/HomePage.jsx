@@ -11,15 +11,22 @@ export default function HomePage() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/category/get");
-        const imagesData = await response.json();
-        setImages(imagesData);
+        const response = await fetch("http://localhost:3000/api/category");
+        const categoryData = await response.json();
+        setImages(categoryData);
       } catch (error) {
         console.log("error:", error);
       }
     };
 
     fetchImages();
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("popstate", (event) => {
+      console.log("Location changed:", window.location.href);
+      console.log("State object:", event.state);
+    });
   }, []);
 
   return (

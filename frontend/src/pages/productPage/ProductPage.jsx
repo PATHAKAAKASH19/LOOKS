@@ -1,94 +1,107 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
-import Card from "../../components/ui/card/Card";
+
 import Container from "../../components/ui/container/Container";
 import Title from "../../components/ui/title/Title";
+import createSlug from "../../utils/createSlug";
+import slugToStr from "../../utils/slugToStr";
+import ProductListCard from "../../components/productListCard/ProductListCard";
 
 export default function ProductPage() {
-  const { productId } = useParams();
+  const { productName } = useParams();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    console.log(pathname);
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   const [product, setProduct] = useState(null);
   const [srcAttribute, setSrcAttribute] = useState("");
   const [size, setSize] = useState("");
+  const [productList, setProductList] = useState(null);
+  const [categoryId, setCategoryId] = useState(null);
 
   const Color = (e) => {
-    e.target.innerText === size
-      ? setSize("")
-      : setSize(e.target.innerText);
+    e.target.innerText === size ? setSize("") : setSize(e.target.innerText);
   };
-
-  useEffect(() => {
-    const fetchProductImageFromBackend = async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:3000/api/product/search/${productId}`
-        );
-
-        const productData = await res.json();
-
-        if (productData) {
-          setSrcAttribute(productData.productImgUrls[0]);
-          setProduct(productData);
-        }
-      } catch (error) {
-        console.log("error:", error);
-      }
-    };
-
-    fetchProductImageFromBackend();
-  }, []);
 
   const handleClick = (e) => {
-    const src = e.target.getAttribute("src");
-    setSrcAttribute(src);
+    setSrcAttribute(e.target.src);
   };
 
-  const [productsImage, setProductsImage] = useState(null);
+  // const addItemToCart = async () => {
+  //   try {
+  //     const res = await fetch("http://localhost:3000/api/cart", {
+  //       method: "POST",
+  //       headers: {
+  //         "content-Type": "application/json",
+  //       },
+
+  //       body: JSON.stringify({
+  //         productId: productId,
+  //         quantity: 1,
+  //         size: size,
+  //       }),
+  //     });
+
+  //     const message = await res.json();
+
+  //     console.log(message);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   }
+  // };
 
   useEffect(() => {
-    const fetchProductsImage = async () => {
+    const fetchProductData = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:3000/api/product/get?category=${"oversized tees"}`
-        );
+        if (productName) {
+          const name = slugToStr(productName);
+          console.log(name);
+          const res = await fetch(
+            `http://localhost:3000/api/product?name=${name}`
+          );
 
-        const productsImage = await res.json();
-
-        if (productsImage !== null) {
-          setProductsImage(productsImage);
+          const productData = await res.json();
+          console.log(productData);
+          if (productData) {
+            setSrcAttribute(productData[0].productImgUrls[0]);
+            setProduct(productData[0]);
+            console.log(productData);
+            setCategoryId(productData[0].categoryId);
+          }
         }
       } catch (error) {
         console.log("error:", error);
       }
     };
 
-    fetchProductsImage();
-  }, []);
+    fetchProductData();
+  }, [productName]);
 
-  const addItemToCart = async () => {
-    try {
-        const res = await fetch("http://localhost:3000/api/cart/create", {
-        method: "POST",
-        headers: {
-          "content-Type": "application/json",
-        },
+  useEffect(() => {
+    const fetchProductsData = async () => {
+      try {
+        if (categoryId) {
+          const res = await fetch(
+            `http://localhost:3000/api/product/category/${categoryId}`
+          );
 
-        body: JSON.stringify({
-          productId:productId, 
-          quantity:1,
-           size:size,
-        })
+          const productList = await res.json();
 
-      });
+          if (productList !== null) {
+            setProductList(productList);
+          }
+        }
+      } catch (error) {
+        console.log("error:", error);
+      }
+    };
 
-
-      const message = await res.json()
-
-      console.log(message)
-    } catch (error) {
-      console.log("error", error)
-    }
-  };
+    fetchProductsData();
+  }, [categoryId, productName]);
 
   return (
     <>
@@ -109,7 +122,7 @@ export default function ProductPage() {
           </Container>
 
           <Container className="product-info-sec">
-            <h1 className="name">{product.name}</h1>
+            <h1 className="name">{product.name.toUpperCase()}</h1>
 
             <Container className="price">
               <Title title={`Inr ${product.price}`} />
@@ -139,6 +152,7 @@ export default function ProductPage() {
                 {product.sizes.map((sizevalue, index) => {
                   return (
                     <li
+                      className="pointer"
                       key={index}
                       onClick={Color}
                       style={
@@ -152,8 +166,6 @@ export default function ProductPage() {
                   );
                 })}
               </ul>
-
-              
             </Container>
 
             <Container className="button-box">
@@ -161,8 +173,7 @@ export default function ProductPage() {
               <Button
                 title="Add to Cart"
                 className="button2"
-                onClick={addItemToCart}
-                route={`/product/${productId}`}
+                // onClick={addItemToCart}
               />
             </Container>
           </Container>
@@ -172,95 +183,20 @@ export default function ProductPage() {
       <Container className="recommendation-sec">
         <Title className="title" title="Similar Products" />
 
-        {productsImage && (
-          <Container className="product-column">
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-            <Card
-              image={productsImage}
-              type="productList"
-              route={`/product/${productsImage[0]._id}`}
-            />
-          </Container>
-        )}
+        <Container className="product-column">
+          {productList && productList.length > 0
+            ? productList.map((prod) => {
+                if (prod._id !== product._id) {
+                  return<ProductListCard
+                    key={prod._id}
+                    data={prod}
+                    type="productList"
+                    route={`/product/${createSlug(prod.name)}`}
+                  />;
+                }
+              })
+            : "nothing to show"}
+        </Container>
       </Container>
     </>
   );

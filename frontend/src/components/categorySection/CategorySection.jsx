@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "../ui/button/Button";
 import Container from "../ui/container/Container";
 import Card from "../ui/card/Card";
 import Title from "../ui/title/Title";
+import createSlug from "../../utils/createSlug";
 
 export default function CategorySection({
   images,
@@ -36,16 +37,14 @@ export default function CategorySection({
     <Container className="section">
       <Title className="category" reactIcon={reactIcon} title={title} />
       <Container className="categoryImage">
-        {images.filter(filterImage).map((image, index) => (
+        {images.filter(filterImage).map((image) => (
           <Card
-            key={index}
-            type="category"
+            key={`${image._id}`}
             image={image}
-            route={`/${image.category}`}
+            route={`/collections/${createSlug(image.category)}`}
           />
         ))}
       </Container>
-      <Button className="button" title="View All" route={`/${filterType}`} />
     </Container>
   );
 }

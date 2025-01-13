@@ -23,7 +23,7 @@ export default function CreateCategory() {
 
   // handle text input box
   const handleInput = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value.toLowerCase()}));
   };
 
   const handleImg = (e) => {
@@ -46,11 +46,10 @@ export default function CreateCategory() {
         formData.append("subCategory", form.subCategory);
         formData.append("categoryImg", img);
 
-        const res = await fetch("http://localhost:3000/api/category/create", {
+        const res = await fetch("http://localhost:3000/api/category", {
           method: "POST",
           body: formData,
         });
-
         const msg = await res.json();
 
         if (res.status === 201) {
@@ -62,7 +61,6 @@ export default function CreateCategory() {
           });
           setPreviewImg("");
           setImg(null);
-          console.log("akasj")
           toast.success(`${msg.message}`);
         }
       } else {
@@ -76,7 +74,7 @@ export default function CreateCategory() {
           formData.append("categoryImg", img);
         }
         const res = await fetch(
-          `http://localhost:3000/api/category/update/${form._id}`,
+          `http://localhost:3000/api/category/${form._id}`,
           {
             method: "PUT",
             body: formData,
@@ -95,10 +93,11 @@ export default function CreateCategory() {
           setPreviewImg("");
           setImg(null);
           setUpdate(false);
+          toast.success(`${msg.message}`);
         }
       }
     } catch (error) {
-      console.log("error", error);
+      toast.error(`${error.message}`);
     }
   };
 
@@ -111,7 +110,7 @@ export default function CreateCategory() {
   // delete category data
   const deleteCategory = async (category) => {
     try {
-      const res = await fetch("http://localhost:3000/api/category/delete", {
+      const res = await fetch("http://localhost:3000/api/category", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -123,9 +122,10 @@ export default function CreateCategory() {
 
       if (res.status === 200) {
         setChange(msg);
+        toast.success(`${msg.message}`);
       }
     } catch (error) {
-      console.log("error", error);
+      toast.error(`${error.message}`);
     }
   };
 
@@ -133,7 +133,7 @@ export default function CreateCategory() {
   useEffect(() => {
     const getAllCategory = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/category/get");
+        const response = await fetch("http://localhost:3000/api/category");
         const categoryData = await response.json();
 
         if (categoryData) {

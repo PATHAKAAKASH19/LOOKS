@@ -1,27 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import Card from "../../components/ui/card/Card";
+import { useSearchParams, useParams, useLocation } from "react-router-dom";
+import ProductListCard from "../../components/productListCard/ProductListCard";
 import FilterComponent from "../../components/filterComponent/FilterComponent";
 import Container from "../../components/ui/container/Container";
+import createSlug from "../../utils/createSlug";
+import slugToStr from "../../utils/slugToStr";
 
 export default function ProductListPage() {
-  let { category } = useParams();
+  const { category } = useParams();
+  const { pathname } = useLocation();
 
-  const [product, setProduct] = useState(null);
-  const [filter , setFilter] = useState({})
+  useEffect(() => {
+    console.log(pathname);
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  const [categoryId, setCategoryId] = useState("");
+  const [products, setProducts] = useState(null);
+  const [error, setError] = useState("nothing to show");
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const fetchCategoryId = async () => {
+      try {
+        const slugToNormal = slugToStr(category);
+
+        const categoryRes = await fetch(
+          `http://localhost:3000/api/category?category=${slugToNormal}`
+        );
+
+        const categoryData = await categoryRes.json();
+
+        if (categoryData) {
+          setCategoryId(categoryData[0]._id);
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+
+    fetchCategoryId();
+  }, []);
 
   useEffect(() => {
     const fetchProductsImage = async () => {
-
       try {
-        const res = await fetch(
-          `http://localhost:3000/api/product/get?category=${category}`
-        );
-        const productsImage = await res.json();
-        console.log("product",productsImage)
-        if (productsImage !== null) {
-          console.log(productsImage)
-          setProduct(productsImage);
+        let queryString;
+
+        if (searchParams) {
+          queryString = searchParams ? searchParams.toString() : null;
+        }
+
+        if (categoryId) {
+          const res = await fetch(
+            `http://localhost:3000/api/product/category/${categoryId}?${queryString}`
+          );
+
+          const productsData = await res.json();
+
+          if (res.status === 200) {
+            setProducts(productsData);
+          }
         }
       } catch (error) {
         console.log("error:", error);
@@ -29,135 +69,36 @@ export default function ProductListPage() {
     };
 
     fetchProductsImage();
+  }, [searchParams, categoryId]);
+
+  useEffect(() => {
+    window.addEventListener("popstate", (event) => {
+      console.log("Location changed:", window.location.href);
+      console.log("State object:", event.state);
+    });
+    console.log("Navigated to:", window.location.pathname);
   }, []);
 
   return (
     <Container className="productList">
-      <FilterComponent className="filter" setFilter={setFilter} filter={filter}></FilterComponent>
-      {product && (
-        <Container className="product-column">
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-          <Card
-            image={product}
-            type="productList"
-            route={`/product/${product[0]._id}`}
-          />
-        </Container>
-      )}
+      <FilterComponent
+        className="filter"
+        setSearchParams={setSearchParams}
+      ></FilterComponent>
+
+      <Container className="product-column">
+        {products && products.length > 0 ? (
+          products.map((product) => (
+            <ProductListCard
+              key={product._id}
+              data={product}
+              route={`/product/${createSlug(product.name)}`}
+            />
+          ))
+        ) : (
+          <div>{error}</div>
+        )}
+      </Container>
     </Container>
   );
 }

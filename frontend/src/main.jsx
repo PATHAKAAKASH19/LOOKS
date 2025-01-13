@@ -2,7 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 
 import ErrorPage from "./pages/errorPage/ErrorPage.jsx";
 import App from "./App.jsx";
@@ -19,6 +23,11 @@ import CreateProduct from "./components/createProduct/CreateProduct.jsx";
 import UserPage from "./pages/userPage/UserPage.jsx";
 
 import ShowProducts from "./components/showProducts/ShowProducts.jsx";
+import UserAddress from "./components/user/userAddress/UserAddress.jsx";
+import UserProfile from "./components/user/userProfile/UserProfile.jsx";
+import UserWishlist from "./components/user/userWishlist/UserWishlist.jsx";
+import UserOrders from "./components/user/userOrders/UserOrders.jsx";
+import ChangePassword from "./components/user/changePassword/ChangePassword.jsx";
 
 const router = createBrowserRouter([
   {
@@ -27,20 +36,15 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "home",
+        path: "",
         element: <HomePage />,
-      },
-
-      {
-        path: ":category",
-        element: <ProductListPage />,
       },
 
       {
         path: "product",
         children: [
           {
-            path: ":productId",
+            path: ":productName",
             element: <ProductPage />,
           },
         ],
@@ -52,15 +56,47 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "user",
+        path: "account",
         children: [
           {
             path: ":auth",
             element: <Auth></Auth>,
           },
+        ],
+      },
+
+      {
+        path: "user",
+        element: <UserPage />,
+        children: [
+          {
+            index: true,
+            element: <UserProfile />,
+          },
 
           {
-            path: "dashboard",
+            path: "profile",
+            element: <UserProfile />,
+          },
+
+          {
+            path: "address",
+            element: <UserAddress />,
+          },
+
+          {
+            path: "wishlist",
+            element: <UserWishlist />,
+          },
+
+          {
+            path: "orders",
+            element: <UserOrders />,
+          },
+
+          {
+            path: "changePassword",
+            element: <ChangePassword />,
           },
         ],
       },
@@ -71,7 +107,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to="products" replace />, // Placeholder content
+            element: <ShowProducts></ShowProducts>,
           },
           {
             path: "create-category",
@@ -91,11 +127,21 @@ const router = createBrowserRouter([
             path: "update-product",
             children: [
               {
-                path:":id",
-                element: <CreateProduct></CreateProduct>
-              }
-            ]
-          }
+                path: ":productName",
+                element: <CreateProduct></CreateProduct>,
+              },
+            ],
+          },
+        ],
+      },
+
+      {
+        path: "collections",
+        children: [
+          {
+            path: ":category",
+            element: <ProductListPage />,
+          },
         ],
       },
     ],

@@ -12,7 +12,7 @@ export default function CartPage() {
     const fetchProductsImage = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/product/get?category=${"oversized tees"}`
+          `http://localhost:3000/api/product?category=${"oversized tees"}`
         );
         const productsImage = await res.json();
 

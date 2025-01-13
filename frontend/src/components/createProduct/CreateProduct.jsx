@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import Container from "../ui/container/Container";
 import InputBox from "../ui/inputBox/InputBox";
 import { MdDelete } from "react-icons/md";
-import toast, { Toaster } from "react-hot-toast";
-import { useLocation } from "react-router-dom";
+import { toast, Toaster } from "react-hot-toast";
+import { Link, useLocation } from "react-router-dom";
 
 export default function CreateProduct() {
   const location = useLocation();
-  const product = location.state || null;
+  const data = location.state || null;
+
   const [productDetail, setProductDetail] = useState({
     name: "",
     description: "",
@@ -43,7 +44,7 @@ export default function CreateProduct() {
       }
     } else {
       setProductDetail((prev) => {
-        return { ...prev, [e.target.name]: e.target.value };
+        return { ...prev, [e.target.name]: e.target.value.toLowerCase() };
       });
     }
   };
@@ -59,27 +60,27 @@ export default function CreateProduct() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-
-    formData.append("name", productDetail.name);
-    formData.append("description", productDetail.description);
-    formData.append("stock", productDetail.stock);
-
-    formData.append("price", productDetail.price);
-    formData.append("categoryId", productDetail.categoryId);
-    formData.append("materialType", productDetail.materialType);
-    formData.append("styleType", productDetail.styleType);
-    formData.append("color", productDetail.color);
-
-    size.forEach((obj, index) => {
-      formData.append(`sizes[${index}]`, obj);
-    });
-    productImages.forEach((file) => {
-      formData.append(`productImages`, file);
-    });
     try {
       if (!update) {
-        const res = await fetch("http://localhost:3000/api/product/create", {
+        const formData = new FormData();
+        formData.append("name", productDetail.name);
+        formData.append("description", productDetail.description);
+        formData.append("stock", productDetail.stock);
+
+        formData.append("price", productDetail.price);
+        formData.append("categoryId", productDetail.categoryId);
+        formData.append("materialType", productDetail.materialType);
+        formData.append("styleType", productDetail.styleType);
+        formData.append("color", productDetail.color);
+
+        size.forEach((obj, index) => {
+          formData.append(`sizes[${index}]`, obj);
+        });
+
+        productImages.forEach((file) => {
+          formData.append(`productImages`, file);
+        });
+        const res = await fetch("http://localhost:3000/api/product", {
           method: "POST",
           body: formData,
         });
@@ -102,17 +103,69 @@ export default function CreateProduct() {
           setProductImages([]);
           setSize([]);
 
-          toast(`${msg.message}`);
-        } else {
-    
-          const res = await fetch(`http://localhost:3000/api/product/update/${productDetail._id}`, {
-            method:"PUT",
-            body:formData
-          })
+          toast.success(`${msg.message}`);
+        }
+      } else {
+        const formData = new FormData();
+
+        formData.append("name", productDetail.name);
+        formData.append("description", productDetail.description);
+        formData.append("stock", productDetail.stock);
+
+        formData.append("price", productDetail.price);
+        formData.append("categoryId", productDetail.categoryId);
+        formData.append("materialType", productDetail.materialType);
+        formData.append("styleType", productDetail.styleType);
+        formData.append("color", productDetail.color);
+
+        size.forEach((obj, index) => {
+          formData.append(`sizes[${index}]`, obj);
+        });
+
+        if (productImages) {
+          const productImgUrlsArray = productDetail.productImgUrls.filter(
+            (img) => previewImages.includes(img)
+          );
+
+          productImgUrlsArray.forEach((imgUrl, index) => {
+            formData.append(`productImgUrls[${index}]`, imgUrl);
+          });
+
+          productImages.forEach((file) => {
+            formData.append(`productImages`, file);
+          });
+        }
+        const res = await fetch(
+          `http://localhost:3000/api/product/${productDetail._id}`,
+          {
+            method: "PUT",
+            body: formData,
+          }
+        );
+
+        const msg = await res.json();
+
+        if (res.status === 200) {
+          setProductDetail({
+            name: "",
+            description: "",
+            stock: "",
+            price: "",
+            materialType: "",
+            styleType: "",
+            color: "",
+            categoryId: "",
+            category: "",
+          });
+          setPreviewImages([]);
+          setProductImages([]);
+          setSize([]);
+          setUpdate(false);
+          toast.success(`${msg.message}`);
         }
       }
     } catch (error) {
-      console.log("error : ", error);
+      toast.error(`${error}`);
     }
   };
 
@@ -130,8 +183,7 @@ export default function CreateProduct() {
 
     setProductImages((prev) => [...prev, ...files]);
     const urls = arrayFIles.map((file) => URL.createObjectURL(file));
-    console.log(urls);
-    console.log(productImages);
+
     setPreviewImages((prev) => [...prev, ...urls]);
   };
 
@@ -140,22 +192,24 @@ export default function CreateProduct() {
     setPreviewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // get the product data  from showProduct components and insert to the data into state
   const updateProductDetail = () => {
     const categoryData = category.find(
-      (ctgObj) => ctgObj._id === product.categoryId
+      (ctgObj) => ctgObj._id === data.categoryId
     );
 
-    setProductDetail({ ...product, category: categoryData.category });
+    setProductDetail({ ...data, category: categoryData.category });
 
-    setSize(product.sizes);
-    setPreviewImages(product.productImgUrls);
+    setSize(data.sizes);
+    setPreviewImages(data.productImgUrls);
     setUpdate(true);
   };
 
+  // this fetch the categroy data
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/category/get");
+        const res = await fetch("http://localhost:3000/api/category");
         const categoryData = await res.json();
 
         if (categoryData) {
@@ -169,13 +223,31 @@ export default function CreateProduct() {
     getCategory();
   }, []);
 
+  // this add the product details from show Product component to the productDetail state
   useEffect(() => {
-    if (product && category.length > 0) {
+    if (data && category.length > 0) {
       updateProductDetail();
     } else {
       return;
     }
   }, [category]);
+
+  const deleteProduct = async (productId) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/product/${productId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const msg = res.json();
+
+      toast.success(`${msg.message}`);
+    } catch (error) {
+      toast.error(`${error.message}`);
+    }
+  };
 
   return (
     <Container className="admin-panel">
@@ -209,7 +281,7 @@ export default function CreateProduct() {
               placeholder="Enter product quantity"
               min={10}
               name="stock"
-              value={productDetail.stock}
+              value={productDetail.stock === "" ? "" :Number(productDetail.stock)}
               onChange={handleInput}
               required
             />
@@ -221,7 +293,7 @@ export default function CreateProduct() {
               placeholder="Enter product price"
               min={0}
               name="price"
-              value={productDetail.price}
+              value={productDetail.price === "" ? "": Number(productDetail.price)}
               onChange={handleInput}
               required
             />
@@ -335,19 +407,27 @@ export default function CreateProduct() {
           ) : (
             <Container className="productBtn">
               <button
+                type="button"
+                className="delete"
+                onClick={() => {
+                  deleteProduct(data._id);
+                }}
+              >
+                delete
+              </button>
+
+              <button
                 type="submit"
-                className="update "
+                className="update"
                 onClick={handleFormSubmit}
               >
                 update
               </button>
-              <button
-                type="button"
-                className="delete "
-                onClick={() => cancleCategoryUpdate()}
-              >
-                cancle
-              </button>
+              <Link to="/seller-dashboard/products">
+                <button type="button" className="delete cancle">
+                  cancle
+                </button>
+              </Link>
             </Container>
           )}
         </form>

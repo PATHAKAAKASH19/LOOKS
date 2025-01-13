@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <div className="navbar">
       <div>
-        <Link className="link" to="/home">
+        <Link className="link" to="/">
           <h2 className="logo">LOOKS</h2>
         </Link>
       </div>
