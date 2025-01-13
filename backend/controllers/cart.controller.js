@@ -84,7 +84,7 @@ async function updateCartItem(req, res) {
   }
 }
 
-async function deleteCardItem(req, res) {
+async function deleteCartItem(req, res) {
   try {
     const { userId } = res.body;
     const productId = res.query.productId;
@@ -126,6 +126,6 @@ export {
   getCartItems,
   addItemToCart,
   updateCartItem,
-  deleteCardItem,
+  deleteCartItem,
   deleteCart,
 };

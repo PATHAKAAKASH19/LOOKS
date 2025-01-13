@@ -25,7 +25,16 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
-
+app.use((req, res, next) => {
+    if (req.body && typeof req.body === "object") {
+      for (const key in req.body) {
+        if (typeof req.body[key] === "string") {
+          req.body[key] = req.body[key].toLowerCase();
+        }
+      }
+    }
+    next();
+  });
 app.use("/api/cart", cartRoute)
 app.use("/api/product" , productRoute)
 app.use("/api/category" , categoryRoute)

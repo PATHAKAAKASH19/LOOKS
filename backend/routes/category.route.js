@@ -7,13 +7,13 @@ const router = express.Router()
 
 
 
-router.get("/get", getAllCategory)
+router.get("/", getAllCategory)
 
-router.post("/create" , upload.single("categoryImg"),createCategory)
+router.post("/" , upload.single("categoryImg"),createCategory)
 
-router.put("/update/:id", upload.single("categoryImg") ,updateCategory)
+router.put("/:id", upload.single("categoryImg") ,updateCategory)
 
-router.delete("/delete" ,  deleteCategory)
+router.delete("/" ,  deleteCategory)
 
 
 export default router

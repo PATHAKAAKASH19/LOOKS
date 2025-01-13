@@ -10,12 +10,18 @@ async function register(req, res) {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
     const userExist = await User.findOne({ email: email });
 
     if (userExist) {
       return res
         .status(400)
-        .json({ message: "user already exist go to login page" });
+        .json({ message: "user already exist, Please log in" });
     }
 
     // hashing the password by bcrupt
@@ -23,12 +29,14 @@ async function register(req, res) {
 
     // storing the hashed password in database
     const createUser = await User.create({
-      email,
+      email: email,
       password: hashPassword,
     });
 
+    console.log(createUser);
     return res.status(200).json({ message: "user register successfully" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "internal error" });
   }
 }
@@ -79,7 +87,7 @@ async function login(req, res) {
         user: userExist._id,
       });
 
-      res.status(200).json({ accessToken: accessToken });
+      res.status(200).json({ userData:userExist,accessToken: accessToken});
 
       // sending the refresh token in httpOnly cookie
       res.cookie("refreshToken", refreshToken, {
@@ -92,7 +100,9 @@ async function login(req, res) {
 
     return res.status(200).json({ message: "user already login" });
   } catch (error) {
-   return res.status(500).json({ message: "internal server error", err: error });
+    return res
+      .status(500)
+      .json({ message: "internal server error", err: error });
   }
 }
 
@@ -119,7 +129,7 @@ async function generateAccessToken(req, res) {
       // generate a new access token
       const newAccessToken = jwt.sign(
         { userId: user.userId, role: user.role },
-        process.env.JWT_REFRESH_SECRET,
+        process.env.JWT_SECRET,
         { expiresIn: "15m" }
       );
 
@@ -145,7 +155,7 @@ async function deleteAccount(req, res) {
   }
 }
 
-async function singOut(params) {
+async function singOut(req, res) {
   const refreshToken = req.cookies.refreshToken;
   try {
     const deleteRefreshTokenFromDatabase = await RefreshToken.findOneAndDelete({

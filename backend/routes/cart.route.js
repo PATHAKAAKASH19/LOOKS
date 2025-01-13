@@ -1,13 +1,13 @@
 import express from "express"
 
-import {getCartItems, addItemToCart, updateCartItem, deleteCardItem, deleteCart} from "../controllers/cart.controller.js"
+import {getCartItems, addItemToCart, updateCartItem, deleteCartItem, deleteCart} from "../controllers/cart.controller.js"
 const router = express.Router()
 
 
-router.get("/get" , getCartItems)
-router.post("/create" ,addItemToCart )
-router.put("/update" ,  updateCartItem)
-router.delete("/delete/:productId" , deleteCardItem)
-router.delete("/delete" , deleteCart)
+router.get("/" , getCartItems)
+router.post("/" ,addItemToCart )
+router.put("/" ,  updateCartItem)
+router.delete("/:productId" , deleteCartItem)
+router.delete("/:id" , deleteCart)
 
 export default router
