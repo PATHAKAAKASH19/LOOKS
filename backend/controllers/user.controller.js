@@ -12,7 +12,7 @@ async function register(req, res) {
 
     if (!email || !password) {
       return res
-        .status(400)
+        .status(401)
         .json({ message: "Email and password are required" });
     }
 
@@ -20,7 +20,7 @@ async function register(req, res) {
 
     if (userExist) {
       return res
-        .status(400)
+        .status(403)
         .json({ message: "user already exist, Please log in" });
     }
 
@@ -44,11 +44,11 @@ async function register(req, res) {
 async function login(req, res) {
   try {
     const { email, password } = req.body;
-
-    const userExist = await User.findone({ email: email });
-
+    console.log(req.body)
+    const userExist = await User.findOne({ email: email });
+    console.log(userExist)
     if (!userExist) {
-      return res.status(400).json({ message: "please signup first" });
+      return res.status(401).json({ message: "please signup first" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(
@@ -56,8 +56,10 @@ async function login(req, res) {
       userExist.password
     );
 
+    console.log(isPasswordCorrect)
+
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "invalid password" });
+      return res.status(401).json({ message: "invalid password" });
     }
 
     const isRefreshTokenExist = await RefreshToken.findOne({
@@ -98,7 +100,7 @@ async function login(req, res) {
       });
     }
 
-    return res.status(200).json({ message: "user already login" });
+    return res.status(403).json({ message: "user already login" });
   } catch (error) {
     return res
       .status(500)
@@ -111,19 +113,19 @@ async function generateAccessToken(req, res) {
 
   if (!refreshToken)
     return res
-      .status(403)
-      .json({ message: "refresh token not found please login" });
+      .status(401)
+      .json({ message: "invalid token" });
 
   try {
     const refreshToken = await RefreshToken.findOne({
       refreshToken: refreshToken,
     });
     if (!refreshToken)
-      return res.status(403).json({ message: "invalid token" });
+      return res.status(401).json({ message: "invalid token" });
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
       if (err) {
-        return res.status(403).json({ messgae: "invalid token" });
+        return res.status(401).json({ messgae: "invalid token" });
       }
 
       // generate a new access token
