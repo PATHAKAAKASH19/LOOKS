@@ -52,7 +52,7 @@ export default function FilterComponent({ searchParams, setSearchParams }) {
 
   const bottomWearValue = ["trouser", "jeans", "joggers", "shorts"];
   const [filterProperties, setFilterProperties] = useState(topWearObj);
-  const [filter, setFilter] = useState({});
+  const [filter, setFilter] = useState(null);
   const { category } = useParams();
 
   useEffect(() => {
@@ -82,15 +82,13 @@ export default function FilterComponent({ searchParams, setSearchParams }) {
   };
 
   useEffect(() => {
-    
     if (filter !== null) {
-      const params = new URLSearchParams()
+      const params = new URLSearchParams();
       for (const [key, values] of Object.entries(filter)) {
-
         values.length > 0
-          ? values.forEach(value => {
-            params.append(`${key}`, value)
-          })
+          ? values.forEach((value) => {
+              params.append(`${key}`, value);
+            })
           : params.delete(`${key}`);
       }
 

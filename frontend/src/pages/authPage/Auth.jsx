@@ -3,95 +3,128 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Container from "../../components/ui/container/Container";
 import Form from "../../components/form/Form";
 import Title from "../../components/ui/title/Title";
+import { Toaster, toast } from "react-hot-toast";
+import { useAuth } from "../../context/userContext";
 
 export default function Auth() {
-  // use to store the form data
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  // use to store the error data
   const [errors, setErrors] = useState({
     emailError: "",
     passwordError: "",
   });
 
-  // this hook is use to extract the route params
   const { auth } = useParams();
-  
-  // this hook is use to naviagete between pages
   const navigate = useNavigate();
+  const { setAccessToken } = useAuth();
 
-  // this function is used for form submission
-  const handleForm = async (e) => {
-    // prevent default behaviour of form tag
-    e.preventDefault();
-
-    // set the error
+  const cleanState = () => {
+    setFormData({
+      email: "",
+      password: "",
+    });
     setErrors({
       emailError: "",
       passwordError: "",
     });
+  };
 
-    // return an object
-    const validation = validate(formData);
+  const submitLoginForm = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (validation.validateEmail && validation.validatePassword) {
-      try {
-        // send user form data to backend
-        const res = await fetch(
-          `http://localhost:3000/api/auth/${auth.toLowerCase()}`,
-          {
-            method: "POST",
-            headers: {
-              "content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          }
-        );
+      const data = await res.json();
+      console.log(data);
+      if (res.status === 401) {
+        toast.error(`${data.message}`);
+      } else if (res.status === 403) {
+        toast.error(`${data.message}`);
+      } else if (res.status === 200) {
+        setAccessToken(data.accessToken);
 
-        const data = await res.json();
+        navigate("/");
+      }
 
-        if (auth.toLowerCase() === "signup" && res.status === 200) {
-          setFormData({
-            email: "",
-            password: "",
-          });
-          navigate("/account/login");
-        } else if (auth.toLowerCase() === "login" && res.status === 200) {
-          setFormData({
-            email: "",
-            password: "",
-          });
-          
-          navigate("../../home");
-        } else {
-          setFormData({
-            email: "",
-            password: "",
-          });
-          alert(`error: ${res.error}`);
-          navigate(`/account/${auth}`);
+      cleanState();
+    } catch (error) {
+      cleanState();
+      toast.error(`error : ${error}`);
+    }
+  };
+
+  const submitSignupForm = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/auth/signup`, {
+        method: "POST",
+        headers: {
+          "content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        toast.error(`${data.message}`);
+      } else if (res.status === 403) {
+        toast.error(`${data.message}`);
+      } else {
+        navigate(`/account/login`);
+      }
+      cleanState();
+    } catch (error) {
+      cleanState();
+      toast.error(`error : ${error}`);
+    }
+  };
+
+  const handleValidation = (validation) => {
+    if (validation.validateEmail === false) {
+      setErrors((prev) => {
+        return {
+          ...prev,
+          emailError: "Email must be in the format: example@domain.com",
+        };
+      });
+    }
+
+    if (validation.validatePassword === false) {
+      setErrors((prev) => {
+        return {
+          ...prev,
+          passwordError: "Password: ≥8 chars, A-Z, a-z, 0-9, & !@#$%^&*.",
+        };
+      });
+    }
+  };
+
+  // this function is used for form submission
+  const handleForm = async (e) => {
+    e.preventDefault();
+
+    try {
+      const validation = validate(formData);
+
+      if (validation.validateEmail && validation.validatePassword) {
+        if (auth.toLowerCase() === "signup") {
+          await submitSignupForm();
+        } else if (auth.toLowerCase() === "login") {
+          await submitLoginForm();
         }
-      } catch (error) {
-        console.log("error : ", error);
+      } else {
+        handleValidation(validation);
       }
-    } else {
-      if (validation.validateEmail === false) {
-        setErrors((prev) => {
-          return { ...prev, emailError: "please enter valid email format" };
-        });
-      }
-
-      if (validation.validatePassword === false) {
-        setErrors((prev) => {
-          return {
-            ...prev,
-            passwordError: "please enter valide password format",
-          };
-        });
-      }
+    } catch (error) {
+      console.log("error : ", error);
     }
   };
 
@@ -124,6 +157,7 @@ export default function Auth() {
           handleInput={handleInput}
           handleForm={handleForm}
           errors={errors}
+          autoComplete="true"
         ></Form>
 
         {auth === "signup" ? (
@@ -136,6 +170,7 @@ export default function Auth() {
           </p>
         )}
       </Container>
+      <Toaster />
     </Container>
   );
 }

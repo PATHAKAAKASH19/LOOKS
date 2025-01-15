@@ -28,6 +28,7 @@ import UserProfile from "./components/user/userProfile/UserProfile.jsx";
 import UserWishlist from "./components/user/userWishlist/UserWishlist.jsx";
 import UserOrders from "./components/user/userOrders/UserOrders.jsx";
 import ChangePassword from "./components/user/changePassword/ChangePassword.jsx";
+import ShowOrders from "./components/showOrders/ShowOrders.jsx";
 
 const router = createBrowserRouter([
   {
@@ -121,6 +122,11 @@ const router = createBrowserRouter([
           {
             path: "products",
             element: <ShowProducts></ShowProducts>,
+          },
+
+          {
+            path: "orders",
+            element: <ShowOrders/>,
           },
 
           {

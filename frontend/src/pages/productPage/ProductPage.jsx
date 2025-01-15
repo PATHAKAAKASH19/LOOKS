@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../components/ui/button/Button";
 
 import Container from "../../components/ui/container/Container";
@@ -7,15 +7,18 @@ import Title from "../../components/ui/title/Title";
 import createSlug from "../../utils/createSlug";
 import slugToStr from "../../utils/slugToStr";
 import ProductListCard from "../../components/productListCard/ProductListCard";
+import { useAuth } from "../../context/userContext";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function ProductPage() {
-  const { productName } = useParams();
-  const { pathname } = useLocation();
+  const { productName } = useParams() || "";
+  const navigate = useNavigate();
+
+  const { accessToken, setAccessToken } = useAuth();
 
   useEffect(() => {
-    console.log(pathname);
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [productName]);
 
   const [product, setProduct] = useState(null);
   const [srcAttribute, setSrcAttribute] = useState("");
@@ -31,28 +34,87 @@ export default function ProductPage() {
     setSrcAttribute(e.target.src);
   };
 
-  // const addItemToCart = async () => {
-  //   try {
-  //     const res = await fetch("http://localhost:3000/api/cart", {
-  //       method: "POST",
-  //       headers: {
-  //         "content-Type": "application/json",
-  //       },
+  const getAccessToken = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/auth/generate-new-access-token`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
 
-  //       body: JSON.stringify({
-  //         productId: productId,
-  //         quantity: 1,
-  //         size: size,
-  //       }),
-  //     });
+      const data = await res.json();
 
-  //     const message = await res.json();
+      if (res.status === 401) {
+        navigate(`../../account/login`);
+      } else {
+        setAccessToken(data.accessToken);
+      }
+    } catch (error) {
+      console.error("Error in token generation", error);
+      navigate(`../../account/login`);
+    }
+  };
 
-  //     console.log(message);
-  //   } catch (error) {
-  //     console.log("error", error);
-  //   }
-  // };
+  const submitAddToCart = async () => {
+    return await fetch("http://localhost:3000/api/cart", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+
+      body: JSON.stringify({
+        productId: product._id,
+        quantity: 1,
+        size: size,
+      }),
+    });
+  };
+
+  const addItemToCart = async () => {
+    try {
+      if (!accessToken) {
+        await getAccessToken();
+      }
+
+      const res = await submitAddToCart();
+
+      if (res.status === 401) {
+        await getAccessToken();
+        await submitAddToCart();
+      } else {
+        toast(
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div>
+              <img
+                src={product.productImgUrls[0]}
+                alt={product.name}
+                style={{ width: "50px", height: "50px", borderRadius: "8px" }}
+              />
+            </div>
+            <div>
+              <strong>{product.name}</strong>
+            </div>
+          </div>,
+          {
+            duration: 3000,
+            position: "top-right",
+            style: {
+              border: "1px solid #4caf50",
+              borderRadius: "10px",
+              background: "#fff",
+              color: "#333",
+            },
+          }
+        );
+      }
+    } catch (error) {
+      console.log("error in adding item to cart", error);
+    }
+  };
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -173,7 +235,7 @@ export default function ProductPage() {
               <Button
                 title="Add to Cart"
                 className="button2"
-                // onClick={addItemToCart}
+                onClick={addItemToCart}
               />
             </Container>
           </Container>
@@ -187,16 +249,19 @@ export default function ProductPage() {
           {productList && productList.length > 0
             ? productList.map((prod) => {
                 if (prod._id !== product._id) {
-                  return<ProductListCard
-                    key={prod._id}
-                    data={prod}
-                    type="productList"
-                    route={`/product/${createSlug(prod.name)}`}
-                  />;
+                  return (
+                    <ProductListCard
+                      key={prod._id}
+                      data={prod}
+                      type="productList"
+                      route={`/product/${createSlug(prod.name)}`}
+                    />
+                  );
                 }
               })
             : "nothing to show"}
         </Container>
+        <Toaster />
       </Container>
     </>
   );

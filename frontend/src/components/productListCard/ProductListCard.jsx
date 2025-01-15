@@ -4,8 +4,9 @@ import Container from "../ui/container/Container";
 
 export default function ProductListCard({route, data}) {
   return (
-    <Link className="link1" to={`${route}`} style={{ height: "400px" }}>
+   
       <Container className="product">
+         <Link className="link1" to={`${route}`} style={{ height: "400px" }}>
         <img src={data.productImgUrls[0]} alt={data.category} />
 
         <Container className="product-info-box">
@@ -19,7 +20,8 @@ export default function ProductListCard({route, data}) {
             })}
           </ul>
         </Container>
+        </Link>
       </Container>
-    </Link>
+  
   );
 }

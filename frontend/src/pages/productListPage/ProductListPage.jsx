@@ -76,7 +76,7 @@ export default function ProductListPage() {
       console.log("Location changed:", window.location.href);
       console.log("State object:", event.state);
     });
-    console.log("Navigated to:", window.location.pathname);
+    console.log("Navigated to:", window.location);
   }, []);
 
   return (

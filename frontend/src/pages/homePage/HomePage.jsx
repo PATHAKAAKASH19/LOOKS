@@ -22,13 +22,6 @@ export default function HomePage() {
     fetchImages();
   }, []);
 
-  useEffect(() => {
-    window.addEventListener("popstate", (event) => {
-      console.log("Location changed:", window.location.href);
-      console.log("State object:", event.state);
-    });
-  }, []);
-
   return (
     <Container className="home">
       {images && images.length > 0 ? (

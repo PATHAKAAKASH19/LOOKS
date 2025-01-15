@@ -172,7 +172,7 @@ export default function CreateCategory() {
         <h1>Create Category</h1>
         <form onSubmit={handleFormSubmit}>
           <Container>
-            <Toaster />
+           
           </Container>
           <Container className="input">
             <label htmlFor="category" style={{ alignSelf: "center" }}>
@@ -299,9 +299,11 @@ export default function CreateCategory() {
                     delete
                   </button>
                 </Container>
+
               </Container>
             );
           })}
+           <Toaster />
       </Container>
     </Container>
   );

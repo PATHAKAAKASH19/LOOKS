@@ -32,7 +32,7 @@ export default function UserProfile() {
   };
 
   return (
-    <Container className="right-box">
+    <Container className="user-profile-box">
       <form onSubmit={handleUserForm}>
         <Container>
           <label htmlFor="firstName">First Name</label>

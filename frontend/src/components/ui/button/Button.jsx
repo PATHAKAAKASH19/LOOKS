@@ -1,15 +1,10 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function Button({
-    title,
-    route,
-    className,
-    onClick
-}){
+export default function Button({ title, route, className }) {
   return (
-        <Link to={`${route}`} replace >
-         <button className={`${className}`} onClick={onClick}>{title}</button>
-        </Link>
-    )
+    <Link to={`${route}`} replace>
+      <button className={`${className}`}>{title}</button>
+    </Link>
+  );
 }

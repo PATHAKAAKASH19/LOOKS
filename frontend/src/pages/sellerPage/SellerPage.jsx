@@ -33,6 +33,15 @@ export default function SellerPage() {
         >
           <h1 className="h1">Products</h1>
         </NavLink>
+
+        <NavLink
+          to="orders"
+          className={({ isActive }) =>
+            isActive ? "active-link" : "not-active-link"
+          }
+        >
+          <h1 className="h1">Orders</h1>
+        </NavLink>
       </Container>
       <Outlet></Outlet>
     </Container>

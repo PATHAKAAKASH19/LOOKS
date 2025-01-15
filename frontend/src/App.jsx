@@ -3,14 +3,14 @@ import Footer from "./components/footer/Footer";
 import Header from "./components/header/Header";
 import { Outlet } from "react-router-dom";
 
-import { authContextProvider } from "./context/userContext";
+import { AuthContextProvider } from "./context/userContext.jsx";
 
 export default function App() {
   return (
-    <authContextProvider>
+    <AuthContextProvider>
       <Header />
       <Outlet />
       <Footer />
-    </authContextProvider>
+    </AuthContextProvider>
   );
 }

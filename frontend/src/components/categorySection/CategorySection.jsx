@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import Button from "../ui/button/Button";
 import Container from "../ui/container/Container";
-import Card from "../ui/card/Card";
+import { Card } from "../ui/card/Card";
 import Title from "../ui/title/Title";
 import createSlug from "../../utils/createSlug";
 
@@ -11,27 +11,30 @@ export default function CategorySection({
   title,
   reactIcon,
 }) {
-  const filterImage = (image) => {
-    if (filterType === "trending") {
-      return image.trending;
-    } else if (filterType === "bottomwear") {
-      return (
-        !image.trending &&
-        image.subCategory === "bottomwear" &&
-        image.category !== "banner" &&
-        image.category !== "banner2"
-      );
-    } else if (filterType === "topwear") {
-      return (
-        !image.trending &&
-        image.subCategory === "topwear" &&
-        image.category !== "banner" &&
-        image.category !== "banner2"
-      );
-    } else {
-      return false;
-    }
-  };
+  const filterImage = useCallback(
+    (image) => {
+      if (filterType === "trending") {
+        return image.trending;
+      } else if (filterType === "bottomwear") {
+        return (
+          !image.trending &&
+          image.subCategory === "bottomwear" &&
+          image.category !== "banner" &&
+          image.category !== "banner2"
+        );
+      } else if (filterType === "topwear") {
+        return (
+          !image.trending &&
+          image.subCategory === "topwear" &&
+          image.category !== "banner" &&
+          image.category !== "banner2"
+        );
+      } else {
+        return false;
+      }
+    },
+    [filterType]
+  );
 
   return (
     <Container className="section">
@@ -41,10 +44,15 @@ export default function CategorySection({
           <Card
             key={`${image._id}`}
             image={image}
-            route={`/collections/${createSlug(image.category)}`}
+            route={`collections/${createSlug(image.category)}`}
           />
         ))}
       </Container>
+      <Button
+        title="view all"
+        className="button"
+        route={`/collections/${"jj"}`}
+      ></Button>
     </Container>
   );
 }
