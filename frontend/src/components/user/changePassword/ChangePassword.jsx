@@ -1,7 +1,11 @@
 import React from 'react'
+import Container from '../../ui/container/Container'
 
 export default function ChangePassword() {
   return (
-    <div>ChangePassword</div>
+    <Container className="user-profile-box">
+      
+      <form></form>
+    </Container>
   )
 }

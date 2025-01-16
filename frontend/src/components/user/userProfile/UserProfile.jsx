@@ -19,9 +19,7 @@ export default function UserProfile() {
   };
 
   const handleInput = (e) => {
-    if (e.target.value) {
-      setUserData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    }
+    setUserData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleUserForm = async () => {
@@ -33,8 +31,13 @@ export default function UserProfile() {
 
   return (
     <Container className="user-profile-box">
+      {disabled ? (
+        <CiEdit onClick={handleFormEdit} className="edit-icon" />
+      ) : (
+        <AiOutlineCloseCircle onClick={handleFormEdit} className="edit-icon" />
+      )}
       <form onSubmit={handleUserForm}>
-        <Container>
+        <Container className="flex-box">
           <label htmlFor="firstName">First Name</label>
           <InputBox
             type="text"
@@ -42,11 +45,10 @@ export default function UserProfile() {
             value={userData.firstName}
             onChange={handleInput}
             disabled={disabled}
-            className="input"
             id="firstName"
           />
         </Container>
-        <Container>
+        <Container className="flex-box">
           <label htmlFor="lastName">Last Name</label>
           <InputBox
             type="text"
@@ -54,40 +56,37 @@ export default function UserProfile() {
             value={userData.lastName}
             onChange={handleInput}
             disabled={disabled}
-            className="input"
             id="lastName"
           />
         </Container>
-        <Container>
-          <label htmlFor="email">Email</label>
+        <Container className="flex-box">
+          <label htmlFor="email1">Email</label>
           <InputBox
             type="text"
             name="email"
             value={userData.email}
             onChange={handleInput}
             disabled={disabled}
-            className="input"
-            id="email"
+            id="email1"
           />
         </Container>
-        <Container>
+        <Container className="flex-box">
           <label htmlFor="contactNo">Contact No</label>
           <InputBox
             type="text"
             name="contactNo"
-            value={userData.contatcNo}
+            value={userData.contactNo}
             onChange={handleInput}
             disabled={disabled}
-            className="input"
             id="contactNo"
           />
         </Container>
-        {disabled ? (
-          <CiEdit onClick={handleFormEdit} />
-        ) : (
-          <AiOutlineCloseCircle onClick={handleFormEdit} />
+
+        {!disabled && (
+         
+            <button type="submit">Save</button>
+         
         )}
-        {!disabled && <button type="submit">Save</button>}
       </form>
     </Container>
   );

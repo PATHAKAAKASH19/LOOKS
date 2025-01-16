@@ -74,11 +74,25 @@ export default function UserAddress() {
   const handleForm = () => {};
 
   return (
-    <Container>
+    <Container className="user-address-box">
       {!hideAndShow && (
-        <Container>
-          <LuMapPin onClick={handleHideAndShow} />
-        </Container>
+        <>
+        
+        
+          <Container className="address-icon-box">
+            <LuMapPin onClick={handleHideAndShow} className="address-icon" />
+            <h1 onClick={handleHideAndShow}>Add new address</h1>
+          </Container>
+          <Container className="address-icon-box">
+            <LuMapPin onClick={handleHideAndShow} className="address-icon" />
+            <h1 onClick={handleHideAndShow}>Add new address</h1>
+          </Container>
+          <Container className="address-icon-box">
+            <LuMapPin onClick={handleHideAndShow} className="address-icon" />
+            <h1 onClick={handleHideAndShow}>Add new address</h1>
+          </Container>
+         
+        </>
       )}
 
       {hideAndShow && (
