@@ -58,10 +58,15 @@ const userSchema = mongoose.Schema(
           type: String,
           required: true,
         },
+
+        default: {
+          type: Boolean,
+          required:true
+        }
       },
     ],
 
-    phone: {
+    phoneNo: {
       type: String,
       match: [/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"],
       sparse: true,

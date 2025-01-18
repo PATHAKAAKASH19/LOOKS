@@ -10,11 +10,9 @@ import mongoose from "mongoose";
 // get all the products created by seller
 async function getProduct(req, res) {
   try {
-    console.log(req.query);
     const allProducts = await Product.find(req.query);
-    console.log("aa9");
+
     if (allProducts.length > 0) {
-      console.log("aa8");
       return res.status(200).json(allProducts);
     }
   } catch (error) {
@@ -28,7 +26,7 @@ async function getProduct(req, res) {
 //  get all the products by category
 async function getProductsByCategory(req, res) {
   try {
-    console.log("aa7");
+   
     let query = {};
 
     const { price, color, sizes, material, style } = req.query;
