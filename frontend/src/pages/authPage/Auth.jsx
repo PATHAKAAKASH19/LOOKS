@@ -4,7 +4,8 @@ import Container from "../../components/ui/container/Container";
 import Form from "../../components/form/Form";
 import Title from "../../components/ui/title/Title";
 import { Toaster, toast } from "react-hot-toast";
-import { useAuth } from "../../context/userContext";
+import { useAuth } from "../../context/authContext.jsx";
+import { validateEmail, validatePassword } from "../../utils/validate";
 
 export default function Auth() {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ export default function Auth() {
 
   const { auth } = useParams();
   const navigate = useNavigate();
-  const { setAccessToken } = useAuth();
+  const { setAccessToken, setUserId } = useAuth();
 
   const cleanState = () => {
     setFormData({
@@ -50,7 +51,7 @@ export default function Auth() {
         toast.error(`${data.message}`);
       } else if (res.status === 200) {
         setAccessToken(data.accessToken);
-
+        setUserId(data.userId)
         navigate("/");
       }
 
@@ -87,8 +88,8 @@ export default function Auth() {
     }
   };
 
-  const handleValidation = (validation) => {
-    if (validation.validateEmail === false) {
+  const handleValidation = (isEmailValid, isPasswordValid) => {
+    if (isEmailValid === false) {
       setErrors((prev) => {
         return {
           ...prev,
@@ -97,7 +98,7 @@ export default function Auth() {
       });
     }
 
-    if (validation.validatePassword === false) {
+    if (isPasswordValid === false) {
       setErrors((prev) => {
         return {
           ...prev,
@@ -112,16 +113,17 @@ export default function Auth() {
     e.preventDefault();
 
     try {
-      const validation = validate(formData);
+      const isEmailValid = validateEmail(formData.email);
+      const isPasswordValid = validatePassword(formData.password);
 
-      if (validation.validateEmail && validation.validatePassword) {
+      if (isEmailValid && isPasswordValid) {
         if (auth.toLowerCase() === "signup") {
           await submitSignupForm();
         } else if (auth.toLowerCase() === "login") {
           await submitLoginForm();
         }
       } else {
-        handleValidation(validation);
+        handleValidation(isEmailValid, isPasswordValid);
       }
     } catch (error) {
       console.log("error : ", error);
@@ -131,20 +133,6 @@ export default function Auth() {
   // this function handle the input box data
   const handleInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // validate email and password format
-  const validate = (formData) => {
-    const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    const validateEmail = emailRegex.test(formData.email);
-    const validatePassword = passwordRegex.test(formData.password);
-    return {
-      validateEmail: validateEmail,
-      validatePassword: validatePassword,
-    };
   };
 
   return (

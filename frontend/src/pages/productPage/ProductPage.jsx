@@ -7,14 +7,14 @@ import Title from "../../components/ui/title/Title";
 import createSlug from "../../utils/createSlug";
 import slugToStr from "../../utils/slugToStr";
 import ProductListCard from "../../components/productListCard/ProductListCard";
-import { useAuth } from "../../context/userContext";
+import { useAuth } from "../../context/authContext.jsx";
 import { Toaster, toast } from "react-hot-toast";
 
 export default function ProductPage() {
   const { productName } = useParams() || "";
   const navigate = useNavigate();
 
-  const { accessToken, setAccessToken } = useAuth();
+  const { accessToken, setAccessToken, userId } = useAuth();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,13 +47,13 @@ export default function ProductPage() {
       const data = await res.json();
 
       if (res.status === 401) {
-        navigate(`../../account/login`);
+        navigate(`/account/login`);
       } else {
         setAccessToken(data.accessToken);
       }
     } catch (error) {
       console.error("Error in token generation", error);
-      navigate(`../../account/login`);
+      navigate(`/account/login`);
     }
   };
 
@@ -70,14 +70,19 @@ export default function ProductPage() {
         productId: product._id,
         quantity: 1,
         size: size,
+        userId: userId
       }),
     });
   };
 
   const addItemToCart = async () => {
+    console.log("aaka1")
     try {
+      console.log("aaka2")
       if (!accessToken) {
+        console.log("aaka3")
         await getAccessToken();
+        console.log("aad")
       }
 
       const res = await submitAddToCart();
@@ -121,17 +126,17 @@ export default function ProductPage() {
       try {
         if (productName) {
           const name = slugToStr(productName);
-          console.log(name);
+
           const res = await fetch(
             `http://localhost:3000/api/product?name=${name}`
           );
 
           const productData = await res.json();
-          console.log(productData);
+
           if (productData) {
             setSrcAttribute(productData[0].productImgUrls[0]);
             setProduct(productData[0]);
-            console.log(productData);
+
             setCategoryId(productData[0].categoryId);
           }
         }
@@ -232,11 +237,11 @@ export default function ProductPage() {
 
             <Container className="button-box">
               <Button title="size Chat" className="button1" />
-              <Button
-                title="Add to Cart"
+              <button
+                type="button"
                 className="button2"
                 onClick={addItemToCart}
-              />
+              >Add to Cart</button>
             </Container>
           </Container>
         </Container>

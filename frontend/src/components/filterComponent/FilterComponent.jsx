@@ -4,7 +4,7 @@ import Title from "../ui/title/Title";
 import InputBox from "../ui/inputBox/InputBox";
 import { useFetcher, useParams } from "react-router-dom";
 
-export default function FilterComponent({ searchParams, setSearchParams }) {
+export default function FilterComponent({ setSearchParams }) {
   const topWearObj = {
     sizes: ["S", "M", "L", "XL", "XXL"],
     material: ["cotton", "cotton blend", "polyester", "linen"],
@@ -52,7 +52,7 @@ export default function FilterComponent({ searchParams, setSearchParams }) {
 
   const bottomWearValue = ["trouser", "jeans", "joggers", "shorts"];
   const [filterProperties, setFilterProperties] = useState(topWearObj);
-  const [filter, setFilter] = useState(null);
+  const [filter, setFilter] = useState({});
   const { category } = useParams();
 
   useEffect(() => {
@@ -82,7 +82,7 @@ export default function FilterComponent({ searchParams, setSearchParams }) {
   };
 
   useEffect(() => {
-    if (filter !== null) {
+    if (Object.keys(filter).length !== 0) {
       const params = new URLSearchParams();
       for (const [key, values] of Object.entries(filter)) {
         values.length > 0

@@ -71,14 +71,6 @@ export default function ProductListPage() {
     fetchProductsImage();
   }, [searchParams, categoryId]);
 
-  useEffect(() => {
-    window.addEventListener("popstate", (event) => {
-      console.log("Location changed:", window.location.href);
-      console.log("State object:", event.state);
-    });
-    console.log("Navigated to:", window.location);
-  }, []);
-
   return (
     <Container className="productList">
       <FilterComponent
