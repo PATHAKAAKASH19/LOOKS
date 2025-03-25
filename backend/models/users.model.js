@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique:true,
+      unique: true,
     },
 
     password: {
@@ -32,37 +32,38 @@ const userSchema = mongoose.Schema(
         addressLine: {
           type: String,
           required: true,
+          default: "",
         },
 
         locality: {
           type: String,
           required: true,
+          default: "",
         },
 
         city: {
           type: String,
           required: true,
+          default: "",
         },
 
         state: {
           type: String,
           required: true,
-        },
-
-        zipCode: {
-          type: String,
-          required: true,
+          default: "",
         },
 
         country: {
           type: String,
           required: true,
+          default: "",
         },
 
-        default: {
-          type: Boolean,
-          required:true
-        }
+        zipCode: {
+          type: String,
+          required: true,
+          default: "",
+        },
       },
     ],
 
@@ -72,7 +73,7 @@ const userSchema = mongoose.Schema(
       sparse: true,
     },
 
-    Wishlist: [
+    wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",

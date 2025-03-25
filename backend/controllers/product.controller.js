@@ -32,6 +32,10 @@ async function getProductsByCategory(req, res) {
     const { price, color, sizes, material, style } = req.query;
     const { categoryId } = req.params;
 
+    if(!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)){
+      return res.status(400).json({success:false, message:"invalid ProductId"})
+    }
+
     if (sizes) query.sizes = { $in: Array.isArray(sizes) ? sizes : [sizes] };
     if (style)
       query.styleType = { $in: Array.isArray(style) ? style : [style] };
@@ -74,9 +78,13 @@ async function getProductsByCategory(req, res) {
 //  get one product at a time
 async function getProductById(req, res) {
   try {
-    const id = req.params.productId;
+    const {productId} = req.params;
 
-    const product = await Product.findById(id);
+    if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
+      return res.status(400).json({success:false, message:"invalid ProductId"})
+    }
+
+    const product = await Product.findById(productId);
 
     if (product.length !== 0) {
       return res.status(200).json(product);
@@ -169,7 +177,12 @@ async function addProduct(req, res) {
 async function updateProduct(req, res) {
   const files = req.files;
   try {
-    const productId = req.params.id;
+    const {productId} = req.params;
+
+    if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
+      return res.status(400).json({success:false, message:"invalid ProductId"})
+    }
+
     const product = await Product.findById(productId);
     const { productImgUrls, ...rest } = req.body;
 
@@ -203,7 +216,7 @@ async function updateProduct(req, res) {
             console.log(err);
             return;
           } else {
-            console.log("photos deleted successfully  folder");
+            console.log("photos deleted successfully folder");
           }
         });
       }
@@ -239,8 +252,11 @@ async function updateProduct(req, res) {
 // to delete a product
 async function deleteProduct(req, res) {
   try {
-    const productId = req.params.id;
+    const {productId} = req.params;
 
+    if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
+      return res.status(400).json({success:false, message:"invalid ProductId"})
+    }
     await cloudinary.api.delete_resources_by_prefix(
       `e-commerce-shop/product-page-images/${productId}`
     );

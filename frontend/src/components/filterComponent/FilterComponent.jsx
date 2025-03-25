@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, forwardRef } from "react";
 import Container from "../ui/container/Container";
 import Title from "../ui/title/Title";
 import InputBox from "../ui/inputBox/InputBox";
 import { useFetcher, useParams } from "react-router-dom";
+import { FiPlus } from "react-icons/fi";
+import { FaMinus } from "react-icons/fa6";
 
-export default function FilterComponent({ setSearchParams }) {
+ const FilterComponent = forwardRef(({ setSearchParams, isMobile, hideFilter}, ref)=> {
   const topWearObj = {
     sizes: ["S", "M", "L", "XL", "XXL"],
     material: ["cotton", "cotton blend", "polyester", "linen"],
@@ -53,7 +55,11 @@ export default function FilterComponent({ setSearchParams }) {
   const bottomWearValue = ["trouser", "jeans", "joggers", "shorts"];
   const [filterProperties, setFilterProperties] = useState(topWearObj);
   const [filter, setFilter] = useState({});
+
+  const [openFilter, setOpenFilter] = useState({})
   const { category } = useParams();
+
+
 
   useEffect(() => {
     const ChangeFilterProperties = () => {
@@ -96,14 +102,28 @@ export default function FilterComponent({ setSearchParams }) {
     }
   }, [filter]);
 
+
+  const handleShowFilter = (e, key, value) => {
+
+    setOpenFilter(prev  => ({...prev, [key]: value}))
+    console.log(e.target.scrollIntoView({behavior:"smooth"}))
+  } 
+
+
+
   return (
-    <Container className="filter-sec">
-      <Title title="filter" className="filter-title" />
+    <div className="filter-sec" ref={ref}>
+    
       <Container className="filterBox">
         {Object.entries(filterProperties).map(([key, value]) => (
           <Container className="Box" key={`${key}_tfgf`}>
-            <Title title={key} className="box-title" />
-            <Container className="sub-box">
+           <Container className="box-icon-con">
+           <Title title={key} className="box-title" />
+          {openFilter[key]?   <FaMinus onClick={(e) => handleShowFilter(e, key, false)} key={`${key}_minus`}/>:
+           <FiPlus onClick={(e) => handleShowFilter(e, key, true)} key={`${key}_plus`}/>}
+           </Container>
+         
+         {openFilter[key]?    <Container className="sub-box">
               {value.map((element, index) => (
                 <Container key={`${index}_${key}`}>
                   <InputBox
@@ -115,10 +135,21 @@ export default function FilterComponent({ setSearchParams }) {
                   <label htmlFor={element}>{element}</label>
                 </Container>
               ))}
-            </Container>
+
+           
+            </Container>: null}
           </Container>
         ))}
+
+        {isMobile && (
+          <Container className="filter-button">
+            <button type="button" onClick={hideFilter}>close</button>
+            <button type="button" onClick={hideFilter}>apply</button>
+          </Container>
+        )}
       </Container>
-    </Container>
+    </div>
   );
-}
+})
+
+export  default FilterComponent

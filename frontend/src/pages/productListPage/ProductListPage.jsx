@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useSearchParams, useParams, useLocation } from "react-router-dom";
+import React, { useEffect, useState , useRef} from "react";
+import { useSearchParams, useParams, useLocation, Link } from "react-router-dom";
 import ProductListCard from "../../components/productListCard/ProductListCard";
 import FilterComponent from "../../components/filterComponent/FilterComponent";
 import Container from "../../components/ui/container/Container";
 import createSlug from "../../utils/createSlug";
 import slugToStr from "../../utils/slugToStr";
+import Spinner from "../../components/ui/spinner/Spinner";
+import { CgArrowsExchangeV } from "react-icons/cg";
+import { FiFilter } from "react-icons/fi";
+
 
 export default function ProductListPage() {
   const { category } = useParams();
   const { pathname } = useLocation();
+
+
 
   useEffect(() => {
     console.log(pathname);
@@ -18,22 +24,29 @@ export default function ProductListPage() {
   const [categoryId, setCategoryId] = useState("");
   const [products, setProducts] = useState(null);
   const [error, setError] = useState("nothing to show");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 700)
+  const [isFilterVisible, setIsFilterVisible]= useState(false)
+  const [isSortVisible, setIsSortVisible] = useState(false);
+  const filterRef = useRef(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  
 
   useEffect(() => {
     const fetchCategoryId = async () => {
       try {
+        setIsLoading(true);
         const slugToNormal = slugToStr(category);
 
         const categoryRes = await fetch(
-          `http://localhost:3000/api/category?category=${slugToNormal}`
+          `http://192.168.0.104:3000/api/category?category=${slugToNormal}`
         );
 
-        const categoryData = await categoryRes.json();
+        const { categoryValue } = await categoryRes.json();
 
-        if (categoryData) {
-          setCategoryId(categoryData[0]._id);
+        if (categoryValue) {
+          setCategoryId(categoryValue[0]._id);
         }
       } catch (error) {
         console.log("error", error);
@@ -54,13 +67,14 @@ export default function ProductListPage() {
 
         if (categoryId) {
           const res = await fetch(
-            `http://localhost:3000/api/product/category/${categoryId}?${queryString}`
+            `http://192.168.0.104:3000/api/product/category/${categoryId}?${queryString}`
           );
 
           const productsData = await res.json();
 
           if (res.status === 200) {
             setProducts(productsData);
+            setIsLoading(false);
           }
         }
       } catch (error) {
@@ -71,26 +85,137 @@ export default function ProductListPage() {
     fetchProductsImage();
   }, [searchParams, categoryId]);
 
-  return (
-    <Container className="productList">
-      <FilterComponent
-        className="filter"
-        setSearchParams={setSearchParams}
-      ></FilterComponent>
 
-      <Container className="product-column">
-        {products && products.length > 0 ? (
-          products.map((product) => (
-            <ProductListCard
-              key={product._id}
-              data={product}
-              route={`/product/${createSlug(product.name)}`}
-            />
-          ))
-        ) : (
-          <div>{error}</div>
-        )}
-      </Container>
+  useEffect(() => {
+      
+
+    const handleResize = () => {
+     setIsMobile(window.innerWidth < 700)
+      
+    
+    }
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
+
+
+const hideFilter = () => {
+  setIsFilterVisible(false)
+}
+
+
+const handleSorting = (typeOfSorting) => {
+  if(typeOfSorting === "ascending"){
+  
+    setProducts(prev =>  [...prev].sort((product1, product2) => {
+    
+      return product1.price - product2.price;
+    }))
+
+
+  }else{
+    setProducts(prev =>  [...prev].sort((product1, product2) => {
+   
+      return product2.price- product1.price ;
+    }))
+  }
+
+ if(products){
+  setIsSortVisible(false)
+ }
+}
+
+
+
+
+
+  return (
+    <Container className="product-list-container">
+      {isLoading ? (
+        <Spinner></Spinner>
+      ) : (
+        <>
+          {products && products.length > 0 ?(
+              <Container className="productList">
+              {
+               (isMobile && !isFilterVisible) && (
+                 <Container className="productList-icon-con">
+                 <Container>
+                   <CgArrowsExchangeV  className="productList-icon" onClick={() => setIsSortVisible(prev => !prev)}/>
+                   <h1 onClick={() => setIsSortVisible(prev => !prev)}>SORT</h1>
+                 </Container>
+                 <div className="line"></div>
+                 <Container >
+                   <FiFilter className="productList-icon" onClick={() => setIsFilterVisible(prev => !prev)}/>
+                   <h1 onClick={() => setIsFilterVisible(prev => !prev)}>FILTER</h1>
+                 </Container>
+                </Container>
+       
+               )
+              }
+             
+               {
+               
+                 (!isMobile || isFilterVisible) &&(
+                  
+                 <Container className="filterCon"  >
+                     <FilterComponent
+                    ref={filterRef}
+                   isMobile={isMobile}
+                   hideFilter={hideFilter}
+                   className="filter"
+                   setSearchParams={setSearchParams}
+                  ></FilterComponent>
+                 </Container>
+                 
+                   
+                 )
+                
+               }
+       
+               {
+                 (isMobile && isSortVisible) &&  (
+                   <Container className="sort-con">
+                 <Container className="sort">
+                   <h2 onClick={() => handleSorting("descending")}>Price : High to Low</h2>
+                   <h2 onClick={() => handleSorting("ascending")}>Price : Low to High</h2>
+                   <button onClick={() =>  setIsSortVisible(false)}>go back</button>
+                  </Container>
+                  </Container>)
+               }
+               
+       
+                 <Container className="product-column" >
+                   { 
+                     products.map((product) => (
+                     
+                       <ProductListCard
+                         key={product._id}
+                         data={product}
+                         route={`/product/${createSlug(product.name)}`}
+                       /> 
+                    
+                     ))
+                   }
+                 </Container>
+               </Container>
+          ): (
+            <Container className="product-list-error">
+              <h2>{error}</h2>
+              <Link to="/" className="product-list-link">
+                <h2>Go to Home page</h2>
+              </Link>
+
+           
+            </Container>
+          )
+          }
+
+        </>
+      )}
     </Container>
   );
 }

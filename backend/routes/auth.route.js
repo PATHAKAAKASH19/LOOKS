@@ -1,18 +1,19 @@
-import express from "express"
-import {register, login, generateAccessToken, deleteAccount , logOut, changePassword} from "../controllers/auth.controller.js"
-const router = express.Router()
+import express from "express";
+import {
+  register,
+  login,
+  logOut,
+  changePassword,
+} from "../controllers/auth.controller.js";
+import authenticate from "../middleware/authentication.middleware.js";
+const router = express.Router();
 
+router.post("/signup", register);
 
-router.post("/signup", register )
+router.post("/login", login);
 
-router.post("/login", login)
+router.put("/change-password", authenticate,changePassword);
 
-router.post("/generate-new-access-token", generateAccessToken)
+router.delete("/logout", authenticate,logOut);
 
-router.delete("/delete-account", deleteAccount)
-
-router.post("/logout", logOut)
-
-router.put("/password", changePassword)
-
-export default router
+export default router;

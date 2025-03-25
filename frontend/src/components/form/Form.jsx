@@ -19,7 +19,7 @@ export default function Form({
   };
   return (
     <form onSubmit={handleForm}>
-      <Container className={"inputBox"}>
+      <Container className="inputBox">
         <label htmlFor="email">email</label>
         <InputBox
           type="text"
@@ -34,9 +34,9 @@ export default function Form({
         <h3 className="error">{errors.emailError}</h3>
       </Container>
 
-      <Container className={"inputBox"}>
+      <Container className="inputBox">
         <label htmlFor="password">password</label>
-        <Container className={"passwordBox"}>
+        <Container className="passwordBox">
           <InputBox
             type={!show ? "password" : "text"}
             placeholder="enter your password"

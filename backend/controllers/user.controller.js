@@ -1,23 +1,27 @@
 import User from "../models/users.model.js";
 
-async function getUser(req, res) {
+async function getUserInfo(req, res) {
   try {
-    const { userId } = req.body;
+    const { userId } = req;
 
-    const userExist = await User.findById(userId);
+    const userData = await User.findById(userId, {
+      password: 0,
+    }).populate("wishlist", "name price productImgUrls");
 
-    if (!userExist) {
-      return res.status(200).json({ userData: userExist });
+    if (userData) {
+      return res.status(200).json({ success: true, userData });
     }
 
-    return res.status(404).json({ message: "user not found" });
+    return res.status(404).json({ success: false, message: "user not found" });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: "internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "internal server error" });
   }
 }
 
-async function updateUser(req, res) {
+async function updateUserInfo(req, res) {
   try {
     const query = {};
     const {
@@ -25,38 +29,88 @@ async function updateUser(req, res) {
       lastName,
       phoneNo,
       address,
-      wishlist,
+      wishlistId,
       email,
       wishlistAction,
       addressAction,
+      prevAddressId,
     } = req.body;
-    const { userId } = req.params;
+    const { userId } = req;
 
-    if (wishlistAction === "save") {
-      query.$push = { wishlist: wishlist };
-    } else if (wishlistAction === "delete") {
-      query.$pull = { wishlist: wishlist };
+   
+
+    if (!prevAddressId) {
+      if (wishlistAction === "save") {
+        query.$addToSet = { wishlist: wishlistId };
+      } else if (wishlistAction === "delete") {
+        query.$pull = { wishlist: wishlistId };
+      }
+
+      if (addressAction === "save") {
+        const user = await User.findOne({
+          _id: userId,
+          address: { $elemMatch: address },
+        });
+
+        if (!user) {
+          query.$push = { address: address }; // Add address only if it doesn't exist
+        }
+
+
+      } else if (addressAction === "delete") {
+        query.$pull = { address: address };
+      }
+
+      const userData = await User.findOneAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          firstName,
+          lastName,
+          email,
+          phoneNo,
+          ...query,
+        },
+        {
+          new:true,
+          projection:{password:0}
+        }
+      ).populate("wishlist", "name price productImgUrls");
+
+      
+
+      return res.status(200).json({
+        success: true,
+        message: "user info updated successfully",
+        userData,
+      });
+    } else {
+      const userData = await User.findOneAndUpdate(
+        {
+          _id: userId,
+          "address._id": prevAddressId,
+        },
+        {
+          "address.$": address,
+        },
+        {
+          new:true,
+          projection:{password:0}
+        }
+      ).populate("wishlist", "name price productImgUrls");
+
+      return res.status(200).json({
+        success: true,
+        message: "address updated successfully",
+        userData,
+      });
     }
-
-    if (addressAction === "save") {
-      query.$push = { address: address };
-    } else if (addressAction === "delete") {
-      query.$pull = { address: address };
-    }
-    const userExist = await User.findByIdAndUpdate(userId, {
-      firstName,
-      lastName,
-      email,
-      phoneNo,
-      ...query,
-    });
-
-    return res.status(200).json({ message: "user info updated successfully" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "internal server error" });
   }
 }
 
-
-export { getUser, updateUser };
+export { getUserInfo, updateUserInfo };

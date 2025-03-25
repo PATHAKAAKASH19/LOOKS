@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Container from "../../ui/container/Container";
-import InputBox from "../../ui/inputBox/InputBox";
-import { AiOutlineCloseCircle } from "react-icons/ai";
 import { LuMapPin } from "react-icons/lu";
+import { useUserInfo } from "../../../context/UserInfoContext";
+import { useAuth } from "../../../context/AuthContext";
+import toast, { Toaster } from "react-hot-toast";
+import AddressForm from "../../addressForm/AddressForm";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import { CiEdit } from "react-icons/ci";
 
 export default function UserAddress() {
   const [address, setAddress] = useState({
@@ -12,197 +16,182 @@ export default function UserAddress() {
     state: "",
     country: "USA",
     zipCode: "",
-    default: false,
   });
 
-  const [addressData, setAddressData] = useState(null);
+  const [addressArray, setAddressArray] = useState(null);
   const [hideAndShow, setHideAndShow] = useState(false);
+  const [editAddress, setEditAddress] = useState(false);
+  const [prevAddressId, setPrevAddressId] = useState("");
 
-  const indianStatesAndUTs = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-    "Andaman and Nicobar Islands",
-    "Chandigarh",
-    "Dadra and Nagar Haveli and Daman and Diu",
-    "Delhi",
-    "Jammu and Kashmir",
-    "Ladakh",
-    "Lakshadweep",
-    "Puducherry",
-  ];
+  const { userInfo, setUserInfo } = useUserInfo();
 
-  const countries = ["India"];
+  const { userId } = useAuth();
 
-  const handleInput = (e) => {
-    if (e.target.name === "default") {
-      setAddress((prev) => ({ ...prev, default: e.target.checked }));
-    } else {
-      setAddress((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  useEffect(() => {
+    if (userInfo && Object.keys(userInfo).length !== 0) {
+      setAddressArray(userInfo.address);
     }
-  };
+  }, [userInfo]);
 
   const handleHideAndShow = () => {
     setHideAndShow((prev) => !prev);
+
+    setAddress({
+      addressLine: "",
+      locality: "",
+      city: "",
+      state: "",
+      country: "",
+      zipCode: "",
+      
+    });
+
+    setEditAddress(false);
   };
 
-  const handleForm = () => {};
+  const saveAddress = async (e) => {
+    try {
+      e.preventDefault();
+
+      const res = await fetch(
+        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({ address, addressAction: "save" }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        setUserInfo(data.userData);
+        handleHideAndShow();
+
+        toast.success(`${"address created successfully"}`);
+      }
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+  };
+
+  const updateAddress = async (e) => {
+    try {
+      e.preventDefault();
+      const res = await fetch(
+        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            prevAddressId,
+            address,
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        setUserInfo(data.userData);
+        handleHideAndShow();
+        toast.success(`${"address created successfully"}`);
+      }
+    } catch (error) {
+      toast.error("error : ", error);
+    }
+  };
+
+  const convertAddressToString = (addressObj) => {
+    const addressString = Object.entries(addressObj)
+      .filter(([field]) => field !== "default" && field !== "_id")
+      .map(([, value]) => value)
+      .join(", ");
+    return addressString;
+  };
+
+  const deleteAddress = async (e, address) => {
+    try {
+      const res = await fetch(
+        "http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            address,
+            addressAction: "delete",
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        toast.success("address deleted successfully");
+        setUserInfo(data.userData);
+      }
+    } catch (error) {
+      toast.error("unable to delete!! Please try again");
+    }
+  };
+
+  const editAddressData = (e, addressObj) => {
+    handleHideAndShow();
+    setAddress((prev) => ({ ...prev, ...addressObj }));
+    setEditAddress(true);
+    setPrevAddressId(addressObj._id);
+  };
 
   return (
     <Container className="user-address-box">
+      <Toaster></Toaster>
       {!hideAndShow && (
         <>
-        
-        
           <Container className="address-icon-box">
             <LuMapPin onClick={handleHideAndShow} className="address-icon" />
             <h1 onClick={handleHideAndShow}>Add new address</h1>
           </Container>
-          <Container className="address-icon-box">
-            <LuMapPin onClick={handleHideAndShow} className="address-icon" />
-            <h1 onClick={handleHideAndShow}>Add new address</h1>
-          </Container>
-          <Container className="address-icon-box">
-            <LuMapPin onClick={handleHideAndShow} className="address-icon" />
-            <h1 onClick={handleHideAndShow}>Add new address</h1>
-          </Container>
-         
+
+          {addressArray &&
+            addressArray.map((addressObj, i) => (
+              <Container
+                className="address-icon-box"
+                key={`${addressObj.zipCode}_${i}`}
+              >
+                <AiOutlineCloseCircle
+                  onClick={(e) => deleteAddress(e, addressObj)}
+                  className="address-icon2"
+                />
+                <h4 className="address-info">
+                  {convertAddressToString(addressObj)}
+                </h4>
+
+                <CiEdit
+                  className="edit-button"
+                  onClick={(e) => editAddressData(e, addressObj)}
+                />
+              </Container>
+            ))}
         </>
       )}
 
       {hideAndShow && (
-        <form onSubmit={handleForm}>
-          <AiOutlineCloseCircle onClick={handleHideAndShow} />
-
-          <Container>
-            <label htmlFor="addressLine">Address Line</label>
-            <InputBox
-              type="text"
-              name="addressLine"
-              value={address.addressLine}
-              onChange={handleInput}
-              className="input"
-              id="addressLine"
-            />
-          </Container>
-
-          <Container>
-            <label htmlFor="locality">Locality</label>
-            <InputBox
-              type="text"
-              name="locality"
-              value={address.locality}
-              onChange={handleInput}
-              className="input"
-              id="locality"
-            />
-          </Container>
-
-          <Container>
-            <label htmlFor="city">city</label>
-            <InputBox
-              type="text"
-              name="city"
-              value={address.city}
-              onChange={handleInput}
-              className="input"
-              id="city"
-            />
-          </Container>
-
-          <Container>
-            <label htmlFor="state">state</label>
-
-            <select
-              id="state"
-              value={address.state}
-              name="state"
-              onChange={handleInput}
-            >
-              <option value="" disabled>
-                select an option
-              </option>
-
-              {indianStatesAndUTs.map((state, i) => {
-                return (
-                  <option key={i} value={state}>
-                    {state}
-                  </option>
-                );
-              })}
-            </select>
-          </Container>
-
-          <Container>
-            <label htmlFor="country">country</label>
-            <select
-              id="country"
-              value={address.country}
-              onChange={handleInput}
-              name="country"
-            >
-              <option value="" disabled>
-                select an option
-              </option>
-              {countries.map((country, i) => (
-                <option key={i} value={country}>
-                  {country}
-                </option>
-              ))}
-            </select>
-          </Container>
-
-          <Container>
-            <label htmlFor="zipCode">Postal / Zip Code</label>
-            <InputBox
-              type="text"
-              name="zipCode"
-              value={address.zipCode}
-              onChange={handleInput}
-              className="input"
-              id="zipCode"
-            />
-          </Container>
-
-          <Container>
-            <label htmlFor="default">Default</label>
-            <InputBox
-              type="checkbox"
-              name="default"
-              checked={address.default}
-              onChange={handleInput}
-              className="input"
-              id="default"
-            />
-          </Container>
-
-          <button type="submit">Save</button>
-        </form>
+        <AddressForm
+          handleHideAndShow={handleHideAndShow}
+          setAddress={setAddress}
+          saveAddress={editAddress ? updateAddress : saveAddress}
+          addressObj={address}
+          editAddress={editAddress}
+        />
       )}
     </Container>
   );

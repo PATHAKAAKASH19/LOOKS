@@ -15,9 +15,9 @@ router.get("/:productId", getProductById)
 
 router.post("/",upload.array("productImages", 5), addProduct)
 
-router.put("/:id", upload.array("productImages"),updateProduct)
+router.put("/:productId", upload.array("productImages"),updateProduct)
 
-router.delete("/:id", deleteProduct)
+router.delete("/:productId", deleteProduct)
 
 
 export default router

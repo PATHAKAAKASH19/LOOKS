@@ -2,33 +2,30 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import ErrorPage from "./pages/errorPage/ErrorPage.jsx";
 import App from "./App.jsx";
 import HomePage from "./pages/homePage/HomePage.jsx";
-import CartPage from "./pages/cartPage/CartPage.jsx";
 import ProductListPage from "./pages/productListPage/ProductListPage.jsx";
 import ProductPage from "./pages/productPage/ProductPage.jsx";
+import CartPage from "./pages/cartPage/CartPage.jsx";
 
 import Auth from "./pages/authPage/Auth.jsx";
+import ErrorPage from "./pages/errorPage/ErrorPage.jsx";
+
 import SellerPage from "./pages/sellerPage/SellerPage.jsx";
-import CreateCategory from "./components/createCategory/CreateCategory.jsx";
-import CreateProduct from "./components/createProduct/CreateProduct.jsx";
+import CreateCategory from "./components/seller/createCategory/CreateCategory.jsx";
+import CreateProduct from "./components/seller/createProduct/CreateProduct.jsx";
+import ShowProducts from "./components/seller/showProducts/ShowProducts.jsx";
+import ShowOrders from "./components/seller/showOrders/ShowOrders.jsx";
 
 import UserPage from "./pages/userPage/UserPage.jsx";
-
-import ShowProducts from "./components/showProducts/ShowProducts.jsx";
-import UserAddress from "./components/user/userAddress/UserAddress.jsx";
 import UserProfile from "./components/user/userProfile/UserProfile.jsx";
+import UserAddress from "./components/user/userAddress/UserAddress.jsx";
 import UserWishlist from "./components/user/userWishlist/UserWishlist.jsx";
 import UserOrders from "./components/user/userOrders/UserOrders.jsx";
 import ChangePassword from "./components/user/changePassword/ChangePassword.jsx";
-import ShowOrders from "./components/showOrders/ShowOrders.jsx";
+import OrderPage from "./pages/orderPage/OrderPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +51,13 @@ const router = createBrowserRouter([
       {
         path: "cart",
         element: <CartPage />,
+      },
+
+      {
+        path:"paymentsuccess",
+        element:<OrderPage/>
+        
+       
       },
 
       {
@@ -126,7 +130,7 @@ const router = createBrowserRouter([
 
           {
             path: "orders",
-            element: <ShowOrders/>,
+            element: <ShowOrders />,
           },
 
           {

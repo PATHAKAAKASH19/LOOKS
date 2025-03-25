@@ -6,21 +6,46 @@ import fs from "fs";
 // use to get all the category
 async function getAllCategory(req, res) {
   try {
-    const category = req.query
-      ? await Category.find(req.query)
-      : await Category.find();
+    const { category, trending, subCategory } = req.query;
 
-    if (category.length !== 0) {
-      return res.status(200).json(category);
+    const query = {};
+    const subCategoryValue = [
+      "topwear",
+      "bottomwear",
+      "accessories",
+      "footwear",
+      "watches",
+    ];
+
+    if (category !== undefined) {
+      query.category = category;
+    }
+
+    if (trending !== undefined) {
+      query.trending = trending;
+    }
+
+    console.log("akash");
+
+    if (subCategory !== undefined && subCategoryValue.includes(subCategory)) {
+      query.subCategory = subCategory;
+    }
+
+    const categoryValue = await Category.find(query);
+   
+    if (categoryValue.length !== 0) {
+      return res
+        .status(200)
+        .json({ success: true, message: "Categroy is present", categoryValue });
     }
 
     return res
       .status(204)
-      .json({ success: true, message: "no category found" });
+      .json({ success: false, message: "no category found" });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal server error",
     });
   }
 }

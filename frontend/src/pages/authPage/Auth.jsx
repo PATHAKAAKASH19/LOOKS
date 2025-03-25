@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Container from "../../components/ui/container/Container";
 import Form from "../../components/form/Form";
 import Title from "../../components/ui/title/Title";
 import { Toaster, toast } from "react-hot-toast";
-import { useAuth } from "../../context/authContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { validateEmail, validatePassword } from "../../utils/validate";
 
 export default function Auth() {
@@ -20,7 +20,11 @@ export default function Auth() {
 
   const { auth } = useParams();
   const navigate = useNavigate();
-  const { setAccessToken, setUserId } = useAuth();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
+
+  const { setAccessToken} = useAuth();
 
   const cleanState = () => {
     setFormData({
@@ -35,7 +39,7 @@ export default function Auth() {
 
   const submitLoginForm = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/auth/login`, {
+      const res = await fetch(`http://192.168.0.104:3000/api/auth/login`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,16 +47,19 @@ export default function Auth() {
         body: JSON.stringify(formData),
       });
 
+
       const data = await res.json();
-      console.log(data);
+    
       if (res.status === 401) {
+     
         toast.error(`${data.message}`);
       } else if (res.status === 403) {
+       
         toast.error(`${data.message}`);
       } else if (res.status === 200) {
+      
         setAccessToken(data.accessToken);
-        setUserId(data.userId)
-        navigate("/");
+        navigate(`${from}`);
       }
 
       cleanState();
@@ -64,7 +71,7 @@ export default function Auth() {
 
   const submitSignupForm = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/auth/signup`, {
+      const res = await fetch(`http://192.168.0.104:3000/api/auth/signup`, {
         method: "POST",
         headers: {
           "content-Type": "application/json",
@@ -93,7 +100,7 @@ export default function Auth() {
       setErrors((prev) => {
         return {
           ...prev,
-          emailError: "Email must be in the format: example@domain.com",
+          emailError: "Email must be in format: example@domain.com",
         };
       });
     }

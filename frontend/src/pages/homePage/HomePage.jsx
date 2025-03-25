@@ -4,16 +4,27 @@ import { IoShirtOutline } from "react-icons/io5";
 import { MdSunny } from "react-icons/md";
 import Container from "../../components/ui/container/Container";
 import CategorySection from "../../components/categorySection/CategorySection";
+import Spinner from "../../components/ui/spinner/Spinner";
+
 
 export default function HomePage() {
   const [images, setImages] = useState(null);
 
+  const [isLoading , setIsLoading] = useState(true);
+
   useEffect(() => {
     const fetchImages = async () => {
+
+      
       try {
-        const response = await fetch("http://localhost:3000/api/category");
-        const categoryData = await response.json();
-        setImages(categoryData);
+
+        setIsLoading(true)
+        const response = await fetch("http://192.168.0.104:3000/api/category");
+        const {categoryValue} = await response.json();
+       
+        setImages(categoryValue);
+
+        setIsLoading(false)
       } catch (error) {
         console.log("error:", error);
       }
@@ -22,9 +33,30 @@ export default function HomePage() {
     fetchImages();
   }, []);
 
+  const CATEGORY_SECTION = [
+    {
+      filterType: "trending",
+      title: "SEASONAL TREND",
+      reactIcon: <MdSunny style={{ color: "orange", fontSize: "50px" }} />,
+    },
+    {
+      filterType: "bottomwear",
+      title: "BOTTOM WEAR",
+      reactIcon: <PiPantsLight style={{ color: "orange", fontSize: "40px" }} />,
+    },
+
+    {
+      filterType: "topwear",
+      title: "TOP WEAR",
+      reactIcon: (
+        <IoShirtOutline style={{ color: "orange", fontSize: "30px" }} />
+      ),
+    },
+  ];
+
   return (
     <Container className="home">
-      {images && images.length > 0 ? (
+      {isLoading ? (<Spinner></Spinner>):(
         <>
           <Container className="BannerSection">
             {images.map((image, index) => {
@@ -36,34 +68,18 @@ export default function HomePage() {
             })}
           </Container>
 
-          <CategorySection
-            images={images}
-            filterType={"trending"}
-            title={"SEASONAL TREND"}
-            reactIcon={
-              <MdSunny style={{ color: "orange", fontSize: "50px" }} />
-            }
-          />
-
-          <CategorySection
-            images={images}
-            filterType={"bottomwear"}
-            title={"BOTTOM WEAR"}
-            reactIcon={
-              <PiPantsLight style={{ color: "orange", fontSize: "40px" }} />
-            }
-          />
-
-          <CategorySection
-            images={images}
-            filterType={"topwear"}
-            title={"TOP WEAR"}
-            reactIcon={
-              <IoShirtOutline style={{ color: "orange", fontSize: "30px" }} />
-            }
-          />
+          {CATEGORY_SECTION.map((value, i) => (
+            <CategorySection
+            key={i}
+              images={images}
+              filterType={value.filterType}
+              title={value.title}
+              reactIcon={value.reactIcon}
+              
+            />
+          ))}
         </>
-      ) : null}
+      ) }
     </Container>
   );
 }

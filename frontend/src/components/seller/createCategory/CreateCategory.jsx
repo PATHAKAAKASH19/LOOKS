@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import InputBox from "../ui/inputBox/InputBox";
-import Container from "../ui/container/Container";
-import Title from "../ui/title/Title";
+import InputBox from "../../ui/inputBox/InputBox";
+import Container from "../../ui/container/Container";
+import Title from "../../ui/title/Title";
 import { MdDelete } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -46,7 +46,7 @@ export default function CreateCategory() {
         formData.append("subCategory", form.subCategory);
         formData.append("categoryImg", img);
 
-        const res = await fetch("http://localhost:3000/api/category", {
+        const res = await fetch("http://192.168.0.104:3000/api/category", {
           method: "POST",
           body: formData,
         });
@@ -74,7 +74,7 @@ export default function CreateCategory() {
           formData.append("categoryImg", img);
         }
         const res = await fetch(
-          `http://localhost:3000/api/category/${form._id}`,
+          `http://192.168.0.104:3000/api/category/${form._id}`,
           {
             method: "PUT",
             body: formData,
@@ -110,7 +110,7 @@ export default function CreateCategory() {
   // delete category data
   const deleteCategory = async (category) => {
     try {
-      const res = await fetch("http://localhost:3000/api/category", {
+      const res = await fetch("http://192.168.0.104:3000/api/category", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -133,11 +133,11 @@ export default function CreateCategory() {
   useEffect(() => {
     const getAllCategory = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/category");
-        const categoryData = await response.json();
+        const response = await fetch("http://192.168.0.104:3000/api/category");
+        const {categoryValue} = await response.json();
 
-        if (categoryData) {
-          setCategoryData(categoryData);
+        if (categoryValue) {
+          setCategoryData(categoryValue);
         }
       } catch (error) {
         console.log("error", error);
@@ -171,9 +171,7 @@ export default function CreateCategory() {
       <Container className="create-category">
         <h1>Create Category</h1>
         <form onSubmit={handleFormSubmit}>
-          <Container>
-           
-          </Container>
+         
           <Container className="input">
             <label htmlFor="category" style={{ alignSelf: "center" }}>
               category
@@ -222,7 +220,7 @@ export default function CreateCategory() {
           </Container>
 
           <Container className="upload upload1" style={{ alignSelf: "center" }}>
-            <label>
+            <label className="label">
               upload image
               <InputBox
                 type="file"

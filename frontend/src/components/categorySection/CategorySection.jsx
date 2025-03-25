@@ -51,7 +51,7 @@ export default function CategorySection({
       <Button
         title="view all"
         className="button"
-        route={`/collections/${"jj"}`}
+        route={`/collections/${""}`}
       ></Button>
     </Container>
   );

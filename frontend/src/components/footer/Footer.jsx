@@ -8,31 +8,31 @@ import Container from "../ui/container/Container";
 
 export default function Footer() {
   return (
-    <Container className="footer">
+    <Container className="footer-con">
       <div>
-        <Link className="link">
+        <Link className="link-con">
           <h2 className="logo">LOOKS</h2>
         </Link>
       </div>
-      <Container className="sub-footer">
-        <Container className="user">
-          <h2 className="h2">details</h2>
-          <Link to="/admin" className="link">
+      <Container className="footer">
+        <Container className="sub-footer">
+          <h2>details</h2>
+          <Link to="/admin" className="link-con">
             admin login
           </Link>
-          <Link to="/contact" className="link">
+          <Link to="/contact" className="link-con">
             contact us
           </Link>
-          <Link to="/faqs" className="link">
+          <Link to="/faqs" className="link-con">
             faqs
           </Link>
-          <Link to="customer-care" className="link">
+          <Link to="customer-care" className="link-con">
             customer care
           </Link>
         </Container>
 
-        <Container className="social-icon">
-          <h2 className="h2">Socials</h2>
+        <Container className="social-icon sub-footer">
+          <h2 >Socials</h2>
           <Link>
             <FaXTwitter style={{ color: "white", fontSize: "25px" }} />
           </Link>

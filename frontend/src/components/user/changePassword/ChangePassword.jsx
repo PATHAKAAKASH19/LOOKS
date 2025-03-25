@@ -11,14 +11,14 @@ export default function ChangePassword() {
     confirmNewPassword: "",
   });
 
-  const handlePassword = (e) => {
-    setPassword((prev) => ({ ...prev, [e.targert.name]: e.target.value }));
-  };
-
   const [error, setError] = useState({
     password1: "",
     password2: "",
   });
+
+  const handlePassword = (e) => {
+    setPassword((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleValidation = (isPassword1Valid, isPassword2Valid) => {
     if (isPassword1Valid === false) {
@@ -45,82 +45,101 @@ export default function ChangePassword() {
       newPassword: "",
       confirmNewPassword: "",
     });
+
+    setError({
+      password1: "",
+      password2: "",
+    });
   };
 
   const updatePassword = async (e) => {
     e.preventDefault();
     try {
+      if (!password.newPassword) {
+        toast.error("Please provide new password");
+        return;
+      }
+
+      if (!password.confirmNewPassword) {
+        toast.error("please provide confirm password");
+        return;
+      }
+
       const isPassword1Valid = validatePassword(password.newPassword);
       const isPassword2Valid = validatePassword(password.confirmNewPassword);
 
       if (isPassword1Valid && isPassword2Valid) {
         if (password.newPassword === password.confirmNewPassword) {
-          const res = await fetch(`https://localhost:3000/api/auth/password`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(object),
-          });
+          const res = await fetch(
+            `http://192.168.0.104:3000/api/auth/change-password/678761ba46047b57d7132fad`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ newPassword: password.newPassword }),
+            }
+          );
+
+          const data = await res.json();
 
           if (res.status === 200) {
+            toast.success(`${data.message}`);
             clearState();
-            toast.success("password updated succefully");
+            return
           }
         } else {
-          clearState();
-          toast.error("both password should be same");
+          toast.error("both password must be same");
+          return
         }
       } else {
-        clearState();
         handleValidation(isPassword1Valid, isPassword2Valid);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <Container className="user-profile-box password-con">
+    <Container className="user-address-box password-con">
       <Toaster></Toaster>
       <form onSubmit={updatePassword} className="password-form-box">
         <Container className="password-form-title">
-          <LiaUserLockSolid />
+          <LiaUserLockSolid style={{ fontSize: "25px" }} />
           <label>Update your password for</label>
           <label>pathakaakash8900@gmail.com</label>
         </Container>
 
-       <Container>
-       <Container className="password-form">
-          <label htmlFor="newPassword">New Password</label>
-          <InputBox
-            type="text"
-            id="newPassword"
-            name="newPassword"
-            value={password.newPassword}
-            onChange={handlePassword}
-            placeholder="Enter New Password"
-          />
+        <Container className="password-form-field">
+          <Container className="field">
+            <label htmlFor="newPassword">New Password</label>
+            <InputBox
+              type="text"
+              id="newPassword"
+              name="newPassword"
+              value={password.newPassword}
+              onChange={handlePassword}
+              placeholder="Enter New Password"
+            />
 
-          <label>{error.password1}</label>
+            <div>{error.password1}</div>
+          </Container>
+
+          <Container className="field">
+            <label htmlFor="confirmNewPassword">Confirm New Password</label>
+            <InputBox
+              type="text"
+              id="confirmNewPassword"
+              name="confirmNewPassword"
+              value={password.confirmNewPassword}
+              onChange={handlePassword}
+              placeholder="Confirm New Password"
+            />
+            <div>{error.password2}</div>
+          </Container>
         </Container>
 
-        <Container>
-          <label htmlFor="confirmNewPassword">Confirm New Password</label>
-          <InputBox
-            type="text"
-            id="confirmNewPassword"
-            name="confirmNewPassword"
-            value={password.confirmNewPassword}
-            onChange={handlePassword}
-            placeholder="Confirm New Password"
-          />
-          <label>{error.password2}</label>
-        </Container>
-       </Container>
-
-       
-        
-          <button type="submit">update password</button>
-       
+        <button type="submit">update password</button>
       </form>
     </Container>
   );

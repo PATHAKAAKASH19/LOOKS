@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <div className="navbar">
       <div>
-        <Link className="link" to="/">
+        <Link className="link-con" to="/">
           <h2 className="logo">LOOKS</h2>
         </Link>
       </div>
@@ -28,13 +28,13 @@ export default function Header() {
       </div>
 
       <div className="subnav2">
-        <Link className="link">
+        <Link>
           <FiUser className="icon" />
         </Link>
-        <Link>
-          <MdFavoriteBorder className="icon" />
+        <Link to="/user/wishlist">
+          <MdFavoriteBorder className="icon heart" />
         </Link>
-        <Link className="link" to="/cart">
+        <Link  to="/cart">
           <IoCartOutline className="icon" />
         </Link>
       </div>

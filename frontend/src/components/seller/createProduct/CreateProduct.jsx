@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import Container from "../ui/container/Container";
-import InputBox from "../ui/inputBox/InputBox";
+import Container from "../../ui/container/Container";
+import InputBox from "../../ui/inputBox/InputBox";
 import { MdDelete } from "react-icons/md";
 import { toast, Toaster } from "react-hot-toast";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function CreateProduct() {
   const location = useLocation();
@@ -26,6 +26,7 @@ export default function CreateProduct() {
   const [productImages, setProductImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [update, setUpdate] = useState(false);
+  const navigate = useNavigate()
 
   const sizesArray = ["S", "M", "L", "XL", "XXL"];
   const MAX_IMAGES = 5;
@@ -80,7 +81,7 @@ export default function CreateProduct() {
         productImages.forEach((file) => {
           formData.append(`productImages`, file);
         });
-        const res = await fetch("http://localhost:3000/api/product", {
+        const res = await fetch("http://192.168.0.104:3000/api/product", {
           method: "POST",
           body: formData,
         });
@@ -136,7 +137,7 @@ export default function CreateProduct() {
           });
         }
         const res = await fetch(
-          `http://localhost:3000/api/product/${productDetail._id}`,
+          `http://192.168.0.104:3000/api/product/${productDetail._id}`,
           {
             method: "PUT",
             body: formData,
@@ -209,11 +210,11 @@ export default function CreateProduct() {
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/category");
-        const categoryData = await res.json();
+        const res = await fetch("http://192.168.0.104:3000/api/category");
+        const {categoryValue} = await res.json();
 
-        if (categoryData) {
-          setCategory(categoryData);
+        if (categoryValue) {
+          setCategory(categoryValue);
         }
       } catch (error) {
         console.log("error : ", error);
@@ -235,7 +236,7 @@ export default function CreateProduct() {
   const deleteProduct = async (productId) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/product/${productId}`,
+        `http://192.168.0.104:3000/api/product/${productId}`,
         {
           method: "DELETE",
         }
@@ -248,6 +249,10 @@ export default function CreateProduct() {
       toast.error(`${error.message}`);
     }
   };
+
+  const goBackToProductPage =  () => {
+    navigate("/seller-dashboard/products")
+  }
 
   return (
     <Container className="admin-panel">
@@ -354,7 +359,7 @@ export default function CreateProduct() {
           </Container>
 
           <Container className="sizes-con">
-            <h2>sizes</h2>
+            <label>sizes</label>
             {sizesArray.map((s, i) => (
               <Container className="size1" key={i}>
                 <InputBox
@@ -417,17 +422,21 @@ export default function CreateProduct() {
               </button>
 
               <button
-                type="submit"
+                type="button"
                 className="update"
                 onClick={handleFormSubmit}
               >
                 update
               </button>
-              <Link to="/seller-dashboard/products">
-                <button type="button" className="delete cancle">
-                  cancle
-                </button>
-              </Link>
+              
+            
+               <button type="button" className="delete" style={{backgroundColor:"black"}} onClick={goBackToProductPage}>
+               cancle
+               </button>
+               
+               
+              
+            
             </Container>
           )}
         </form>

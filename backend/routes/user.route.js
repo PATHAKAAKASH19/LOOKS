@@ -1,10 +1,10 @@
-import express from "express"
+import express from "express";
+import { getUserInfo, updateUserInfo } from "../controllers/user.controller.js";
+import authenticate from "../middleware/authentication.middleware.js";
+const router = express.Router();
 
+router.get("/", authenticate,getUserInfo);
 
-const router = express.Router()
+router.put("/", authenticate,updateUserInfo);
 
-
-router.get("/" , )
-
-
-export default router
+export default router;

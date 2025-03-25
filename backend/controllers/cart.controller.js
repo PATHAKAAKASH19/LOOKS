@@ -2,130 +2,122 @@ import Cart from "../models/cart.model.js";
 
 async function getCartItems(req, res) {
   try {
-    const { userId } = req.body;
-    const cart = await Cart.findById(userId);
-
-    if (cart.length > 0) {
-      const populateCart = cart
-        .populate("user")
-        .populate("products.productId", "name price productImgUrls");
-      return res.status(200).json({ populateCart });
+    const { userId } = req;
+   
+    const cart = await Cart.findOne({ userId: userId })
+      .populate("userId", "firstName email address phoneNo role")
+      .populate("products.productId", "name price productImgUrls color");
+    console.log(cart)
+    if (cart) {
+      return res
+        .status(200)
+        .json({ success: true, message: "cart is present", cart });
     } else {
-      return res.status(404).json({ message: "please add product" });
+      return res
+        .status(404)
+        .json({ success: false, message: "please add product to cart" });
     }
   } catch (error) {
-    return res.status(500).json({ err: error });
+    return res
+      .status(500)
+      .json({ success: false, message: "internal server error", error });
   }
 }
 
 async function addItemToCart(req, res) {
   try {
-    const { productId, userId, quantity, size } = req.body;
-    let cart = await Cart.findOne({ user: userId });
-
-    if (!cart) {
-      cart = await Cart.create({
-        user: userId,
+    const { productId, quantity, size } = req.body;
+ 
+    const { userId } = req;
+   
+    let cartPresent = await Cart.findOne({ userId: userId });
+  
+  
+    if (!cartPresent) {
+      const cart = await Cart.create({
+        userId: userId,
         products: [{ productId, quantity, size }],
       });
-    } else {
-      const productIndex = cart.products.findIndex(
-        (p) => p.productId.toString() === productId
-      );
 
-      if (
-        productIndex >= 0 &&
-        cart.products[productIndex].quantity !== quantity
-      ) {
-        cart.products[productIndex].quantity = quantity;
-      } else {
-        cart.products.push({ productId, quantity, size });
-      }
-
-      if (productIndex >= 0 && cart.products[productIndex].size !== size) {
-        cart.products[productIndex].size = size;
-      }
+      return res
+        .status(200)
+        .json({ success: true, message: "Cart created and product added" });
     }
 
-    await cart.save();
-
-    return res.status(200).json({ message: "product is added to cart successfully" });
-  } catch (error) {
-    return res.status(500).status({ err: error });
-  }
-}
-
-async function updateCartItem(req, res) {
-  try {
-    const { quantity, size, userId, productId } = req.body;
-
-    const cart = await Cart.findOne({ user: userId });
-
-    const productIndex = cart.products.findIndex(
-      (p) => p.productId.toString() === productId
+    const productIndex = cartPresent.products.findIndex(
+      (p) => p.productId._id.toString() === productId.toString()
     );
 
-    if (productIndex >= 0 && cart.products[productIndex].size !== size) {
-      cart.products[productIndex].size = size;
+  
+ 
+    if (productIndex === -1) {
+      
+     const cart =  await Cart.findOneAndUpdate(
+        { userId: userId },
+        {
+          $push: {
+            products: { productId, size, quantity },
+          },
+        }
+      );
+
+      return res
+        .status(200)
+        .json({ success: true, message: "Product is added to cart" });
+    } else if (productIndex !== -1) {
+     console.log("akak")
+      const cart = await Cart.findOneAndUpdate(
+        {
+          userId: userId,
+          "products._id": productId,
+          "products.size": { $ne:size },
+        },
+        {
+         
+            "products.$.size": size,
+        
+        },
+        {
+          new: true,
+        }
+      ).populate("userId", "firstName email address phoneNo")
+      .populate("products.productId", "name price productImgUrls color");
+
+     
+
+      return res.status(200).json({ success: true, message: "updated", cart });
     }
-
-    if (
-      productIndex >= 0 &&
-      cart.products[productIndex].quantity !== quantity
-    ) {
-      cart.products[productIndex].quantity = quantity;
-    }
-
-    await cart.save();
-
-    return res.status(200).json({ cart });
   } catch (error) {
-    return res.status(500).json({ err: error });
+    return res
+      .status(500)
+      .status({ success: false, message: "Internal server error" });
   }
 }
 
 async function deleteCartItem(req, res) {
   try {
-    const { userId } = res.body;
-    const productId = res.query.productId;
+    const { userId } = req;
+    const { productId } = req.body;
 
-    const cart = await Cart.findOne({ user: userId });
-
-    const productIndexValue = cart.products.findIndex(
-      (p) => p.productId.toString() === productId
+    const cart = await Cart.findOneAndUpdate(
+      { userId: userId },
+      {
+        $pull: { products: { _id: productId } },
+      },
+      {
+         new:true
+      }
     );
 
-    const deleteElement = await cart.updateOne({ _id: "document_id" }, [
-      { $set: { [`products.${productIndexValue}`]: null } }, // Set element at index 1 to `null`
-      { $pull: { products: null } }, // Remove all `null` elements
-    ]);
-
-    return res.status(200).json({ message: "product deleted successfully" });
+   
+    return res
+      .status(200)
+      .json({ success: true, message: "product deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ err: error });
+    return res.status(500).json({ success: false, message: error });
   }
 }
 
-async function deleteCart(params) {
-  try {
-    const { userId } = res.body;
 
-    const deleteCart = await Cart.findOneAndDelete({ userId: userId });
 
-    if (deleteCart) {
-      return res.status(200).json({ message: "cart items deleted successfully" });
-    } else {
-      return res.status(404).json({ message: "cart is empty" });
-    }
-  } catch (error) {
-    return res.status(500).json({ err: error });
-  }
-}
-
-export {
-  getCartItems,
-  addItemToCart,
-  updateCartItem,
-  deleteCartItem,
-  deleteCart,
-};
+export { getCartItems, addItemToCart, deleteCartItem };

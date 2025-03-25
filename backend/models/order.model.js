@@ -2,10 +2,21 @@ import mongoose from "mongoose";
 
 const orderSchema = mongoose.Schema(
   {
-    cartId: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+    },
+
+    paymentStatus:{
+      type:Boolean,
+      required:true,
+      default:false
     },
 
     totalPrice: {
@@ -13,49 +24,49 @@ const orderSchema = mongoose.Schema(
       required: true,
     },
 
-    customerAddress: [
+    orderedItem: [
       {
-        name: {
-          type: String,
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
           required: true,
         },
-        addressLine: {
-          type: String,
+
+        quantity: {
+          type: Number,
           required: true,
+          default: 1,
         },
-        locality: {
-          type: String,
-        },
-        city: {
-          type: String,
-          required: true,
-        },
-        state: {
-          type: String,
-          required: true,
-        },
-        postalCode: {
-          type: String,
-          required: true,
-        },
-        country: {
+
+        size: {
           type: String,
           required: true,
         },
       },
     ],
 
-    paymentInfo: {
-      method: {
-        type: String, // e.g., 'stripe', 'paypal', 'razorpay'
+    deliveryAddress: {
+      addressLine: {
+        type: String,
         required: true,
       },
-      paymentId: {
-        type: String, // transaction ID from the payment gateway
+      locality: {
+        type: String,
+      },
+      city: {
+        type: String,
         required: true,
       },
-      status: {
-        type: String, // e.g., 'Pending', 'Paid', 'Failed'
+      state: {
+        type: String,
+        required: true,
+      },
+      zipCode: {
+        type: String,
+        required: true,
+      },
+      country: {
+        type: String,
         required: true,
       },
     },

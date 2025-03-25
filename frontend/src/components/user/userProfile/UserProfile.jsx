@@ -1,18 +1,35 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "../../ui/container/Container";
 import InputBox from "../../ui/inputBox/InputBox";
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineCloseCircle } from "react-icons/ai";
+import { useUserInfo } from "../../../context/UserInfoContext";
+import { useAuth } from "../../../context/AuthContext";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function UserProfile() {
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    contatcNo: "",
+    phoneNo: "",
   });
 
   const [disabled, setDisabled] = useState(true);
+
+  const { userInfo, setUserInfo } = useUserInfo();
+  // const { userId } = useAuth();
+
+  useEffect(() => {
+    if (userInfo && Object.keys(userInfo).length !== 0) {
+      setUserData({
+        firstName: userInfo.firstName || "",
+        lastName: userInfo.lastName || "",
+        email: userInfo.email || "",
+        phoneNo: userInfo.phoneNo || "",
+      });
+    }
+  }, [userInfo, disabled]);
 
   const handleFormEdit = () => {
     setDisabled((prev) => !prev);
@@ -22,15 +39,36 @@ export default function UserProfile() {
     setUserData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleUserForm = async () => {
+  const handleUserForm = async (e) => {
     try {
       e.preventDefault();
-      const res = fetch("http://localhost:3000/api/user");
-    } catch (error) {}
+      const res = await fetch(
+        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify(userData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.status === 200) {
+        setUserInfo(data.userData);
+        toast.success(`${data.message}`);
+        handleFormEdit();
+      }
+    } catch (error) {
+      toast.error(`${error.message}`);
+    }
   };
 
   return (
     <Container className="user-profile-box">
+      <Toaster></Toaster>
       {disabled ? (
         <CiEdit onClick={handleFormEdit} className="edit-icon" />
       ) : (
@@ -71,22 +109,18 @@ export default function UserProfile() {
           />
         </Container>
         <Container className="flex-box">
-          <label htmlFor="contactNo">Contact No</label>
+          <label htmlFor="phoneNo">Phone No</label>
           <InputBox
             type="text"
-            name="contactNo"
-            value={userData.contactNo}
+            name="phoneNo"
+            value={userData.phoneNo}
             onChange={handleInput}
             disabled={disabled}
-            id="contactNo"
+            id="phoneNo"
           />
         </Container>
 
-        {!disabled && (
-         
-            <button type="submit">Save</button>
-         
-        )}
+        {!disabled && <button type="submit">Save</button>}
       </form>
     </Container>
   );
