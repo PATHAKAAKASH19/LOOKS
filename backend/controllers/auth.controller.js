@@ -41,13 +41,15 @@ async function changePassword(req, res) {
 
 async function register(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
 
     if (!email || !password) {
       return res
         .status(401)
         .json({ message: "Email and password are required" });
     }
+
+   
 
     const userExist = await User.findOne({ email: email });
 
@@ -64,6 +66,7 @@ async function register(req, res) {
     const createUser = await User.create({
       email: email,
       password: hashPassword,
+      role:role,
     });
 
     return res.status(200).json({ message: "user register successfully" });
@@ -75,7 +78,7 @@ async function register(req, res) {
 
 async function login(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
    
    
     if (!email || !password) {
@@ -89,6 +92,7 @@ async function login(req, res) {
       return res.status(401).json({ message: "please signup first" });
     }
 
+    
     const isPasswordCorrect = await bcrypt.compare(
       password,
       userExist.password
@@ -121,11 +125,11 @@ async function login(req, res) {
 
 async function logOut(req, res) {
   try {
+ 
     const {userId} = req
-    const removeUserInfo = await User.findByIdAndDelete({
-      userId
-    });
-    return res.status(200).json({success:true, messgae: "user logout successfully" });
+    console.log(userId)
+    const removeUserInfo = await User.findByIdAndDelete(userId);
+    return res.status(200).json({success:true, message: "user logout successfully" });
   } catch (error) {
     return res.status(500).json({success:false, message: "internal server error" });
   }

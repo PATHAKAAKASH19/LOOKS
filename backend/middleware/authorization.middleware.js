@@ -1,11 +1,11 @@
-function authorization(...roles){
-    return (req, res, next) => {
-        if(!roles.includes(req.user.role)){
+function authorization(req, res, next){
+  
+        if(req.role !== "admin"){
          return res.status(403).json({message: "access denied"})
         }
 
         next()
-    }
+   
 }
 
 export default authorization

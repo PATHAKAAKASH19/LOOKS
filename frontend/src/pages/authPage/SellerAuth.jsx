@@ -1,45 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState , useEffect} from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Container from "../../components/ui/container/Container";
 import Form from "../../components/form/Form";
 import Title from "../../components/ui/title/Title";
 import { Toaster, toast } from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { validateEmail, validatePassword } from "../../utils/validate";
+
+import { validateEmail, validatePassword, validateRole } from "../../utils/validate";
 import { useSellerAuth } from "../../context/SellerAuthContext.jsx";
 
-export default function Auth() {
+export default function SellerAuth() {
+
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    role:""
   });
 
   const [errors, setErrors] = useState({
     emailError: "",
     passwordError: "",
+    roleError:""
   });
 
   const { auth } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from?.pathname || "/";
+  const from = location.state?.from?.pathname || "/seller-dashboard/products";
 
-  const {setAccessToken} = useAuth();
-  const {setSellerToken} = useSellerAuth()
+  const { setSellerToken} = useSellerAuth();
+  const {setAccessToken} = useAuth()
 
   const cleanState = () => {
     setFormData({
       email: "",
       password: "",
+      role:""
     });
     setErrors({
       emailError: "",
       passwordError: "",
+      roleError:""
     });
   };
 
-  const submitLoginForm = async () => {
+  const submitLoginForm = async (e) => {
     try {
       const res = await fetch(`http://192.168.0.104:3000/api/auth/login`,{
         method: "POST",
@@ -51,17 +58,17 @@ export default function Auth() {
 
 
       const data = await res.json();
-    
+   
       if (res.status === 401) {
-     
+      
         toast.error(`${data.message}`);
       } else if (res.status === 403) {
        
         toast.error(`${data.message}`);
       } else if (res.status === 200) {
       
-        setAccessToken(data.accessToken);
-        setSellerToken("")
+        setSellerToken(data.accessToken);
+        setAccessToken("");
         navigate(`${from}`);
       }
 
@@ -72,8 +79,9 @@ export default function Auth() {
     }
   };
 
-  const submitSignupForm = async () => {
+  const submitSignupForm = async (e) => {
     try {
+      
       const res = await fetch(`http://192.168.0.104:3000/api/auth/signup`, {
         method: "POST",
         headers: {
@@ -89,7 +97,7 @@ export default function Auth() {
       } else if (res.status === 403) {
         toast.error(`${data.message}`);
       } else {
-        navigate(`/account/login`);
+        navigate(`/seller/login`);
       }
       cleanState();
     } catch (error) {
@@ -98,7 +106,7 @@ export default function Auth() {
     }
   };
 
-  const handleValidation = (isEmailValid, isPasswordValid) => {
+  const handleValidation = (isEmailValid, isPasswordValid, isRoleValid) => {
     if (isEmailValid === false) {
       setErrors((prev) => {
         return {
@@ -116,6 +124,15 @@ export default function Auth() {
         };
       });
     }
+
+    if(isRoleValid === false){
+        setErrors((prev) => {
+            return {
+              ...prev,
+              roleError: "Please select role",
+            };
+          });
+    }
   };
 
   // this function is used for form submission
@@ -125,15 +142,17 @@ export default function Auth() {
     try {
       const isEmailValid = validateEmail(formData.email);
       const isPasswordValid = validatePassword(formData.password);
-
-      if (isEmailValid && isPasswordValid) {
+      const  isRoleValid = validateRole(formData.role)
+    
+     
+      if (isEmailValid && isPasswordValid && isRoleValid) {
         if (auth.toLowerCase() === "signup") {
           await submitSignupForm();
         } else if (auth.toLowerCase() === "login") {
           await submitLoginForm();
         }
       } else {
-        handleValidation(isEmailValid, isPasswordValid);
+        handleValidation(isEmailValid, isPasswordValid, isRoleValid);
       }
     } catch (error) {
       console.log("error : ", error);
@@ -152,7 +171,7 @@ export default function Auth() {
 
   return (
     <Container className={auth}>
-      <Title title={`${auth.toUpperCase()} WITH EMAIL`} />
+      <Title title={`${auth.toUpperCase()} AS SELLER`} />
       <Container className="box1">
         <Form
           btnTitle={`${auth}`}
@@ -161,6 +180,8 @@ export default function Auth() {
           handleForm={handleForm}
           errors={errors}
           autoComplete="true"
+          SellerAuth={true}
+
         ></Form>
 
         {auth === "signup" ? (

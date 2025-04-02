@@ -1,8 +1,26 @@
-import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Container from "../../components/ui/container/Container";
+import { useSellerAuth } from "../../context/SellerAuthContext";
 
 export default function SellerPage() {
+
+
+  const {sellerToken} = useSellerAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    if(!sellerToken){
+      navigate(`/seller/signup` ,{state:{from : location, sellerAuth:true}} )
+    }
+  }, [sellerToken])
+
+
+   useEffect(() => {
+       window.scrollTo(0, 0);
+    }, []);
+  
   return (
     <Container className="admin">
       <Container className="admin-sidebar">

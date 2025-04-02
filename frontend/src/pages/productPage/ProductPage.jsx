@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-
-
 import { LiaHeartSolid } from "react-icons/lia";
-
 import Container from "../../components/ui/container/Container";
 import Title from "../../components/ui/title/Title";
 import createSlug from "../../utils/createSlug";
@@ -13,6 +10,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { Toaster, toast } from "react-hot-toast";
 import Spinner from "../../components/ui/spinner/Spinner.jsx";
 import { useUserInfo } from "../../context/UserInfoContext.jsx";
+import { useCartInfo } from "../../context/cartContext.jsx";
 
 export default function ProductPage() {
   const [product, setProduct] = useState(null);
@@ -24,12 +22,14 @@ export default function ProductPage() {
   const [isPresentInWishlist , setIsPresentInWishlist] = useState(false)
 
 
+
   const { productName } = useParams() || "";
   const navigate = useNavigate();
   const location = useLocation();
 
   const { accessToken } = useAuth();
   const {userInfo, setUserInfo} = useUserInfo()
+  const {setCartInfo} = useCartInfo()
 
   const Color = (e) => {
     e.target.innerText === size ? setSize("") : setSize(e.target.innerText);
@@ -39,6 +39,8 @@ export default function ProductPage() {
     setSrcAttribute(e.target.src);
   };
 
+
+ 
  
   const submitAddToCart = async () => {
  
@@ -66,9 +68,11 @@ export default function ProductPage() {
       const data = await res.json();
     
       if (res.status === 403) {
-        navigate("/account/login", {state:{from : location}} )
+       return  navigate("/account/login", {state:{from : location}} )
       } 
        
+      
+      setCartInfo(data.cart)
       toast.success(`Product added to the cart`)
     }else{
         toast.error("Please select a size")
@@ -146,12 +150,13 @@ export default function ProductPage() {
     const fetchProductsData = async () => {
       try {
         if (categoryId) {
+          
           const res = await fetch(
-            `http://192.168.0.104:3000/api/product/category/${categoryId}`
+            `http://192.168.0.104:3000/api/product/category/${categoryId._id}`
           );
 
           const productList = await res.json();
-
+        
           if (productList !== null) {
             setProductList(productList);
             
@@ -162,10 +167,17 @@ export default function ProductPage() {
         console.log("error:", error);
       }
     };
-
+ 
     fetchProductsData();
   }, [categoryId, productName]);
 
+  
+  
+
+
+
+  
+  
   useEffect(() => {
 
 
@@ -209,6 +221,39 @@ useEffect(() => {
     }
     }
   }, [userInfo?.wishlist, product?._id])
+
+
+  useEffect(() => {
+
+
+    const getCartInfo  = async () => {
+      
+      try {
+        
+        const res = await fetch(`http://192.168.0.104:3000/api/cart/`, {
+          method:"GET",
+          headers:{
+             "Authorization":`Bearer ${accessToken}`
+          }
+        })
+
+        const data = await res.json()
+      
+         if(res.status === 200){
+       
+          setCartInfo(data.cart)
+         }
+      } catch (error) {
+        toast.error("error : ", error)
+      }
+    }
+
+    if(accessToken){
+      getCartInfo()
+    }
+  
+  }, [accessToken])
+
 
 
   return (

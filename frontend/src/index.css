@@ -58,9 +58,11 @@ body {
 }
 
 .subnav2 {
-    width: 10%;
+    width: 12%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
+    gap: 4px;
+    cursor: pointer;
 }
 
 .link1 {
@@ -74,12 +76,262 @@ body {
 
 
 
+.error-con{
+    border: 2px solid;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items:center;
+    
+  
+}
+
+.error-con .illustration {
+    width: 90%;
+    height: 90%;
+  
+   
+}
+
+.error-con .reference {
+    font-size: 1.2vmin;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+}
+
+.error-con .link{
+    font-size: 2.6vmin;
+    text-decoration: none;
+}
+
+.wishlist-link {
+    position: relative;
+}
+
+.wishlist-count-con {
+    position: absolute;
+   top: -11px;
+   right: -12px;
+    width: 2.4vmin;
+    height: 2.4vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 2em;
+    background-color: red;
+}
+
+.wishlist-count {
+    
+  
+    color: white;
+    font-size: 1.5vmin;
+    font-weight:700;
+}
+@media screen and (max-width:720px) {
+
+
+    .wishlist-count-con{
+        top: -8px;
+        right: -8px;
+        width:20px;
+        height: 20px;
+    }
+
+    .wishlist-count{
+        font-size: 14px;
+       
+    }
+
+    .error-con .illustration {
+       
+        height: 70%;
+      
+       
+    }
+    
+
+.error-con .reference {
+    font-size: 2.2vmin;
+   
+}
+
+
+    .error-con .link{
+        font-size: 5vmin;
+       
+    }
+    
+}
+
+.illustration img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+ 
+  
+}
+
+.dropDown-box, .seller-dropdown  {
+    width: 14vw;
+    height: 22vh;
+    position: fixed;
+   
+    border-radius: 1.2em;
+  
+    background-color: white;
+    box-shadow: 0px 2px 10px 1px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.role {
+   border:1px solid;
+    height: 40%;
+    padding-left: 15px;
+    border-radius: 0.5em;
+    font-size: 1.6vmin;
+    background-color: white;
+    cursor: pointer;
+}
+
+.seller-auth-btn {
+    margin-top: 10px;
+}
+
+.dropDown-box  ul,.seller-dropdown  ul{
+    list-style: none;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 1.8vmin;
+
+}
+
+.dropDown-box  ul li, .seller-dropdown  ul li {
+  border-radius: 1em;
+   width: 100%;
+   
+   height: 20%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   
+}
+.dropDown-box  ul li:hover,   .seller-dropdown  ul li:hover{
+  color: white;
+ background-color: black;
+}
+
+
+.seller-btn{
+    width: 12vmin;
+    height: 4vmin;
+    border-radius: 0.5em;
+   background-color: black;
+   border: none;
+   color: white;
+   font-size: 1.8vmin;
+   cursor: pointer;
+}
+
+
+@media  screen and (max-width:700px) {
+
+
+    .seller-btn{
+        width: 70px;
+        height: 30px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+
+    .dropDown-box, .seller-dropdown  {
+        width: 100vw;
+        height: 100vh; 
+        position:fixed;
+        top: 0px;
+        right: 0px;
+        border-radius: 0em;
+        display: flex;
+        justify-content: flex-end;
+        background-color: rgba(0, 0, 0, 0.4);
+     
+       z-index: 99999;
+    }
+
+
+    .dropDown-box  ul,.seller-dropdown  ul{
+        height: 100vh;
+        width: 65%;
+        font-size: 5vmin;
+        background-color: white;
+        z-index: 2;
+        justify-content: flex-start;
+       padding-top: 14%;
+      
+     
+    }
+    
+
+    .dropDown-box  ul li, .seller-dropdown  ul li {
+        border-radius: 1em;
+         width: 100%;
+         height: 8%;
+      
+        
+         display: flex;
+         align-items: center;
+         justify-content: center;
+    }
+
+    .go-back-btn1 {
+      
+        position: relative;
+        top: 200px;
+       
+      
+       
+       
+       
+    }
+
+    .go-back-btn1 div {
+        width: 10vmin;
+        height: 10vmin;
+       
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        background-color: black;
+        color: white;
+    }
+
+
+   
+    
+      
+    
+    
+}
+
 
 .icon {
     border: none;
     font-size: 30px;
     color: black;
 }
+
+
 
 .section {
 
@@ -150,6 +402,24 @@ body {
 
 }
 
+
+.container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  
+    transition: filter 0.3s ease-in-out;
+   
+   
+}
+
+.container:hover img {
+    filter: blur(2px);
+
+}
+
+
+
 .container {
 
     height: 45vmin;
@@ -157,30 +427,12 @@ body {
     position: relative;
     gap: 10%;
     transition: all 0.3s ease-in-out;
-
 }
-
-.container:hover {
+ .container:hover {
     width: 20vmax;
     height: 46vmin;
     font-size: 1.7vmin;
 }
-
-.container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Ensure the image covers the container */
-    transition: filter 0.3s ease-in-out;
-    /* Smooth transition for blur */
-}
-
-.container:hover img {
-    filter: blur(2px);
-
-    /* Apply blur on hover */
-}
-
 
 
 
@@ -249,8 +501,10 @@ img {
 
 
 
+
 @media screen and (max-width:600px) {
 
+   
     .footer-con {
         height: min-content;
 
@@ -279,11 +533,6 @@ img {
         width: 90vw;
     }
 
-
-
-
-
-
     .section {
 
         margin: 15vmin 0px 10vmin 0px;
@@ -301,8 +550,7 @@ img {
         width: 95vw;
         height: 30vh;
         overflow: auto;
-
-
+       
     }
 
     .BannerSection {
@@ -319,28 +567,48 @@ img {
 
     .container {
         height: 100%;
+        width: 19vmax;
         margin-right: 14px;
-
+        transition: none;
+        border-radius: 0em;
     }
 
+    .container:hover {
+        width:19vmax;
+        height:100%;
+        font-size: 1.7vmin;
+       
+     }
+
+
+  
+    
     .container img {
         border-radius: 1em;
+        transition: none;
+       
     }
 
-    .container h2 {
-
-        font-size: 4.5vmin;
-        font-weight: 600;
-        top: 40%;
-        bottom: 40%;
-    }
-
+    
     .categoryImage::-webkit-scrollbar {
         width: 0px;
     }
 
+    .container:hover img {
+        filter: none;
+    }
 
+    .container h2 {
+
+        font-size: 4vmin;
+        font-weight: 400;
+        top: 40%;
+        bottom: 40%;
+    }
+
+    
 }
+
 
 .product-list-container{
     width: 100vw;
@@ -617,6 +885,16 @@ img {
 @media screen and (max-width:720px) {
 
   
+    .product-list-error h2 {
+        font-size: 4vmin;
+        font-weight: 400;
+    
+      }
+    
+      .product-list-link h2{
+        font-size: 3vmin;
+        
+      }
 
     .filter-button {
        background-color: white;
@@ -1750,6 +2028,7 @@ form button {
 
 @media screen and (max-width:600px) {
 
+  
 
     .signup,
     .login {
@@ -1797,7 +2076,13 @@ form button {
         font-size: 5vmin;
     }
 
+    .inputBox select {
+        font-size: 4vmin;
+    }
 
+   .seller-auth-btn{
+    margin-bottom: 20px;
+   }
 
     .signup h2,
     .login h2 {
@@ -2539,11 +2824,19 @@ table td {
     font-weight: 400
 }
 
+.order-title{
+    font-weight: 400;
+ }
+
 @media screen and (max-width:600px) {
+
+   .order-title{
+      font-weight: 400;
+   }
+
     .admin-panel .order-table {
-
         width: 98vw;
-
+        margin-top: 20px;
     }
 
     .admin-panel .order-con {
@@ -2638,7 +2931,7 @@ table td {
     padding: 15px;
     border-radius: 1em;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 20px;
     box-shadow: 0px 2px 10px 1px rgba(0, 0, 0, 0.2);
 
@@ -2683,7 +2976,7 @@ table td {
     text-align: center;
     align-items: center;
     height: 30%;
-    font-size: 1.5vmin;
+    font-size: 1.8vmin;
     font-weight: 400;
     letter-spacing: 0.1em;
 }
@@ -2695,6 +2988,7 @@ table td {
 
 .child img {
     border-radius: 1em;
+    object-fit: contain;
 }
 
 
@@ -2969,6 +3263,8 @@ table td {
     height: 50%;
     padding: 0px 10px;
     font-size: 1.5vmin;
+    background-color: white;
+    border: 1px solid;
 }
 
 .address-form-icon {
@@ -3240,8 +3536,8 @@ table td {
 
     .wishlist-con h2,
     .wishlist-con h3 {
-        font-size: 3.5vmin;
-
+        font-size: 4vmin;
+    
     }
 
 
@@ -3249,11 +3545,20 @@ table td {
     .wishlist-con select {
         height: 5vh;
         font-size: 3.4vmin;
+        border: 1px solid;
+        border-radius: 0.5em;
+    }
+
+    .wishlist-con select option {
+        font-size: 3.8vmin;
     }
 
     .wishlist-con button {
         font-size: 3.5vmin;
+        height: 10vmin;
+        border: none;
     }
+
 
     .order-item {
         width: 85%;
@@ -3385,19 +3690,16 @@ table td {
 
     .navbar .subnav2 {
 
-        width: 24%;
-        font-size: 2.2vmin;
-
+        width: 28vmin;
+        
     }
 
     .navbar .subnav2 .icon {
         font-size: 28px;
-
+     
     }
 
-    .navbar .subnav2 .heart {
-        display: none;
-    }
+    
 
     .navbar .subnav1 {
         display: none;

@@ -91,6 +91,7 @@ async function createCategory(req, res) {
 async function updateCategory(req, res) {
   try {
     const secure_url = req.body.imgUrl;
+    const {categoryId} = req.params
     if (secure_url) {
       const publicId = extractPublicId(secure_url);
 
@@ -103,7 +104,7 @@ async function updateCategory(req, res) {
       );
 
       const category = await Category.findOneAndUpdate(
-        { _id: req.params.id },
+        { _id:categoryId },
         {
           ...req.body,
           imgUrl: imgDataFromCloudinary.secure_url,
@@ -120,7 +121,7 @@ async function updateCategory(req, res) {
       });
     } else {
       const category = await Category.findOneAndUpdate(
-        { _id: req.params.id },
+        { _id: categoryId},
         {
           ...req.body,
         }

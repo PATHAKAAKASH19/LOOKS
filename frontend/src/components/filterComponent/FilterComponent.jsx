@@ -106,10 +106,15 @@ import { FaMinus } from "react-icons/fa6";
   const handleShowFilter = (e, key, value) => {
 
     setOpenFilter(prev  => ({...prev, [key]: value}))
-    console.log(e.target.scrollIntoView({behavior:"smooth"}))
+    e.target.scrollIntoView({behavior:"smooth"})
   } 
 
 
+
+
+   useEffect(() => {
+     window.scrollTo(0, 0);
+   }, [openFilter]);
 
   return (
     <div className="filter-sec" ref={ref}>

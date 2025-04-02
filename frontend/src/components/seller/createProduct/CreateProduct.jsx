@@ -4,6 +4,7 @@ import InputBox from "../../ui/inputBox/InputBox";
 import { MdDelete } from "react-icons/md";
 import { toast, Toaster } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSellerAuth } from "../../../context/SellerAuthContext";
 
 export default function CreateProduct() {
   const location = useLocation();
@@ -27,6 +28,7 @@ export default function CreateProduct() {
   const [previewImages, setPreviewImages] = useState([]);
   const [update, setUpdate] = useState(false);
   const navigate = useNavigate()
+  const {sellerToken} = useSellerAuth()
 
   const sizesArray = ["S", "M", "L", "XL", "XXL"];
   const MAX_IMAGES = 5;
@@ -83,6 +85,9 @@ export default function CreateProduct() {
         });
         const res = await fetch("http://192.168.0.104:3000/api/product", {
           method: "POST",
+          headers:{
+            "Authorization":`Bearer ${sellerToken}`
+          },
           body: formData,
         });
 
@@ -140,6 +145,9 @@ export default function CreateProduct() {
           `http://192.168.0.104:3000/api/product/${productDetail._id}`,
           {
             method: "PUT",
+            headers:{
+              "Authorization":`Bearer ${sellerToken}`
+            },
             body: formData,
           }
         );
@@ -239,6 +247,9 @@ export default function CreateProduct() {
         `http://192.168.0.104:3000/api/product/${productId}`,
         {
           method: "DELETE",
+          headers:{
+            "Authorization":`Bearer ${sellerToken}`
+          }
         }
       );
 
@@ -253,6 +264,12 @@ export default function CreateProduct() {
   const goBackToProductPage =  () => {
     navigate("/seller-dashboard/products")
   }
+
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Container className="admin-panel">

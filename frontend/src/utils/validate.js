@@ -17,3 +17,12 @@ export const validateEmail = (email) => {
     return validateEmail
   
 };
+
+export const validateRole = (role) => {
+  console.log(role)
+  if(role === "admin"){
+   return true
+  }else{
+    return false
+  }
+}

@@ -8,21 +8,17 @@ import {
   getAllOrder,
 } from "../controllers/order.controller.js";
 import authenticate from "../middleware/authentication.middleware.js";
+import authorization from "../middleware/authorization.middleware.js"
 
 const router = express.Router();
 
-router.get("/seller", getAllOrder);
-router.put("/seller", updateOrder);
-router.delete("/", cancelOrder);
 
+router.get("/seller", authenticate,authorization,getAllOrder);
+router.put("/seller", authenticate,authorization,updateOrder);
+
+router.delete("/", authenticate,cancelOrder);
 router.post("/checkout", authenticate,createOrder);
 router.post("/verify/:orderId", authenticate,verifyPayment);
-
 router.get("/", authenticate,getOrder);
-
-
-
-
-
 
 export default router;

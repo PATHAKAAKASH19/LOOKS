@@ -9,6 +9,8 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 
 export default function UserAddress() {
+
+ 
   const [address, setAddress] = useState({
     addressLine: "",
     locality: "",
@@ -25,7 +27,7 @@ export default function UserAddress() {
 
   const { userInfo, setUserInfo } = useUserInfo();
 
-  const { userId } = useAuth();
+  const {accessToken} = useAuth();
 
   useEffect(() => {
     if (userInfo && Object.keys(userInfo).length !== 0) {
@@ -54,11 +56,12 @@ export default function UserAddress() {
       e.preventDefault();
 
       const res = await fetch(
-        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        `http://192.168.0.104:3000/api/user/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${accessToken}`
           },
 
           body: JSON.stringify({ address, addressAction: "save" }),
@@ -82,11 +85,12 @@ export default function UserAddress() {
     try {
       e.preventDefault();
       const res = await fetch(
-        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        `http://192.168.0.104:3000/api/user/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${accessToken}`
           },
 
           body: JSON.stringify({
@@ -119,11 +123,12 @@ export default function UserAddress() {
   const deleteAddress = async (e, address) => {
     try {
       const res = await fetch(
-        "http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad",
+        "http://192.168.0.104:3000/api/user/",
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${accessToken}`
           },
 
           body: JSON.stringify({
@@ -151,6 +156,11 @@ export default function UserAddress() {
     setPrevAddressId(addressObj._id);
   };
 
+
+  useEffect(() => {
+       window.scrollTo(0, 0);
+    }, []);
+  
   return (
     <Container className="user-address-box">
       <Toaster></Toaster>

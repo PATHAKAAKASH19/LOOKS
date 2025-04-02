@@ -57,13 +57,19 @@ export default function CartPage() {
     return addressString;
   };
 
-  const checkoutHandler = async (amount, userData) => {
+  const checkoutHandler = async (userData, addressArray) => {
+    
     try {
+     
+    
+    
       
         if(amount, userData.phoneNo, userData.email, selectedAddressId){
           const deliveryAddress = addressArray.filter((address) => selectedAddressId === address._id )
           const {_id,...address} = deliveryAddress[0]
           
+        
+         
           const res = await fetch("http://192.168.0.104:3000/api/order/checkout", {
             method: "POST",
             headers: {
@@ -72,15 +78,16 @@ export default function CartPage() {
             },
     
             body: JSON.stringify({
-              amount: Number(amount),
-              address,
-          }),
+             address
+          })
           });
     
+         
           const order = await res.json();
-       
+          const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+         
           const options = {
-            key,// Replace with your Razorpay key_id
+            key:razorpayKey,// Replace with your Razorpay key_id
             amount: order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
             currency: "INR",
             name: "Looks Pvt Ltd",
@@ -92,7 +99,8 @@ export default function CartPage() {
                   const res = await fetch(`http://192.168.0.104:3000/api/order/verify/${order.orderId}`, {
                     method:"POST",
                     headers:{
-                      "Content-Type":"application/json"
+                      "Content-Type":"application/json",
+                       "Authorization":`Bearer ${accessToken}`
                     },
     
                     body:JSON.stringify(
@@ -105,6 +113,8 @@ export default function CartPage() {
     
                     
                   })
+
+                 
     
                   const data = await res.json()
                
@@ -126,7 +136,7 @@ export default function CartPage() {
     
             notes: {
               orderId: `${order.orderId}`,
-              customerId: `678761ba46047b57d7132fad`,
+              customerId:`${userData._id}`,
             },
             theme: {
               color: "#528FF0",
@@ -165,11 +175,12 @@ export default function CartPage() {
       );
 
       const {cart}= await res.json();
-     
+   
       if (res.status === 200 && cart !== null) {
        
-
+  
         setProducts(cart.products)
+       
         toast.success(`size updated successfully`);
 
       }else if (cart === null) {
@@ -184,7 +195,7 @@ export default function CartPage() {
   const deleteProduct = async (product_id) => {
     try {
      
-      console.log(accessToken)
+     
       const res = await fetch(
         `http://192.168.0.104:3000/api/cart/`,
         {
@@ -240,9 +251,7 @@ export default function CartPage() {
     }
   }, [products]);
 
- 
-
-
+  
   useEffect(() => {
 
     const fetchCartData = async () => {
@@ -261,7 +270,7 @@ export default function CartPage() {
       const {cart} = await res.json()
     
     
-    console.log(cart)
+    
      const {address, ...restUserInfo} = cart.userId
       if(res.status === 200){
         setProducts(cart.products)
@@ -305,8 +314,11 @@ export default function CartPage() {
     setUserData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const createAddress = async() =>{
+  const createAddress = async(e) =>{
        try {
+        
+           e.preventDefault()
+          
             const res= await fetch(`http://192.168.0.104:3000/api/user/`, {
             method:"PUT",
             headers:{
@@ -325,17 +337,21 @@ export default function CartPage() {
          if(res.status === 200){
        
           setAddressArray(userData.address)
+
           handleEdit("editAddress")
           toast.success("address created successfully")
-
+          setSelectedAddressId(userData.address[0]?._id) 
          }
        } catch (error) {
         toast.error("error:", error)
        }
   } 
 
-  const updateAddress = async() => {
+  const updateAddress = async(e) => {
     try {
+    
+      e.preventDefault()
+      
       const res= await fetch(`http://192.168.0.104:3000/api/user/`, {
         method:"PUT",
         headers:{
@@ -347,13 +363,14 @@ export default function CartPage() {
           address,
           prevAddressId
         })})
-
-        const data = await json.res()
+         
+        const {userData} = await res.json()
 
         if(res.status ===200){
 
           setAddressArray(userData.address)
           handleEdit("editAddress")
+          setSelectedAddressId(userData.address[0]?._id) 
           toast.success("address updated successfully")
         }
 
@@ -393,6 +410,12 @@ export default function CartPage() {
       toast.error("error : ", error)
      }
   }
+
+
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+   }, []);
 
   return (
     <>
@@ -609,9 +632,7 @@ export default function CartPage() {
                 <button
                   type="button"
                   className="checkout-btn"
-                  onClick={() => {
-                    checkoutHandler(amount.netAmount, userData);
-                  }}
+                  onClick={(e) => checkoutHandler(userData, addressArray)}
                 >
                   CHECKOUT
                 </button>
@@ -634,10 +655,15 @@ export default function CartPage() {
         )}
       </Container>) : (
         <Container className="empty-cart">
+
+         
           <h2>Cart is empty add exciting products</h2>
           <Link to="/" className="empty-cart-link">
            <h2>Go to home page </h2>
+           
           </Link>
+
+         
         </Container>
       )
       }

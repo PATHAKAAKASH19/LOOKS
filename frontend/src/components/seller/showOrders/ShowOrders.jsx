@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import Container from "../../ui/container/Container";
 import moment from "moment";
+import { useSellerAuth } from "../../../context/SellerAuthContext";
 
 export default function ShowOrders() {
   const [orders, setOrders] = useState([])
 
   const [orderStatus, setOrderStatus] = useState("");
+
+  const {sellerToken} = useSellerAuth();
 
   const handleOrderStatus = async (orderId, orderStatus) => {
     try {
@@ -14,6 +17,7 @@ export default function ShowOrders() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization":`Bearer ${sellerToken}`
         },
 
         body: JSON.stringify({
@@ -38,6 +42,9 @@ export default function ShowOrders() {
       try {
         const res = await fetch(`http://192.168.0.104:3000/api/order/seller`, {
           method: "GET",
+          headers:{
+            "Authorization":`Bearer ${sellerToken}`
+          }
         });
 
         const data = await res.json();
@@ -64,13 +71,19 @@ export default function ShowOrders() {
     "Cancelled",
   ];
 
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <Container className="admin-panel">
+       <h2 style={{marginTop:"5%"}} className="order-title">Orders</h2>
       {orders.length > 0
         ? orders.map((order, index) => (
             <Container key={order._id} className="order-table">
               <table>
-                <caption>Orders</caption>
+               
                 <thead>
                   <tr>
                     <th>#</th>

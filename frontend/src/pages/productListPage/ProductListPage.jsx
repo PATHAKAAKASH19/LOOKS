@@ -17,7 +17,6 @@ export default function ProductListPage() {
 
 
   useEffect(() => {
-    console.log(pathname);
     window.scrollTo(0, 0);
   }, [pathname]);
 
@@ -33,18 +32,26 @@ export default function ProductListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   
 
+
+
+
+
+
+ 
+
   useEffect(() => {
+    
     const fetchCategoryId = async () => {
       try {
         setIsLoading(true);
         const slugToNormal = slugToStr(category);
-
+  
         const categoryRes = await fetch(
           `http://192.168.0.104:3000/api/category?category=${slugToNormal}`
         );
-
+  
         const { categoryValue } = await categoryRes.json();
-
+  
         if (categoryValue) {
           setCategoryId(categoryValue[0]._id);
         }
@@ -54,6 +61,8 @@ export default function ProductListPage() {
     };
 
     fetchCategoryId();
+   
+  
   }, []);
 
   useEffect(() => {
@@ -76,6 +85,8 @@ export default function ProductListPage() {
             setProducts(productsData);
             setIsLoading(false);
           }
+        }else {
+
         }
       } catch (error) {
         console.log("error:", error);

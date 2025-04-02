@@ -10,6 +10,7 @@ export default function CategorySection({
   filterType,
   title,
   reactIcon,
+ 
 }) {
   const filterImage = useCallback(
     (image) => {
@@ -36,6 +37,8 @@ export default function CategorySection({
     [filterType]
   );
 
+ 
+
   return (
     <Container className="section">
       <Title className="category" reactIcon={reactIcon} title={title} />
@@ -51,7 +54,7 @@ export default function CategorySection({
       <Button
         title="view all"
         className="button"
-        route={`/collections/${""}`}
+        route={`collections/${filterType}`}
       ></Button>
     </Container>
   );

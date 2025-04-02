@@ -4,6 +4,7 @@ import Container from "../../ui/container/Container";
 import Title from "../../ui/title/Title";
 import { MdDelete } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
+import { useSellerAuth } from "../../../context/SellerAuthContext";
 
 export default function CreateCategory() {
   // this state stores all form data
@@ -20,6 +21,7 @@ export default function CreateCategory() {
   const [categoryData, setCategoryData] = useState(null);
   const [change, setChange] = useState(null);
   const [update, setUpdate] = useState(false);
+  const {sellerToken} = useSellerAuth()
 
   // handle text input box
   const handleInput = (e) => {
@@ -48,6 +50,9 @@ export default function CreateCategory() {
 
         const res = await fetch("http://192.168.0.104:3000/api/category", {
           method: "POST",
+          headers:{
+          "Authorization":`Bearer ${sellerToken}`
+          },
           body: formData,
         });
         const msg = await res.json();
@@ -77,6 +82,9 @@ export default function CreateCategory() {
           `http://192.168.0.104:3000/api/category/${form._id}`,
           {
             method: "PUT",
+            headers:{
+              "Authorization":`Bearer ${sellerToken}`
+              },
             body: formData,
           }
         );
@@ -114,6 +122,7 @@ export default function CreateCategory() {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          "Authorization":`Bearer ${sellerToken}`
         },
         body: JSON.stringify(category),
       });
@@ -165,6 +174,13 @@ export default function CreateCategory() {
     setPreviewImg(null);
     setUpdate(false);
   };
+
+ useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+
+
 
   return (
     <Container className="admin-panel">

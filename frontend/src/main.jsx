@@ -26,6 +26,7 @@ import UserWishlist from "./components/user/userWishlist/UserWishlist.jsx";
 import UserOrders from "./components/user/userOrders/UserOrders.jsx";
 import ChangePassword from "./components/user/changePassword/ChangePassword.jsx";
 import OrderPage from "./pages/orderPage/OrderPage.jsx";
+import SellerAuth from "./pages/authPage/SellerAuth.jsx";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <HomePage />,
+       
       },
 
       {
@@ -66,6 +68,16 @@ const router = createBrowserRouter([
           {
             path: ":auth",
             element: <Auth></Auth>,
+          },
+        ],
+      },
+
+      {
+        path: "seller",
+        children: [
+          {
+            path: ":auth",
+            element: <SellerAuth></SellerAuth>,
           },
         ],
       },
@@ -154,6 +166,12 @@ const router = createBrowserRouter([
           },
         ],
       },
+
+      {
+        path:"/"
+      }
+
+
     ],
   },
 ]);

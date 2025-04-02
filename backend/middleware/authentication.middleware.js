@@ -23,9 +23,10 @@ async function authenticate(req, res, next) {
        
       const user = await User.findById(decode.userId)
      
-      if (!user) return res.status(404).json({ message: "Please signUp first" });
+      if (!user) return res.status(403).json({ message: "Please signUp first" });
 
       req.userId = decode.userId
+      req.role = decode.role
       next();
   } catch (error) {
     res.status(401).json({ message: "invalid token" });

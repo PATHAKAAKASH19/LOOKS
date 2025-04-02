@@ -7,49 +7,52 @@ import mongoose from "mongoose";
 
 async function createOrder(req, res) {
   try {
-    const { amount, address } = req.body;
+    const { address } = req.body;
     const {userId} = req
 
    
 
-    if(!amount || typeof amount !== "number" || amount <= 0){
-      return res.status(400).json({success: false, message:"Invalid amount"})
-    }
-
+   
     if(!address || typeof address !== "object"  || Array.isArray(address)){
       return res.status(400).json({success: false, message:"Invalid address"})
     }
 
 
-    const cart = await Cart.find({ userId: userId });
+    const cart = await Cart.find({ userId: userId }).populate("products.productId", "price");
 
     if(!cart || cart.length === 0){
-      return res.status(404).json({success: false, message:"No cart present for this user"})
+      return res.status(404).json({success: false, message:"Please add product to your cart"})
     }
 
-
+    const totalPrice = cart[0].products.reduce((accumulator, product) => accumulator+product.productId.price,0)
     
-    const deleteOrder = await Order.deleteMany({paymentStatus: false,});
+
+    const deleteOrder = await Order.deleteMany({paymentStatus: false, userId: userId});
       const order = await Order.create({
         userId: userId,
-        totalPrice: amount,
+        totalPrice: Number(totalPrice),
         orderedItem: cart[0].products,
         deliveryAddress: address,
       });
 
+      
       const options = {
-        amount: Number(amount * 100),
+        amount: Number(totalPrice * 100),
         currency: "INR",
         receipt: order._id.toString(),
       };
+
+      
       const razorpayOrder = await instance.orders.create(options);
    
-      console.log(razorpayOrder)
+     
       return res.status(200).json({
         orderId: order._id,
         razorpayOrderId: razorpayOrder.id,
         amount: razorpayOrder.amount,
       });
+
+      
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
@@ -99,7 +102,7 @@ async function getOrder(req, res) {
     const { userId } = req;
 
    
-
+   
     const userOrders = await Order.find({ userId: userId }).populate({
       path: "orderedItem.productId",
       select: "productImgUrls name",
@@ -115,7 +118,7 @@ async function getOrder(req, res) {
       .status(200)
       .json({ success: true, message: "User orders present", userOrders });
 
-    return res.status(400).json({ success: false, message: "invalid request" });
+    
   } catch (error) {
     return res.status(200).json({
       success: false,

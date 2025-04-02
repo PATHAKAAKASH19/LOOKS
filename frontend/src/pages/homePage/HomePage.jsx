@@ -38,11 +38,13 @@ export default function HomePage() {
       filterType: "trending",
       title: "SEASONAL TREND",
       reactIcon: <MdSunny style={{ color: "orange", fontSize: "50px" }} />,
+      
     },
     {
       filterType: "bottomwear",
       title: "BOTTOM WEAR",
       reactIcon: <PiPantsLight style={{ color: "orange", fontSize: "40px" }} />,
+      
     },
 
     {
@@ -51,13 +53,19 @@ export default function HomePage() {
       reactIcon: (
         <IoShirtOutline style={{ color: "orange", fontSize: "30px" }} />
       ),
+
     },
   ];
 
+  useEffect(() => {
+   window.scrollTo(0, 0);
+  }, []);
+
+  
   return (
     <Container className="home">
       {isLoading ? (<Spinner></Spinner>):(
-        <>
+        <Container>
           <Container className="BannerSection">
             {images.map((image, index) => {
               if (image.category === "banner" || image.category === "banner2") {
@@ -69,16 +77,17 @@ export default function HomePage() {
           </Container>
 
           {CATEGORY_SECTION.map((value, i) => (
+          
             <CategorySection
-            key={i}
+               key={i}
               images={images}
               filterType={value.filterType}
               title={value.title}
               reactIcon={value.reactIcon}
-              
+             
             />
           ))}
-        </>
+        </Container>
       ) }
     </Container>
   );

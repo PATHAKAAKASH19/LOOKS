@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Container from "../../ui/container/Container.jsx";
 import createSlug from "../../../utils/createSlug.js";
 import ProductCard from "../../productCard/ProductCard.jsx";
-import Spinner from "../../ui/spinner/Spinner.jsx";
+
 
 export default function ShowProducts() {
   const [productList, setProductList] = useState([]);
@@ -24,6 +24,11 @@ export default function ShowProducts() {
 
     fetchProductList();
   }, []);
+
+  useEffect(() => {
+     window.scrollTo(0, 0);
+  }, []);
+
   return (
     <Container className="admin-panel">
     <Container className="title1">
@@ -33,7 +38,7 @@ export default function ShowProducts() {
       {productList && productList.length > 0 ? (
         productList.map((product) => {
           return (
-           <>
+         
            
            <ProductCard
               key={product._id}
@@ -45,17 +50,8 @@ export default function ShowProducts() {
               
             />
 
-           <ProductCard
-              key={product._id}
-              data={product}
-              route={`/seller-dashboard/update-product/${createSlug(
-                product.name
-              )}`}
-
-              
-            />
-           </>
-
+         
+           
 
             
           );

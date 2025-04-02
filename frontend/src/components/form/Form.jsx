@@ -10,6 +10,7 @@ export default function Form({
   handleInput,
   handleForm,
   errors,
+  SellerAuth,
   ...rest
 }) {
   const [show, setShow] = useState(false);
@@ -56,7 +57,21 @@ export default function Form({
         </Container>
         <h3 className="error">{errors.passwordError}</h3>
       </Container>
-      <button type="submit">{btnTitle}</button>
+
+      {
+        SellerAuth && (
+          <Container className="inputBox">
+        <label htmlFor="role">Role</label>
+        <select name="role" value={formData.role}  onChange={handleInput} id="role"  className="role">
+          <option value="">--select option</option>
+          <option value="admin">admin</option>
+        </select>
+        <h3 className="error">{errors.roleError}</h3>
+     
+        </Container>
+        )
+      }
+      <button type="submit" className="seller-auth-btn">{btnTitle}</button>
     </form>
   );
 }

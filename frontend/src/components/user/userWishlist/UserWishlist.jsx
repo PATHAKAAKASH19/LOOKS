@@ -4,8 +4,11 @@ import { useUserInfo } from "../../../context/UserInfoContext";
 import { Link } from "react-router-dom";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { Toaster, toast } from "react-hot-toast";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function Wishlist() {
+
+  const {accessToken} = useAuth()
   const [wishlistArray, setWishlistArray] = useState([]);
   const [selectedSize, setSelectedSize] = useState("");
 
@@ -23,11 +26,12 @@ export default function Wishlist() {
   const removeFromWishlist = async (wishlistId) => {
     try {
       const res = await fetch(
-        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        `http://192.168.0.104:3000/api/user/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${accessToken}`
           },
 
           body: JSON.stringify({
@@ -52,11 +56,12 @@ export default function Wishlist() {
     try {
       if (size) {
         const res = await fetch(
-          `http://192.168.0.104:3000/api/cart/678761ba46047b57d7132fad`,
+          `http://192.168.0.104:3000/api/cart/`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
+              "Authorization":`Bearer ${accessToken}`
             },
 
             body: JSON.stringify({
@@ -83,6 +88,12 @@ export default function Wishlist() {
   const handleSize = (e) => {
     setSelectedSize(e.target.value);
   };
+
+
+useEffect(() => {
+     window.scrollTo(0, 0);
+  }, []);
+
 
   return (
     <Container className="user-address-box ">

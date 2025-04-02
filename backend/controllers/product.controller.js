@@ -10,7 +10,8 @@ import mongoose from "mongoose";
 // get all the products created by seller
 async function getProduct(req, res) {
   try {
-    const allProducts = await Product.find(req.query);
+  
+    const allProducts = await Product.find(req.query).populate("categoryId", "category trending subCategory");
 
     if (allProducts.length > 0) {
       return res.status(200).json(allProducts);

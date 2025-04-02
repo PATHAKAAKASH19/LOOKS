@@ -11,11 +11,11 @@ const router = express.Router()
 
 router.get("/", getAllCategory)
 
-router.post("/" , upload.single("categoryImg"),authenticate,authorization,createCategory)
+router.post("/" , authenticate,authorization,upload.single("categoryImg"),createCategory)
 
-router.put("/:id", upload.single("categoryImg") ,authenticate,authorization,updateCategory)
+router.put("/:categoryId", authenticate,authorization,upload.single("categoryImg") ,updateCategory)
 
-router.delete("/" ,authenticate  ,authorization,deleteCategory)
+router.delete("/" ,authenticate,authorization,deleteCategory)
 
 
 export default router

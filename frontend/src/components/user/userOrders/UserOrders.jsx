@@ -3,15 +3,22 @@ import Container from "../../ui/container/Container";
 import OrderedItems from "../../orderedItems/OrderedItems";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function UserOrders() {
   const [orders, setOrders] = useState([]);
+  const {accessToken} = useAuth()
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          `http://192.168.0.104:3000/api/order/678761ba46047b57d7132fad`
+          `http://192.168.0.104:3000/api/order/`, {
+            method:"GET",
+            headers:{
+              "Authorization":`Bearer ${accessToken}`
+            }
+          }
         );
 
         const data = await res.json();
@@ -26,6 +33,12 @@ export default function UserOrders() {
 
     fetchOrders();
   }, []);
+
+
+  useEffect(() => {
+       window.scrollTo(0, 0);
+    }, []);
+  
 
   return (
     <Container className="user-address-box">

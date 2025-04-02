@@ -8,6 +8,9 @@ import { useAuth } from "../../../context/AuthContext";
 import { toast, Toaster } from "react-hot-toast";
 
 export default function UserProfile() {
+
+  const {accessToken} = useAuth()
+
   const [userData, setUserData] = useState({
     firstName: "",
     lastName: "",
@@ -18,7 +21,7 @@ export default function UserProfile() {
   const [disabled, setDisabled] = useState(true);
 
   const { userInfo, setUserInfo } = useUserInfo();
-  // const { userId } = useAuth();
+ 
 
   useEffect(() => {
     if (userInfo && Object.keys(userInfo).length !== 0) {
@@ -43,11 +46,12 @@ export default function UserProfile() {
     try {
       e.preventDefault();
       const res = await fetch(
-        `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+        `http://192.168.0.104:3000/api/user/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Authorization":`Bearer ${accessToken}`
           },
 
           body: JSON.stringify(userData),
@@ -65,6 +69,12 @@ export default function UserProfile() {
       toast.error(`${error.message}`);
     }
   };
+
+
+  useEffect(() => {
+       window.scrollTo(0, 0);
+    }, []);
+  
 
   return (
     <Container className="user-profile-box">

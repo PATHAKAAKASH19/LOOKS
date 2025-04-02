@@ -9,6 +9,10 @@ export default function OrderPage() {
  const searchQuery =  useSearchParams()[0]
  const referenceNo = searchQuery.get("reference")
 
+ useEffect(() => {
+    window.scrollTo(0, 0);
+ }, []);
+
   return (
     <Container className="order-page">
         <Container className="order-page-box">

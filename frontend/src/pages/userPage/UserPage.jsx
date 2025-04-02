@@ -10,23 +10,26 @@ import { useAuth } from "../../context/AuthContext";
 import { useUserInfo } from "../../context/UserInfoContext";
 import Spinner from "../../components/ui/spinner/Spinner";
 
+
 export default function UserPage() {
-  const { userInfo, setUserInfo } = useUserInfo();
-
+  const {setUserInfo} = useUserInfo();
   const [isLoading, setIsLoading] = useState(true);
-  // const { userId, accessToken, setAccessToken, setUserId } = useAuth();
-  // const location = useLocation();
+  const {accessToken} = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation()
 
-  // const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setIsLoading(true);
         const res = await fetch(
-          `http://192.168.0.104:3000/api/user/678761ba46047b57d7132fad`,
+          `http://192.168.0.104:3000/api/user/`,
           {
             method: "GET",
+            headers:{
+              "Authorization":`Bearer ${accessToken}`,
+            }
           }
         );
 
@@ -34,8 +37,10 @@ export default function UserPage() {
 
         if (res.status === 200) {
           setUserInfo(data.userData);
-        } else if (res.status === 401) {
-          getAccessToken();
+         
+        }else if(res.status === 403){
+             navigate(`/account/login`, {state:{from: location}})
+            
         }
 
         setIsLoading(false);
@@ -44,41 +49,17 @@ export default function UserPage() {
       }
     };
 
+   if(accessToken){
     fetchUserData();
+   }else {
+    navigate(`/account/login`, {state:{from: location}})
+   }
   }, []);
 
-  // const getAccessToken = async () => {
-  //   try {
-  //     const res = await fetch(
-  //       "http://192.168.0.104:3000/api/auth/generate-new-access-token",
-  //       {
-  //         method: "GET",
-  //         credentials: "include",
-  //       }
-  //     );
 
-  //     const data = await res.json();
-  //     console.log("aka");
-  //     if (res.status === 401) {
-  //       navigate("/account/login", { state: { from: location } });
-  //     } else if (res.status === 200) {
-  //       setAccessToken(data.accessToken);
-  //       setUserId(data.userId);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (accessToken && userId) {
-  //     console.log(accessToken)
-  //     console.log(userId)
-  //     fetchUserData();
-  //   } else {
-  //     getAccessToken();
-  //   }
-  // }, []);
+   useEffect(() => {
+     window.scrollTo(0, 0);
+    }, []);
 
   return (
     <>

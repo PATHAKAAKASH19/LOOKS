@@ -41,11 +41,11 @@ async function addItemToCart(req, res) {
 
       return res
         .status(200)
-        .json({ success: true, message: "Cart created and product added" });
+        .json({ success: true, message: "Cart created and product added", cart });
     }
 
     const productIndex = cartPresent.products.findIndex(
-      (p) => p.productId._id.toString() === productId.toString()
+      (p) => p._id.toString() === productId.toString()
     );
 
   
@@ -58,32 +58,34 @@ async function addItemToCart(req, res) {
           $push: {
             products: { productId, size, quantity },
           },
+        },{
+          new:true
         }
       );
 
       return res
         .status(200)
-        .json({ success: true, message: "Product is added to cart" });
+        .json({ success: true, message: "Product is added to cart", cart });
     } else if (productIndex !== -1) {
-     console.log("akak")
+   
+    
+   
       const cart = await Cart.findOneAndUpdate(
         {
           userId: userId,
           "products._id": productId,
-          "products.size": { $ne:size },
+         
         },
         {
-         
+          $set: {
             "products.$.size": size,
-        
+          },
         },
         {
           new: true,
         }
       ).populate("userId", "firstName email address phoneNo")
       .populate("products.productId", "name price productImgUrls color");
-
-     
 
       return res.status(200).json({ success: true, message: "updated", cart });
     }

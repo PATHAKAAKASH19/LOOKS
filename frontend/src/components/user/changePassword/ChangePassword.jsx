@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import Container from "../../ui/container/Container";
 import InputBox from "../../ui/inputBox/InputBox";
 import { LiaUserLockSolid } from "react-icons/lia";
 import { Toaster, toast } from "react-hot-toast";
 import { validatePassword } from "../../../utils/validate";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function ChangePassword() {
+
+  const {accessToken} = useAuth()
+
   const [password, setPassword] = useState({
     newPassword: "",
     confirmNewPassword: "",
@@ -71,11 +75,12 @@ export default function ChangePassword() {
       if (isPassword1Valid && isPassword2Valid) {
         if (password.newPassword === password.confirmNewPassword) {
           const res = await fetch(
-            `http://192.168.0.104:3000/api/auth/change-password/678761ba46047b57d7132fad`,
+            `http://192.168.0.104:3000/api/auth/change-password/`,
             {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
+                "Authorization":`Bearer ${accessToken}`
               },
               body: JSON.stringify({ newPassword: password.newPassword }),
             }
@@ -99,6 +104,12 @@ export default function ChangePassword() {
       console.log(error);
     }
   };
+
+
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+ }, []);
 
   return (
     <Container className="user-address-box password-con">
