@@ -5,11 +5,11 @@
   "type": "module",
   "description": "Backend of my e-commerce app",
  "scripts": {
-    "test": "node --version",
-    "start": "node index.js",
-    "build": "npm i && npm run client",
-    "client": "cd frontend && npm i --production=false && npm run build",
-    "dev": "nodemon index.js"
+    "dev":"nodemon index.js",
+    "install_backend":"npm i",
+    "build_frontend":"cd ../frontend &&  npm i && npm run build",
+    "deploy":"npm run install_backend && npm run build_frontend && pm2 start index.js --name e-commerce-backend && pm2 save",
+   "restart-pm2": "pm2 restart ecommerce-backend"
   },
   "keywords": [],
   "author": "Akash Pathak",
