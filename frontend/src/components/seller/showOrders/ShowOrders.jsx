@@ -13,7 +13,7 @@ export default function ShowOrders() {
 
   const handleOrderStatus = async (orderId, orderStatus) => {
     try {
-      const res = await fetch(`http://192.168.0.104:3000/api/order/seller`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/seller`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export default function ShowOrders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`http://192.168.0.104:3000/api/order/seller`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/seller`, {
           method: "GET",
           headers:{
             "Authorization":`Bearer ${sellerToken}`

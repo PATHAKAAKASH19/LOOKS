@@ -24,7 +24,7 @@ export default function UserPage() {
       try {
         setIsLoading(true);
         const res = await fetch(
-          `http://192.168.0.104:3000/api/user/`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
           {
             method: "GET",
             headers:{

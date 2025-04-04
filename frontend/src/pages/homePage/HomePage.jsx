@@ -19,7 +19,7 @@ export default function HomePage() {
       try {
 
         setIsLoading(true)
-        const response = await fetch("http://192.168.0.104:3000/api/category");
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
         const {categoryValue} = await response.json();
        
         setImages(categoryValue);

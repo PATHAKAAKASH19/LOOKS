@@ -3,7 +3,7 @@ import Container from "../../ui/container/Container";
 import InputBox from "../../ui/inputBox/InputBox";
 import { MdDelete } from "react-icons/md";
 import { toast, Toaster } from "react-hot-toast";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSellerAuth } from "../../../context/SellerAuthContext";
 
 export default function CreateProduct() {
@@ -83,7 +83,7 @@ export default function CreateProduct() {
         productImages.forEach((file) => {
           formData.append(`productImages`, file);
         });
-        const res = await fetch("http://192.168.0.104:3000/api/product", {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`, {
           method: "POST",
           headers:{
             "Authorization":`Bearer ${sellerToken}`
@@ -142,7 +142,7 @@ export default function CreateProduct() {
           });
         }
         const res = await fetch(
-          `http://192.168.0.104:3000/api/product/${productDetail._id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/product/${productDetail._id}`,
           {
             method: "PUT",
             headers:{
@@ -218,7 +218,7 @@ export default function CreateProduct() {
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const res = await fetch("http://192.168.0.104:3000/api/category");
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
         const {categoryValue} = await res.json();
 
         if (categoryValue) {
@@ -244,7 +244,7 @@ export default function CreateProduct() {
   const deleteProduct = async (productId) => {
     try {
       const res = await fetch(
-        `http://192.168.0.104:3000/api/product/${productId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/product/${productId}`,
         {
           method: "DELETE",
           headers:{

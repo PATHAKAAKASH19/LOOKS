@@ -9,21 +9,21 @@ import cartRoute from "./routes/cart.route.js"
 import authRoute from "./routes/auth.route.js"
 import orderRoute from "./routes/order.route.js"
 import userRoute from "./routes/user.route.js"
-import path, { dirname } from "path"
+import {fileURLToPath} from "url";
+import path from "path"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const buildpath = path.join(__dirname,"../frontend/dist")
+
 
 dotenv.config()
-
-
 const app = express()
 const mongodbURI = process.env.MONGODB_URI
-const _dirname = path.dirname("")
-const buildpath = path.join(_dirname,"../frontend/dist")
 
 
-
- 
 app.use(cors({
-    origin:"http://localhost:5173", 
+    origin:"*", 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
     allowedHeaders: ['Authorization', 'Content-Type']
@@ -32,8 +32,8 @@ app.use(cors({
 
 
 
-app.use(express.json())
 app.use(express.static(buildpath))
+app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
 
@@ -46,13 +46,18 @@ app.use("/api/auth" , authRoute)
 app.use("/api/order" , orderRoute)
 app.use("/api/user", userRoute)
 
+app.get("*", (req, res) => {
+    res.sendFile(path.join(buildpath, "index.html"));
+});
+
+
 mongoose.connect(mongodbURI)
 .then(() => {
     console.log("connected to database")
-    app.listen(3000,() => {
+    app.listen(process.env.PORT || 3000,() => {
         console.log("server started")
     })
 })
-.catch(() => {
-    console.log("connection failed")
+.catch((error) => {
+    console.log("connection failed", error.message)
 })

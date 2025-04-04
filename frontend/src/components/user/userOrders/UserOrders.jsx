@@ -13,7 +13,7 @@ export default function UserOrders() {
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          `http://192.168.0.104:3000/api/order/`, {
+          `${import.meta.env.VITE_BACKEND_URL}/api/order/`, {
             method:"GET",
             headers:{
               "Authorization":`Bearer ${accessToken}`

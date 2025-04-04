@@ -61,16 +61,13 @@ export default function CartPage() {
     
     try {
      
-    
-    
-      
-        if(amount, userData.phoneNo, userData.email, selectedAddressId){
+       if(amount, userData.phoneNo, userData.email, selectedAddressId){
           const deliveryAddress = addressArray.filter((address) => selectedAddressId === address._id )
           const {_id,...address} = deliveryAddress[0]
           
         
          
-          const res = await fetch("http://192.168.0.104:3000/api/order/checkout", {
+          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/checkout`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -96,7 +93,7 @@ export default function CartPage() {
             handler:async function(response) {
                 try {
                   
-                  const res = await fetch(`http://192.168.0.104:3000/api/order/verify/${order.orderId}`, {
+                  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/verify/${order.orderId}`, {
                     method:"POST",
                     headers:{
                       "Content-Type":"application/json",
@@ -159,7 +156,7 @@ export default function CartPage() {
 
    
       const res = await fetch(
-        `http://192.168.0.104:3000/api/cart/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
         {
           method: "POST",
           headers: {
@@ -197,7 +194,7 @@ export default function CartPage() {
      
      
       const res = await fetch(
-        `http://192.168.0.104:3000/api/cart/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
         {
           method: "DELETE",
           headers: {
@@ -260,7 +257,7 @@ export default function CartPage() {
    
      
     
-      const res = await fetch(`http://192.168.0.104:3000/api/cart`,{
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart`,{
         method:"GET",
         headers:{
           "Authorization":`Bearer ${accessToken}`
@@ -319,7 +316,7 @@ export default function CartPage() {
         
            e.preventDefault()
           
-            const res= await fetch(`http://192.168.0.104:3000/api/user/`, {
+            const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
             method:"PUT",
             headers:{
               "Content-Type":"application/json",
@@ -352,7 +349,7 @@ export default function CartPage() {
     
       e.preventDefault()
       
-      const res= await fetch(`http://192.168.0.104:3000/api/user/`, {
+      const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
@@ -382,7 +379,7 @@ export default function CartPage() {
   const saveUserInfo = async() => {
      try {
       
-      const res = await fetch(`http://192.168.0.104:3000/api/user/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",

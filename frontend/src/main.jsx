@@ -1,42 +1,54 @@
-import { StrictMode } from "react";
+import { StrictMode,lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import App from "./App.jsx";
-import HomePage from "./pages/homePage/HomePage.jsx";
-import ProductListPage from "./pages/productListPage/ProductListPage.jsx";
-import ProductPage from "./pages/productPage/ProductPage.jsx";
-import CartPage from "./pages/cartPage/CartPage.jsx";
+import Spinner from "./components/ui/spinner/Spinner.jsx";
 
-import Auth from "./pages/authPage/Auth.jsx";
-import ErrorPage from "./pages/errorPage/ErrorPage.jsx";
+const App = lazy(() => import("./App.jsx"));
+const HomePage = lazy(() => import("./pages/homePage/HomePage.jsx"));
+const ProductListPage = lazy(() => import("./pages/productListPage/ProductListPage.jsx"));
+const ProductPage = lazy(() => import("./pages/productPage/ProductPage.jsx"));
+const CartPage = lazy(() => import("./pages/cartPage/CartPage.jsx"));
 
-import SellerPage from "./pages/sellerPage/SellerPage.jsx";
-import CreateCategory from "./components/seller/createCategory/CreateCategory.jsx";
-import CreateProduct from "./components/seller/createProduct/CreateProduct.jsx";
-import ShowProducts from "./components/seller/showProducts/ShowProducts.jsx";
-import ShowOrders from "./components/seller/showOrders/ShowOrders.jsx";
+const Auth = lazy(() => import("./pages/authPage/Auth.jsx"));
+const ErrorPage = lazy(() => import("./pages/errorPage/ErrorPage.jsx"));
 
-import UserPage from "./pages/userPage/UserPage.jsx";
-import UserProfile from "./components/user/userProfile/UserProfile.jsx";
-import UserAddress from "./components/user/userAddress/UserAddress.jsx";
-import UserWishlist from "./components/user/userWishlist/UserWishlist.jsx";
-import UserOrders from "./components/user/userOrders/UserOrders.jsx";
-import ChangePassword from "./components/user/changePassword/ChangePassword.jsx";
-import OrderPage from "./pages/orderPage/OrderPage.jsx";
-import SellerAuth from "./pages/authPage/SellerAuth.jsx";
+const SellerPage = lazy(() => import("./pages/sellerPage/SellerPage.jsx"));
+const CreateCategory = lazy(() =>import("./components/seller/createCategory/CreateCategory.jsx"))
+const CreateProduct = lazy(() =>import("./components/seller/createProduct/CreateProduct.jsx"));
+const ShowProducts = lazy(() =>import("./components/seller/showProducts/ShowProducts.jsx")) ;
+const ShowOrders = lazy(() =>import("./components/seller/showOrders/ShowOrders.jsx")) ;
+
+const UserPage = lazy(() =>import("./pages/userPage/UserPage.jsx"));
+const UserProfile = lazy(() =>import("./components/user/userProfile/UserProfile.jsx")) ;
+const UserAddress = lazy(() =>import("./components/user/userAddress/UserAddress.jsx")) ;
+const UserWishlist = lazy(() =>import("./components/user/userWishlist/UserWishlist.jsx")) ;
+const UserOrders = lazy(() =>import("./components/user/userOrders/UserOrders.jsx")) ;
+const ChangePassword = lazy(() =>import("./components/user/changePassword/ChangePassword.jsx")) ;
+const OrderPage= lazy(() =>import("./pages/orderPage/OrderPage.jsx"));
+const SellerAuth = lazy(() =>import("./pages/authPage/SellerAuth.jsx")) ;
+
+
+const LazyComponent = ({component:Component}) => {
+  return (
+    <Suspense fallback={<Spinner/>}>
+    <Component />
+  </Suspense>
+  )
+}
+
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <ErrorPage />,
+    errorElement:<LazyComponent component={ErrorPage}/>,
     children: [
       {
         path: "",
-        element: <HomePage />,
+        element:<LazyComponent component={HomePage}/>,
        
       },
 
@@ -45,19 +57,19 @@ const router = createBrowserRouter([
         children: [
           {
             path: ":productName",
-            element: <ProductPage />,
+            element: <LazyComponent component={ProductPage}/>,
           },
         ],
       },
 
       {
         path: "cart",
-        element: <CartPage />,
+        element: <LazyComponent component={CartPage}/>,
       },
 
       {
         path:"paymentsuccess",
-        element:<OrderPage/>
+        element: <LazyComponent component={OrderPage}/>,
         
        
       },
@@ -67,7 +79,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: ":auth",
-            element: <Auth></Auth>,
+            element:  <LazyComponent component={Auth}/>,
           },
         ],
       },
@@ -77,72 +89,72 @@ const router = createBrowserRouter([
         children: [
           {
             path: ":auth",
-            element: <SellerAuth></SellerAuth>,
+            element:  <LazyComponent component={SellerAuth}/>,
           },
         ],
       },
 
       {
         path: "user",
-        element: <UserPage />,
+        element:  <LazyComponent component={UserPage}/>,
         children: [
           {
             index: true,
-            element: <UserProfile />,
+            element: <LazyComponent component={UserProfile }/>,
           },
 
           {
             path: "profile",
-            element: <UserProfile />,
+            element:  <LazyComponent component={UserProfile }/>,
           },
 
           {
             path: "address",
-            element: <UserAddress />,
+            element: <LazyComponent component={UserAddress}/>,
           },
 
           {
             path: "wishlist",
-            element: <UserWishlist />,
+            element:  <LazyComponent component={UserWishlist}/>,
           },
 
           {
             path: "orders",
-            element: <UserOrders />,
+            element:  <LazyComponent component={UserOrders}/>,
           },
 
           {
             path: "changePassword",
-            element: <ChangePassword />,
+            element: <LazyComponent component={ChangePassword}/>,
           },
         ],
       },
 
       {
         path: "seller-dashboard",
-        element: <SellerPage></SellerPage>,
+        element: <LazyComponent component={SellerPage}/>,
         children: [
           {
             index: true,
-            element: <ShowProducts></ShowProducts>,
+            element: <LazyComponent component={ShowProducts}/>,
           },
           {
             path: "create-category",
-            element: <CreateCategory></CreateCategory>,
+            element: <LazyComponent component={CreateCategory}/>,
           },
           {
             path: "create-product",
-            element: <CreateProduct></CreateProduct>,
+            element: <LazyComponent component={CreateProduct}/>,
           },
 
           {
             path: "products",
-            element: <ShowProducts></ShowProducts>,
+            element: <LazyComponent component={ShowProducts}/>,
           },
 
           {
             path: "orders",
-            element: <ShowOrders />,
+            element:  <LazyComponent component={ShowOrders}/>,
           },
 
           {
@@ -150,7 +162,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: ":productName",
-                element: <CreateProduct></CreateProduct>,
+                element: <LazyComponent component={CreateProduct}/>,
               },
             ],
           },
@@ -162,15 +174,12 @@ const router = createBrowserRouter([
         children: [
           {
             path: ":category",
-            element: <ProductListPage />,
+            element: <LazyComponent component={ProductListPage}/> ,
           },
         ],
       },
 
-      {
-        path:"/"
-      }
-
+    
 
     ],
   },

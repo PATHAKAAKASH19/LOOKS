@@ -41,14 +41,16 @@ export default function Auth() {
 
   const submitLoginForm = async () => {
     try {
-      const res = await fetch(`http://192.168.0.104:3000/api/auth/login`,{
+
+    
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-
+    
 
       const data = await res.json();
     
@@ -74,7 +76,7 @@ export default function Auth() {
 
   const submitSignupForm = async () => {
     try {
-      const res = await fetch(`http://192.168.0.104:3000/api/auth/signup`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         method: "POST",
         headers: {
           "content-Type": "application/json",

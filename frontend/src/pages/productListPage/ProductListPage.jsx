@@ -47,7 +47,7 @@ export default function ProductListPage() {
         const slugToNormal = slugToStr(category);
   
         const categoryRes = await fetch(
-          `http://192.168.0.104:3000/api/category?category=${slugToNormal}`
+          `${import.meta.env.VITE_BACKEND_URL}/api/category?category=${slugToNormal}`
         );
   
         const { categoryValue } = await categoryRes.json();
@@ -76,7 +76,7 @@ export default function ProductListPage() {
 
         if (categoryId) {
           const res = await fetch(
-            `http://192.168.0.104:3000/api/product/category/${categoryId}?${queryString}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product/category/${categoryId}?${queryString}`
           );
 
           const productsData = await res.json();

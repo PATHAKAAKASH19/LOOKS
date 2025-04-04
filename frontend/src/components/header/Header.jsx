@@ -51,7 +51,7 @@ export default function Header() {
 
     try {
       
-      const res = await fetch(`http://192.168.0.104:3000/api/auth/logout`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
         method:"DELETE",
         headers:{
           "Content-Type":"application/json",
@@ -74,7 +74,7 @@ export default function Header() {
   const sellerLogout = async(e) => {
     try {
       
-      const res = await fetch(`http://192.168.0.104:3000/api/auth/logout`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
         method:"DELETE",
         headers:{
           "Content-Type":"application/json",

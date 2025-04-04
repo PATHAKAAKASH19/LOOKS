@@ -44,7 +44,7 @@ export default function ProductPage() {
  
   const submitAddToCart = async () => {
  
-    return await fetch("http://192.168.0.104:3000/api/cart/", {
+    return await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/`, {
         method: "POST",
         headers: {
            "Content-Type": "application/json",
@@ -85,7 +85,7 @@ export default function ProductPage() {
   const addToWishlist = async (wishlistId) => {
     try {
       const res = await fetch(
-        `http://192.168.0.104:3000/api/user/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -122,15 +122,16 @@ export default function ProductPage() {
       try {
         setSize("")
         setIsLoading(true);
+        console.log('aa')
         if (productName) {
           const name = slugToStr(productName);
-
+        
           const res = await fetch(
-            `http://192.168.0.104:3000/api/product?name=${name}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product?name=${name}`
           );
 
           const productData = await res.json();
-
+         
           if (productData) {
             setSrcAttribute(productData[0].productImgUrls[0]);
             setProduct(productData[0]);
@@ -142,17 +143,20 @@ export default function ProductPage() {
         console.log("error:", error);
       }
     };
-
+  
+    if(productName){
+   console.log("aja")
     fetchProductData();
+    }
   }, [productName]);
 
   useEffect(() => {
     const fetchProductsData = async () => {
       try {
         if (categoryId) {
-          
+          console.log(categoryId)
           const res = await fetch(
-            `http://192.168.0.104:3000/api/product/category/${categoryId._id}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product/category/${categoryId._id}`
           );
 
           const productList = await res.json();
@@ -168,7 +172,9 @@ export default function ProductPage() {
       }
     };
  
-    fetchProductsData();
+   if(categoryId){
+    fetchProductsData()
+   };
   }, [categoryId, productName]);
 
   
@@ -185,7 +191,7 @@ export default function ProductPage() {
       
       try {
         
-        const res = await fetch(`http://192.168.0.104:3000/api/user/`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
           method:"GET",
           headers:{
              "Authorization":`Bearer ${accessToken}`
@@ -230,7 +236,7 @@ useEffect(() => {
       
       try {
         
-        const res = await fetch(`http://192.168.0.104:3000/api/cart/`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/`, {
           method:"GET",
           headers:{
              "Authorization":`Bearer ${accessToken}`
