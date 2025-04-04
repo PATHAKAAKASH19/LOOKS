@@ -9,7 +9,7 @@
     "install_backend":"npm i",
     "build_frontend":"cd ../frontend &&  npm i && npm run build",
     "deploy":"npm run install_backend && pm2 start index.js --name e-commerce-backend && pm2 save",
-   "restart-pm2": "pm2 restart ecommerce-backend"
+   "restart-pm2": "pm2 restart e-commerce-backend"
   },
   "keywords": [],
   "author": "Akash Pathak",
