@@ -8,7 +8,7 @@
     "dev":"nodemon index.js",
     "install_backend":"npm i",
     "build_frontend":"cd ../frontend &&  npm i && npm run build",
-    "deploy":"npm run install_backend && npm run build_frontend && pm2 start index.js --name e-commerce-backend && pm2 save",
+    "deploy":"npm run install_backend && pm2 start index.js --name e-commerce-backend && pm2 save",
    "restart-pm2": "pm2 restart ecommerce-backend"
   },
   "keywords": [],
