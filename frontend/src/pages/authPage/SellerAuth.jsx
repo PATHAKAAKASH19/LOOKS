@@ -48,7 +48,7 @@ export default function SellerAuth() {
 
   const submitLoginForm = async (e) => {
     try {
-      const res = await fetch(`/api/auth/login`,{
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +82,7 @@ export default function SellerAuth() {
   const submitSignupForm = async (e) => {
     try {
       
-      const res = await fetch(`/api/auth/signup`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
         method: "POST",
         headers: {
           "content-Type": "application/json",

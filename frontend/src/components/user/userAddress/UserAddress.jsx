@@ -56,7 +56,7 @@ export default function UserAddress() {
       e.preventDefault();
 
       const res = await fetch(
-        `/api/user/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -86,7 +86,7 @@ export default function UserAddress() {
     try {
       e.preventDefault();
       const res = await fetch(
-        `/api/user/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -124,7 +124,7 @@ export default function UserAddress() {
   const deleteAddress = async (e, address) => {
     try {
       const res = await fetch(
-        `/api/user/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
         {
           method: "PUT",
           headers: {

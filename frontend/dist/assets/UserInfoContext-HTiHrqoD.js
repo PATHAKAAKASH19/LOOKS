@@ -1,0 +1,1 @@
+import{r as e,j as n}from"./index-qZzDzbZj.js";const t=e.createContext(),x=({children:s})=>{const[o,r]=e.useState(null);return n.jsx(t.Provider,{value:{userInfo:o,setUserInfo:r},children:s})},a=()=>e.useContext(t);export{x as U,a as u};

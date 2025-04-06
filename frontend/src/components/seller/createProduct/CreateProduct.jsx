@@ -83,7 +83,7 @@ export default function CreateProduct() {
         productImages.forEach((file) => {
           formData.append(`productImages`, file);
         });
-        const res = await fetch(`/api/product`, {
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`, {
           method: "POST",
           headers:{
             "Authorization":`Bearer ${sellerToken}`
@@ -142,7 +142,7 @@ export default function CreateProduct() {
           });
         }
         const res = await fetch(
-          `/api/product/${productDetail._id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/product/${productDetail._id}`,
           {
             method: "PUT",
             headers:{
@@ -206,7 +206,7 @@ export default function CreateProduct() {
   useEffect(() => {
     const getCategory = async () => {
       try {
-        const res = await fetch(`/api/category`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
         const {categoryValue} = await res.json();
 
         if (categoryValue) {
@@ -246,7 +246,7 @@ export default function CreateProduct() {
   const deleteProduct = async (productId) => {
     try {
       const res = await fetch(
-        `/api/product/${productId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/product/${productId}`,
         {
           method: "DELETE",
           headers:{

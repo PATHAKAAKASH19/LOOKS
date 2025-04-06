@@ -163,7 +163,7 @@ export default function CartPage() {
 
    
       const res = await fetch(
-        `/api/cart/`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
         {
           method: "POST",
           headers: {
@@ -293,7 +293,7 @@ export default function CartPage() {
         
            e.preventDefault()
           
-            const res= await fetch(`/api/user/`, {
+            const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
             method:"PUT",
             headers:{
               "Content-Type":"application/json",
@@ -326,7 +326,7 @@ export default function CartPage() {
     
       e.preventDefault()
       
-      const res= await fetch(`/api/user/`, {
+      const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
@@ -356,7 +356,7 @@ export default function CartPage() {
   const saveUserInfo = async() => {
      try {
       
-      const res = await fetch(`/api/user/`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
