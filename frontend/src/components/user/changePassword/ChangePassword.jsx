@@ -75,7 +75,7 @@ export default function ChangePassword() {
       if (isPassword1Valid && isPassword2Valid) {
         if (password.newPassword === password.confirmNewPassword) {
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/auth/change-password/`,
+            `/api/auth/change-password/`,
             {
               method: "PUT",
               headers: {

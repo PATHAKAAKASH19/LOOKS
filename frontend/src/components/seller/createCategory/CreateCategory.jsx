@@ -48,7 +48,7 @@ export default function CreateCategory() {
         formData.append("subCategory", form.subCategory);
         formData.append("categoryImg", img);
 
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`, {
+        const res = await fetch(`/api/category`, {
           method: "POST",
           headers:{
           "Authorization":`Bearer ${sellerToken}`
@@ -79,7 +79,7 @@ export default function CreateCategory() {
           formData.append("categoryImg", img);
         }
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/category/${form._id}`,
+          `/api/category/${form._id}`,
           {
             method: "PUT",
             headers:{
@@ -118,7 +118,7 @@ export default function CreateCategory() {
   // delete category data
   const deleteCategory = async (category) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`, {
+      const res = await fetch(`/api/category`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export default function CreateCategory() {
   useEffect(() => {
     const getAllCategory = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
+        const response = await fetch(`/api/category`);
         const {categoryValue} = await response.json();
 
         if (categoryValue) {

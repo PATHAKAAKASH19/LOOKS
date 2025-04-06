@@ -46,7 +46,7 @@ export default function ProductListPage() {
         const slugToNormal = slugToStr(category);
   
         const categoryRes = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/category?category=${slugToNormal}`
+          `/api/category?category=${slugToNormal}`
         );
   
         const { categoryValue } = await categoryRes.json();

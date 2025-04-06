@@ -72,7 +72,7 @@ export default function CartPage() {
           
         
          
-          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/checkout`, {
+          const res = await fetch(`/api/order/checkout`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -98,7 +98,7 @@ export default function CartPage() {
             handler:async function(response) {
                 try {
                   
-                  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/verify/${order.orderId}`, {
+                  const res = await fetch(`/api/order/verify/${order.orderId}`, {
                     method:"POST",
                     headers:{
                       "Content-Type":"application/json",
@@ -163,7 +163,7 @@ export default function CartPage() {
 
    
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
+        `/api/cart/`,
         {
           method: "POST",
           headers: {
@@ -293,7 +293,7 @@ export default function CartPage() {
         
            e.preventDefault()
           
-            const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
+            const res= await fetch(`/api/user/`, {
             method:"PUT",
             headers:{
               "Content-Type":"application/json",
@@ -326,7 +326,7 @@ export default function CartPage() {
     
       e.preventDefault()
       
-      const res= await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
+      const res= await fetch(`/api/user/`, {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
@@ -356,7 +356,7 @@ export default function CartPage() {
   const saveUserInfo = async() => {
      try {
       
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
+      const res = await fetch(`/api/user/`, {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",

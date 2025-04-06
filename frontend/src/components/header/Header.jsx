@@ -52,7 +52,7 @@ export default function Header() {
 
     try {
       
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
+      const res = await fetch(`/api/auth/logout`, {
         method:"DELETE",
         headers:{
           "Content-Type":"application/json",
@@ -76,7 +76,7 @@ export default function Header() {
   const sellerLogout = async() => {
     try {
       
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
+      const res = await fetch(`/api/auth/logout`, {
         method:"DELETE",
         headers:{
           "Content-Type":"application/json",
@@ -143,7 +143,7 @@ export default function Header() {
     const fetchCartInfo = async() => {
      
       try {
-         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {
+         const res = await fetch(`/api/cart`, {
           
             method: "GET",
             headers:{
@@ -166,7 +166,7 @@ export default function Header() {
     const fetchUserInfo = async() => {
       
       try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user`, {
+      const res = await fetch(`/api/user`, {
        
          method: "GET",
          headers:{

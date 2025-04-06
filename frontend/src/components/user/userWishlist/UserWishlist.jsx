@@ -26,7 +26,7 @@ export default function Wishlist() {
   const removeFromWishlist = async (wishlistId) => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
+        `/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -56,7 +56,7 @@ export default function Wishlist() {
     try {
       if (size) {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
+          `/api/cart/`,
           {
             method: "PUT",
             headers: {

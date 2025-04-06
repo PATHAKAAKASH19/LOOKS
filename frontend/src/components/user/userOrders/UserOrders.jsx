@@ -13,7 +13,7 @@ export default function UserOrders() {
     const fetchOrders = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/order/`, {
+          `/api/order/`, {
             method:"GET",
             headers:{
               "Authorization":`Bearer ${accessToken}`

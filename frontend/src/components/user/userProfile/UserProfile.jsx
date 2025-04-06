@@ -46,7 +46,7 @@ export default function UserProfile() {
     try {
       e.preventDefault();
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
+        `/api/user/`,
         {
           method: "PUT",
           headers: {

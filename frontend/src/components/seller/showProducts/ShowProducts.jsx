@@ -10,7 +10,7 @@ export default function ShowProducts() {
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`);
+        const res = await fetch(`/api/product`);
 
         const data = await res.json();
 

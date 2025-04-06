@@ -41,7 +41,7 @@ export default function ProductPage() {
  
   const submitAddToCart = async () => {
  
-    return await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/`, {
+    return await fetch(`/api/cart/`, {
         method: "POST",
         headers: {
            "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export default function ProductPage() {
   const addToWishlist = async (wishlistId) => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
+        `/api/user/`,
         {
           method: "PUT",
           headers: {
@@ -121,7 +121,7 @@ export default function ProductPage() {
           const name = slugToStr(productName);
         
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product?name=${name}`
+            `/api/product?name=${name}`
           );
 
           const productData = await res.json();
@@ -150,7 +150,7 @@ export default function ProductPage() {
         if (categoryId) {
           console.log(categoryId)
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product/category/${categoryId._id}`
+            `/api/product/category/${categoryId._id}`
           );
 
           const productList = await res.json();
