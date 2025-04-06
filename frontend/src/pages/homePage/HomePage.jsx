@@ -18,6 +18,8 @@ export default function HomePage() {
       
       try {
 
+      
+
         setIsLoading(true)
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
         const {categoryValue} = await response.json();

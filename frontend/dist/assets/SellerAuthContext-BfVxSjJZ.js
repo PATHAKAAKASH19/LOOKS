@@ -1,0 +1,1 @@
+import{r as e,j as n}from"./index-DXygbHet.js";const t=e.createContext(),u=({children:r})=>{const[o,s]=e.useState("");return n.jsx(t.Provider,{value:{sellerToken:o,setSellerToken:s},children:r})},x=()=>e.useContext(t);export{u as S,x as u};

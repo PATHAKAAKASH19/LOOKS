@@ -72,7 +72,7 @@ export default function CartPage() {
           
         
          
-          const res = await fetch(`/api/order/checkout`, {
+          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/checkout`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
