@@ -9,12 +9,8 @@ import cartRoute from "./routes/cart.route.js"
 import authRoute from "./routes/auth.route.js"
 import orderRoute from "./routes/order.route.js"
 import userRoute from "./routes/user.route.js"
-import {fileURLToPath} from "url";
-import path from "path"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const buildpath = path.join(__dirname,"../frontend/dist")
+
 
 
 dotenv.config()
@@ -32,7 +28,7 @@ app.use(cors({
 
 
 
-app.use(express.static(buildpath))
+
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cookieParser())
@@ -46,9 +42,6 @@ app.use("/api/auth" , authRoute)
 app.use("/api/order" , orderRoute)
 app.use("/api/user", userRoute)
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(buildpath, "index.html"));
-});
 
 
 mongoose.connect(mongodbURI)
