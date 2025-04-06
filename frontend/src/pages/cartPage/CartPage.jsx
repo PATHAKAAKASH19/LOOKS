@@ -1,8 +1,8 @@
-import React from "react";
+
 import InputBox from "../../components/ui/inputBox/InputBox";
 import Container from "../../components/ui/container/Container";
-import { IoAdd, IoGameController } from "react-icons/io5";
-import { RiDeleteBinLine } from "react-icons/ri";
+import { IoAdd } from "react-icons/io5";
+
 import { useState, useEffect } from "react";
 import Title from "../../components/ui/title/Title";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -12,6 +12,8 @@ import { CiEdit } from "react-icons/ci";
 import AddressForm from "../../components/addressForm/AddressForm";
 import Spinner from "../../components/ui/spinner/Spinner";
 import { Link, useNavigate } from "react-router-dom";
+import { useCartInfo } from "../../context/cartContext";
+import { useUserInfo } from "../../context/UserInfoContext";
 
 export default function CartPage() {
 
@@ -27,7 +29,7 @@ export default function CartPage() {
  
  const [prevAddressId, setPrevAddressId] = useState("")
   const [selectedAddressId, setSelectedAddressId ] = useState("")
-  const [isProductDeleted, setIsProductDeleted] = useState(true)
+  
   const [amount, setAmount] = useState({
     shippingAmount: "",
     productAmount: "",
@@ -46,6 +48,9 @@ export default function CartPage() {
   const [addressArray, setAddressArray] = useState([]);
 
   const {accessToken } = useAuth();
+  const {cartInfo, setCartInfo} = useCartInfo()
+  const {userInfo, setUserInfo} = useUserInfo()
+
 
   const addressObjToString = (address) => {
  
@@ -121,6 +126,7 @@ export default function CartPage() {
                     toast.error("Payment failed, retry")
                   }
                 } catch (error) {
+                  console.log("Error", error)
                   toast.error(`Please try again`)
                 }
             
@@ -147,6 +153,7 @@ export default function CartPage() {
           toast.error("Please fill email, phoneNo and address")
         }
     } catch (error) {
+      console.log("error", error)
       toast.error("Could not initiate payment. Please try again.");
     }
   };
@@ -174,11 +181,8 @@ export default function CartPage() {
       const {cart}= await res.json();
    
       if (res.status === 200 && cart !== null) {
-       
-  
-        setProducts(cart.products)
-       
-        toast.success(`size updated successfully`);
+       setCartInfo(cart)
+       toast.success(`size updated successfully`);
 
       }else if (cart === null) {
          toast.error(`select different size`)
@@ -211,12 +215,12 @@ export default function CartPage() {
       const data = await res.json();
    
     if(res.status === 200){
+      setCartInfo(data.cart)
       toast.success(`${data.message}`);
-      setIsProductDeleted(true)
-     
     }
     } catch (error) {
-      toast.error(data.message);
+      console.log("error", error)
+      toast.error("please delete again");
    
     }
   };
@@ -251,44 +255,17 @@ export default function CartPage() {
   
   useEffect(() => {
 
-    const fetchCartData = async () => {
-      try {
-        setIsLoading(true)
-   
-     
+   if(accessToken && cartInfo&& userInfo){
+     setIsLoading(true)
+  
+     const {address, wishlist,...restUserInfo} = userInfo
+     setProducts(cartInfo.products)
+     setUserData({...restUserInfo})
+     setAddressArray(address)
+     setSelectedAddressId(userInfo?.address[0]?._id)  
+     setIsLoading(false)
     
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart`,{
-        method:"GET",
-        headers:{
-          "Authorization":`Bearer ${accessToken}`
-        }
-      })
-      
-      const {cart} = await res.json()
-    
-    
-    
-     const {address, ...restUserInfo} = cart.userId
-      if(res.status === 200){
-        setProducts(cart.products)
-        setUserData({...restUserInfo})
-        setAddressArray(address)
-        setIsLoading(false)
-        setIsProductDeleted(false)
-        setSelectedAddressId(cart.userId.address[0]?._id)    
-    }else{
-      setIsLoading(false)}
-    } catch (error) {
-        setIsLoading(false)
-        toast.error(`error : `, error)
-       }
-    }
-
-   if(isProductDeleted){
-      fetchCartData()
-    }
-   
-  }, [isProductDeleted])
+   }}, [accessToken, cartInfo, userInfo,products])
 
 
   const handleEdit = (field, address) => {
@@ -364,10 +341,10 @@ export default function CartPage() {
         const {userData} = await res.json()
 
         if(res.status ===200){
-
-          setAddressArray(userData.address)
+        
+          setUserInfo(userData)
           handleEdit("editAddress")
-          setSelectedAddressId(userData.address[0]?._id) 
+        
           toast.success("address updated successfully")
         }
 
@@ -383,7 +360,7 @@ export default function CartPage() {
         method:"PUT",
         headers:{
           "Content-Type":"application/json",
-           "Authorization":`Bearer ${accessToken}`
+          "Authorization":`Bearer ${accessToken}`
         },
 
         body:JSON.stringify({
@@ -392,9 +369,10 @@ export default function CartPage() {
         })
       })
 
-      const data = await res.json()
-    
+     const data = await res.json()
+      
       if(res.status === 200){
+        setUserInfo(data.userData)
         toast.success("userInfo save successfully")
       if(editUserData.editEmail){
         handleEdit("editEmail")
@@ -427,14 +405,14 @@ export default function CartPage() {
      
 
           <Container className="product-con">
-            {products.map((product, index) => (
-              <Container className="product" key={`${product._id}`}>
+            {products.map((product) => (
+              <Container className="product" key={`${product?._id}`}>
                 <Container className="imgBox">
-                <img src={`${product.productId?.productImgUrls[0]}`} alt={`${product.productId?.name}`}/>
+                <img src={`${product?.productId?.productImgUrls[0]}`} alt={`${product?.productId?.name}`}/>
                 </Container>
                 <Container className="product-info">
                 <Title
-                    title={`${product.productId?.name.toUpperCase()}`}
+                    title={`${product?.productId?.name.toUpperCase()}`}
                   ></Title>
 
                   <Container className="size">
@@ -442,9 +420,9 @@ export default function CartPage() {
                     <select
                       name="size"
                       id="size"
-                      value={product.size.toUpperCase()}
+                      value={product?.size?.toUpperCase()}
                       onChange={(e) => changeProductSize(
-                          product._id,
+                          product?._id,
                           e.target.value)
                       }
                     >
@@ -458,15 +436,15 @@ export default function CartPage() {
 
                   <Container className="cloth-color">
                     <h3 className="dark">COLOR -</h3>
-                    <h3>{product.productId?.color.toUpperCase()}</h3>
+                    <h3>{product?.productId?.color?.toUpperCase()}</h3>
                   </Container>
                   <Container className="p">
                     <RiDeleteBin6Line
                       className="delete"
-                      onClick={() => deleteProduct(product._id)}
+                      onClick={() => deleteProduct(product?._id)}
                     />
 
-                    <h3>INR {product.productId?.price}</h3>
+                    <h3>INR {product?.productId?.price}</h3>
                   </Container>
                 </Container>
               </Container>
@@ -604,7 +582,7 @@ export default function CartPage() {
 
                   <button
                     
-                    route="/route"
+                    
                     className="discount-btn"
                   >apply</button>
                 </Container>
@@ -629,7 +607,7 @@ export default function CartPage() {
                 <button
                   type="button"
                   className="checkout-btn"
-                  onClick={(e) => checkoutHandler(userData, addressArray)}
+                  onClick={() => checkoutHandler(userData, addressArray)}
                 >
                   CHECKOUT
                 </button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { LiaHeartSolid } from "react-icons/lia";
 import Container from "../../components/ui/container/Container";
@@ -38,9 +38,6 @@ export default function ProductPage() {
   const handleClick = (e) => {
     setSrcAttribute(e.target.src);
   };
-
-
- 
  
   const submitAddToCart = async () => {
  
@@ -72,8 +69,12 @@ export default function ProductPage() {
       } 
        
       
+     if(data.cart !== null){
       setCartInfo(data.cart)
       toast.success(`Product added to the cart`)
+     }else{
+      toast.success(`Product already added to cart `)
+     }
     }else{
         toast.error("Please select a size")
       }
@@ -110,19 +111,12 @@ export default function ProductPage() {
     }
   };
 
-
-
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [productName]);
-
   useEffect(() => {
     const fetchProductData = async () => {
       try {
         setSize("")
         setIsLoading(true);
-        console.log('aa')
+       
         if (productName) {
           const name = slugToStr(productName);
         
@@ -178,43 +172,7 @@ export default function ProductPage() {
   }, [categoryId, productName]);
 
   
-  
-
-
-
-  
-  
-  useEffect(() => {
-
-
-    const checkWishlistItem  = async () => {
-      
-      try {
-        
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
-          method:"GET",
-          headers:{
-             "Authorization":`Bearer ${accessToken}`
-          }
-        })
-
-        const data = await res.json()
-      
-         if(res.status === 200){
-          setUserInfo(data.userData)
-         }
-      } catch (error) {
-        toast.error("error : ", error)
-      }
-    }
-
-    checkWishlistItem()
-  }, [])
-
-
-useEffect(() => {
-
-  
+   useEffect(() => {
 
     if(userInfo !== null && product !== null){
    
@@ -226,41 +184,12 @@ useEffect(() => {
       setIsPresentInWishlist(false)
     }
     }
-  }, [userInfo?.wishlist, product?._id])
+  }, [userInfo, product])
 
 
   useEffect(() => {
-
-
-    const getCartInfo  = async () => {
-      
-      try {
-        
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart/`, {
-          method:"GET",
-          headers:{
-             "Authorization":`Bearer ${accessToken}`
-          }
-        })
-
-        const data = await res.json()
-      
-         if(res.status === 200){
-       
-          setCartInfo(data.cart)
-         }
-      } catch (error) {
-        toast.error("error : ", error)
-      }
-    }
-
-    if(accessToken){
-      getCartInfo()
-    }
-  
-  }, [accessToken])
-
-
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Container className="product-page-con">

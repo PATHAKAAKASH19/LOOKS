@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import { useState , useEffect} from "react";
 import Container from "../../ui/container/Container";
 import InputBox from "../../ui/inputBox/InputBox";
 import { LiaUserLockSolid } from "react-icons/lia";

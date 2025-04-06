@@ -1,4 +1,4 @@
-import React, { useEffect, useState , useRef} from "react";
+import { useEffect, useState , useRef} from "react";
 import { useSearchParams, useParams, useLocation, Link } from "react-router-dom";
 import ProductListCard from "../../components/productListCard/ProductListCard";
 import FilterComponent from "../../components/filterComponent/FilterComponent";
@@ -22,7 +22,6 @@ export default function ProductListPage() {
 
   const [categoryId, setCategoryId] = useState("");
   const [products, setProducts] = useState(null);
-  const [error, setError] = useState("nothing to show");
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700)
   const [isFilterVisible, setIsFilterVisible]= useState(false)
@@ -60,10 +59,12 @@ export default function ProductListPage() {
       }
     };
 
-    fetchCategoryId();
+    if(category){
+      fetchCategoryId();
+    }
    
   
-  }, []);
+  }, [category]);
 
   useEffect(() => {
     const fetchProductsImage = async () => {
@@ -85,8 +86,6 @@ export default function ProductListPage() {
             setProducts(productsData);
             setIsLoading(false);
           }
-        }else {
-
         }
       } catch (error) {
         console.log("error:", error);
@@ -215,7 +214,7 @@ const handleSorting = (typeOfSorting) => {
                </Container>
           ): (
             <Container className="product-list-error">
-              <h2>{error}</h2>
+              <h2>{"nothing to show"}</h2>
               <Link to="/" className="product-list-link">
                 <h2>Go to Home page</h2>
               </Link>

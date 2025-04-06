@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import {  NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Container from "../../components/ui/container/Container";
 import { useSellerAuth } from "../../context/SellerAuthContext";
 
@@ -14,7 +14,8 @@ export default function SellerPage() {
     if(!sellerToken){
       navigate(`/seller/signup` ,{state:{from : location, sellerAuth:true}} )
     }
-  }, [sellerToken])
+   
+  }, [sellerToken, location, navigate])
 
 
    useEffect(() => {

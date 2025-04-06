@@ -201,19 +201,7 @@ export default function CreateProduct() {
     setPreviewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // get the product data  from showProduct components and insert to the data into state
-  const updateProductDetail = () => {
-    const categoryData = category.find(
-      (ctgObj) => ctgObj._id === data.categoryId
-    );
-
-    setProductDetail({ ...data, category: categoryData.category });
-
-    setSize(data.sizes);
-    setPreviewImages(data.productImgUrls);
-    setUpdate(true);
-  };
-
+  
   // this fetch the categroy data
   useEffect(() => {
     const getCategory = async () => {
@@ -234,12 +222,26 @@ export default function CreateProduct() {
 
   // this add the product details from show Product component to the productDetail state
   useEffect(() => {
+ 
+    // get the product data  from showProduct components and insert to the data into state
+     const updateProductDetail = () => {
+      const categoryData = category.find(
+        (ctgObj) => ctgObj._id === data.categoryId
+      );
+  
+      setProductDetail({ ...data, category: categoryData.category });
+  
+      setSize(data.sizes);
+      setPreviewImages(data.productImgUrls);
+      setUpdate(true);
+    };
+   
     if (data && category.length > 0) {
       updateProductDetail();
     } else {
       return;
     }
-  }, [category]);
+  }, [category,data]);
 
   const deleteProduct = async (productId) => {
     try {

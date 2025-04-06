@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { PiPantsLight } from "react-icons/pi";
 import { IoShirtOutline } from "react-icons/io5";
 import { MdSunny } from "react-icons/md";

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import Container from "../../ui/container/Container";
 import moment from "moment";
@@ -33,7 +33,7 @@ export default function ShowOrders() {
         setOrderStatus(orderStatus);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(`${error}`);
     }
   };
 
@@ -50,18 +50,19 @@ export default function ShowOrders() {
         const data = await res.json();
 
         if (res.status === 200) {
-          console.log(data);
           setOrders(data.orders);
           setOrderStatus(data.orders.orderStatus);
         }
       } catch (error) {
-        console.log(error);
+        
         toast.error(`${error}`);
       }
     };
 
+   if(sellerToken) {
     fetchOrders();
-  }, []);
+   }
+  }, [sellerToken]);
 
   const ORDER_STATUS = [
     "Pending",
@@ -78,6 +79,7 @@ export default function ShowOrders() {
 
   return (
     <Container className="admin-panel">
+      <Toaster></Toaster>
        <h2 style={{marginTop:"5%"}} className="order-title">Orders</h2>
       {orders.length > 0
         ? orders.map((order, index) => (
@@ -113,7 +115,7 @@ export default function ShowOrders() {
                         ))}
                       </select>
                     </td>
-                    <td>{`${order.userId.firstName} ${order.userId.lastName}`}</td>
+                    <td>{`${order.userId?.firstName} ${order.userId?.lastName}`}</td>
                     <td>{moment(order.createdAt).fromNow()}</td>
                     <td>{order.paymentStatus ? "Success" : "Failed"}</td>
                     <td>{order.orderedItem.length}</td>
@@ -122,7 +124,7 @@ export default function ShowOrders() {
               </table>
 
               {order.orderedItem.length > 0 &&
-                order.orderedItem.map((item, i) => (
+                order.orderedItem.map((item) => (
                   <Container key={item._id} className="item-con">
                     <Container className="item">
                       <Container className="item-img-con">

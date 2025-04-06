@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Container from "../../ui/container/Container";
 import OrderedItems from "../../orderedItems/OrderedItems";
 import toast from "react-hot-toast";
@@ -31,8 +31,11 @@ export default function UserOrders() {
       }
     };
 
-    fetchOrders();
-  }, []);
+    if(accessToken){
+      fetchOrders();
+    }
+   
+  }, [accessToken]);
 
 
   useEffect(() => {
@@ -43,8 +46,8 @@ export default function UserOrders() {
   return (
     <Container className="user-address-box">
       {orders.length > 0 ? (
-        orders.map((order, key) => (
-          <OrderedItems Items={order.orderedItem} status={order.orderStatus} />
+        orders.map((order) => (
+          <OrderedItems Items={order.orderedItem} status={order.orderStatus} key={order._id}/>
         ))
       ) : (
         <Container className="wishlist-con2">

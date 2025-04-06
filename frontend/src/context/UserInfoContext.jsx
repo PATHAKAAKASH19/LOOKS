@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { createContext, useContext, useState } from "react";
 
 const UserInfoContext = createContext();
 
-export const UserInfoContextProvider = ({ children }) => {
+export const UserInfoContextProvider = ({children}) => {
   const [userInfo, setUserInfo] = useState(null);
 
   return (

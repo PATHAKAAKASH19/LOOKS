@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import Container from "../../ui/container/Container";
 import InputBox from "../../ui/inputBox/InputBox";
 import { CiEdit } from "react-icons/ci";

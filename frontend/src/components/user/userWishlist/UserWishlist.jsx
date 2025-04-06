@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Container from "../../ui/container/Container";
 import { useUserInfo } from "../../../context/UserInfoContext";
 import { Link } from "react-router-dom";
@@ -42,7 +42,7 @@ export default function Wishlist() {
       );
 
       const data = await res.json();
-
+      console.log(data)
       if (res.status === 200) {
         setUserInfo(data.userData);
         toast.success("Product removed from wishlist");
@@ -99,7 +99,7 @@ useEffect(() => {
     <Container className="user-address-box ">
       <Toaster></Toaster>
       {wishlistArray.length > 0 ? (
-        wishlistArray.map((product, i) => {
+        wishlistArray.map((product) => {
           return (
             <Container key={`${product._id}`} className="wishlist-con">
               <AiOutlineCloseCircle

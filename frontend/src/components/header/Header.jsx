@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoCartOutline } from "react-icons/io5";
 import { FiUser } from "react-icons/fi";
 import { MdFavoriteBorder } from "react-icons/md";
-import toast,{ Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { BsArrowRight } from "react-icons/bs";
 import { useSellerAuth } from "../../context/SellerAuthContext";
 import { useAuth } from "../../context/AuthContext";
@@ -18,9 +18,10 @@ export default function Header() {
   const [cartProductCount, setCartProductCount] = useState("")
   const {sellerToken, setSellerToken} = useSellerAuth()
   const {accessToken, setAccessToken} = useAuth()
-  const {userInfo} = useUserInfo()
-  const {cartInfo} = useCartInfo()
+  const {userInfo,setUserInfo} = useUserInfo()
+  const {cartInfo, setCartInfo} = useCartInfo()
   const navigate = useNavigate()
+  const DROPDOWN_NAME = ["profile", "address", "orders", "changePassword"]
 
   
 
@@ -47,7 +48,7 @@ export default function Header() {
   }
 
 
-  const logout = async(e) => {
+  const logout = async() => {
 
     try {
       
@@ -66,12 +67,13 @@ export default function Header() {
         setAccessToken("")
       }
     } catch (error) {
+      console.log("error", error)
       toast.error("error : ", error)
     }
   }
 
 
-  const sellerLogout = async(e) => {
+  const sellerLogout = async() => {
     try {
       
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
@@ -94,18 +96,23 @@ export default function Header() {
     }
   }
   
-  const DROPDOWN_NAME = ["profile", "address", "orders", "changePassword"]
+  
 
 
   useEffect(() => {
 
     const countWishlistProduct = () => {
         const count = userInfo.wishlist.length
+        
+      if(count > 0){
         setWishlistProductCount(`${count}`)
+      }else{
+        setWishlistProductCount("")
+      }
     }
 
     if(userInfo){
-      countWishlistProduct()
+     countWishlistProduct()
     }
   }, [userInfo])
 
@@ -114,15 +121,82 @@ export default function Header() {
 
 
     const countCartProduct = () =>{ 
-      console.log(cartInfo)
+      
       const count = cartInfo.products.length
-      setCartProductCount(`${count}`)
+      if(count > 0){
+        setCartProductCount(`${count}`)
+      }else{
+        setCartProductCount("")
+      }
+    
     }
 
     if(cartInfo){
       countCartProduct()
     }
   }, [cartInfo])
+
+  
+
+  useEffect(() => {
+
+    const fetchCartInfo = async() => {
+     
+      try {
+         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {
+          
+            method: "GET",
+            headers:{
+              "Authorization":`Bearer ${accessToken}`,
+            }
+          
+         })
+  
+         const data = await res.json()
+  
+         if(res.status === 200){
+          setCartInfo(data.cart)
+  
+         }
+      } catch (error) {
+        console.log("error", error)
+      }
+    }
+  
+    const fetchUserInfo = async() => {
+      
+      try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user`, {
+       
+         method: "GET",
+         headers:{
+           "Authorization":`Bearer ${accessToken}`,
+         }
+       
+      })
+  
+      const data = await res.json()
+  
+      if(res.status === 200){
+       setUserInfo(data.userData)
+  
+      }
+   } catch (error) {
+     console.log("error", error)
+   }
+  }
+    
+
+    if(accessToken){
+      fetchCartInfo()
+      fetchUserInfo()
+      
+    }else if(sellerToken){
+      setCartInfo(null)
+      setUserInfo(null)
+    }
+
+  }, [accessToken, sellerToken,setCartInfo, setUserInfo])
 
   return (
     <div className="navbar">
@@ -156,7 +230,7 @@ export default function Header() {
 
         <ul>
           {
-            DROPDOWN_NAME.map((name, i) => <li key={i} onClick={(e) => navigateToUserDashboard(name)}>{name}</li>)
+            DROPDOWN_NAME.map((name, i) => <li key={i} onClick={() => navigateToUserDashboard(name)}>{name}</li>)
           }
           <li onClick={logout}>LogOut</li>
           
@@ -195,7 +269,7 @@ export default function Header() {
           <Link to="/user/wishlist" className="wishlist-link">
             <MdFavoriteBorder className="icon heart"/>
           {
-            (wishlistProductCount !== "") && (
+            (wishlistProductCount) && (
               <div className="wishlist-count-con">
              <h3 className="wishlist-count">{wishlistProductCount}</h3>
              </div>

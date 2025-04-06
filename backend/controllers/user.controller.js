@@ -100,7 +100,7 @@ async function updateUserInfo(req, res) {
         }
       ).populate("wishlist", "name price productImgUrls");
 
-      console.log(userData)
+     
       return res.status(200).json({
         success: true,
         message: "address updated successfully",

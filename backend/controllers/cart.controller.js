@@ -5,9 +5,8 @@ async function getCartItems(req, res) {
     const { userId } = req;
    
     const cart = await Cart.findOne({ userId: userId })
-      .populate("userId", "firstName email address phoneNo role")
-      .populate("products.productId", "name price productImgUrls color");
-    console.log(cart)
+    .populate("products.productId", "name price productImgUrls color");
+    
     if (cart) {
       return res
         .status(200)
@@ -30,14 +29,15 @@ async function addItemToCart(req, res) {
  
     const { userId } = req;
    
-    let cartPresent = await Cart.findOne({ userId: userId });
+    let cartPresent = await Cart.findOne({ userId: userId })
+    
   
   
     if (!cartPresent) {
       const cart = await Cart.create({
         userId: userId,
         products: [{ productId, quantity, size }],
-      });
+      }).populate("products.productId", "name price productImgUrls color");
 
       return res
         .status(200)
@@ -45,11 +45,10 @@ async function addItemToCart(req, res) {
     }
 
     const productIndex = cartPresent.products.findIndex(
-      (p) => p._id.toString() === productId.toString()
+      (p) => p.productId._id.toString() === productId.toString()
     );
 
   
- 
     if (productIndex === -1) {
       
      const cart =  await Cart.findOneAndUpdate(
@@ -61,7 +60,7 @@ async function addItemToCart(req, res) {
         },{
           new:true
         }
-      );
+      ).populate("products.productId", "name price productImgUrls color");
 
       return res
         .status(200)
@@ -84,10 +83,13 @@ async function addItemToCart(req, res) {
         {
           new: true,
         }
-      ).populate("userId", "firstName email address phoneNo")
-      .populate("products.productId", "name price productImgUrls color");
+      ).populate("products.productId", "name price productImgUrls color");
 
-      return res.status(200).json({ success: true, message: "updated", cart });
+     
+
+      return res.status(200).json({ success: true, message: "updated", cart});
+     
+
     }
   } catch (error) {
     return res
@@ -109,12 +111,12 @@ async function deleteCartItem(req, res) {
       {
          new:true
       }
-    );
+    ).populate("products.productId", "name price productImgUrls color");
 
    
     return res
       .status(200)
-      .json({ success: true, message: "product deleted successfully" });
+      .json({ success: true, message: "product deleted successfully" , cart});
   } catch (error) {
     return res.status(500).json({ success: false, message: error });
   }

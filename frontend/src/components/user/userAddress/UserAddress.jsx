@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Container from "../../ui/container/Container";
 import { LuMapPin } from "react-icons/lu";
 import { useUserInfo } from "../../../context/UserInfoContext";
@@ -77,6 +77,7 @@ export default function UserAddress() {
         toast.success(`${"address created successfully"}`);
       }
     } catch (error) {
+      console.log("error", error)
       toast.error(`${error}`);
     }
   };
@@ -145,6 +146,7 @@ export default function UserAddress() {
         setUserInfo(data.userData);
       }
     } catch (error) {
+      console.log("error", error )
       toast.error("unable to delete!! Please try again");
     }
   };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect} from "react";
 import Container from "../../components/ui/container/Container";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
@@ -7,54 +7,24 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { BsBagCheck } from "react-icons/bs";
 import { useAuth } from "../../context/AuthContext";
-import { useUserInfo } from "../../context/UserInfoContext";
-import Spinner from "../../components/ui/spinner/Spinner";
+
 
 
 export default function UserPage() {
-  const {setUserInfo} = useUserInfo();
-  const [isLoading, setIsLoading] = useState(true);
+ 
   const {accessToken} = useAuth();
   const navigate = useNavigate();
   const location = useLocation()
 
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
-          {
-            method: "GET",
-            headers:{
-              "Authorization":`Bearer ${accessToken}`,
-            }
-          }
-        );
+   
 
-        const data = await res.json();
-
-        if (res.status === 200) {
-          setUserInfo(data.userData);
-         
-        }else if(res.status === 403){
-             navigate(`/account/login`, {state:{from: location}})
-            
-        }
-
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-   if(accessToken){
-    fetchUserData();
-   }else {
+   if(!accessToken){
     navigate(`/account/login`, {state:{from: location}})
    }
-  }, []);
+   
+  }, [accessToken, navigate,location]);
 
 
    useEffect(() => {
@@ -63,9 +33,7 @@ export default function UserPage() {
 
   return (
     <>
-      {isLoading ? (
-        <Spinner></Spinner>
-      ) : (
+      
         <Container className="user-box">
           <Container className="user-sub-box">
             <NavLink
@@ -121,7 +89,7 @@ export default function UserPage() {
 
           <Outlet />
         </Container>
-      )}
+     
     </>
   );
 }

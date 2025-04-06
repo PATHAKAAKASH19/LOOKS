@@ -171,7 +171,7 @@ export default function Auth() {
           </p>
         ) : (
           <p>
-            or don't have an account? <Link to="../signup">signup</Link>
+            or don&apos;t have an account? <Link to="../signup">signup</Link>
           </p>
         )}
       </Container>
