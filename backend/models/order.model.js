@@ -42,6 +42,18 @@ const orderSchema = mongoose.Schema(
           type: String,
           required: true,
         },
+
+        sellerId: { 
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true
+        },
+        
+        status: {  
+            type: String,
+            enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+            default: 'pending'
+        }
       },
     ],
 
@@ -71,11 +83,7 @@ const orderSchema = mongoose.Schema(
       },
     },
 
-    orderStatus: {
-      type: String,
-      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
-      default: "Pending",
-    },
+    
   },
   { timestamps: true }
 );

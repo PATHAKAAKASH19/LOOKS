@@ -1,4 +1,5 @@
-import mongoose from "mongoose"
+import mongoose, { Mongoose } from "mongoose"
+
 
 const categorySchema = mongoose.Schema({
 
@@ -23,6 +24,11 @@ const categorySchema = mongoose.Schema({
       type: String,
       required: true,
       
+   },
+
+   sellerId:{
+      type: mongoose.Schema.Types.ObjectId,
+      required:true,
    }
 }, {timestaps: true})
 

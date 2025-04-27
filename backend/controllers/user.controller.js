@@ -6,7 +6,7 @@ async function getUserInfo(req, res) {
 
     const userData = await User.findById(userId, {
       password: 0,
-    }).populate("wishlist", "name price productImgUrls");
+    }).populate("wishlist", "name price productImgUrls sizes");
 
     if (userData) {
       return res.status(200).json({ success: true, userData });
@@ -76,7 +76,7 @@ async function updateUserInfo(req, res) {
           new:true,
           projection:{password:0}
         }
-      ).populate("wishlist", "name price productImgUrls");
+      ).populate("wishlist", "name price productImgUrls sizes");
 
       
 

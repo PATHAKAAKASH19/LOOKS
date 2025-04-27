@@ -10,28 +10,55 @@ import mongoose from "mongoose";
 // get all the products created by seller
 async function getProduct(req, res) {
   try {
-  
-    const allProducts = await Product.find(req.query).populate("categoryId", "category trending subCategory");
+ 
 
-    if (allProducts.length > 0) {
-      return res.status(200).json(allProducts);
+  
+    const products = await Product.find(req.query).populate("categoryId", "category trending subCategory");
+   console.log(products)
+    if (products.length > 0) {
+      return res.status(200).json({success:true, message:"Product present", products});
     }
+
+    return res.status(404).json({success:false, message:"No product is present"})
   } catch (error) {
     console.log(error);
     return res
       .status(500)
-      .json({ success: false, message: "error in getting product", error });
+      .json({ success: false, message: "Internal server error", error });
+  }
+}
+
+async function getProductCreatedBySeller(req, res) {
+  try {
+
+    const sellerId = req.userId
+  
+    console.log(req.sellerId)
+    const products = await Product.find({sellerId:sellerId}).populate("categoryId", "category trending subCategory");
+
+  
+
+    if (products.length > 0) {
+      return res.status(200).json({success:true, message:"Product present", products});
+    }
+
+    return res.status(404).json({success:false, message:"No product is present"})
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error", error });
   }
 }
 
 //  get all the products by category
-async function getProductsByCategory(req, res) {
+async function getfilteredProduct(req, res) {
   try {
    
     let query = {};
 
-    const { price, color, sizes, material, style } = req.query;
-    const { categoryId } = req.params;
+    const { price, color, sizes, material, style , categoryId} = req.query;
+    
 
     if(!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)){
       return res.status(400).json({success:false, message:"invalid ProductId"})
@@ -86,7 +113,7 @@ async function getProductById(req, res) {
     }
 
     const product = await Product.findById(productId);
-
+   
     if (product.length !== 0) {
       return res.status(200).json(product);
     } else {
@@ -105,6 +132,7 @@ async function getProductById(req, res) {
 // use to create a product
 async function addProduct(req, res) {
   const files = req.files;
+  const sellerId = req.userId
 
   try {
     const {
@@ -136,12 +164,10 @@ async function addProduct(req, res) {
       styleType,
       color,
       productImgUrls,
+      sellerId,
     });
 
-    const populateProduct = await Product.findById(productId).populate(
-      "categoryId",
-      "category trending subCategory"
-    );
+   
 
     for (const file of files) {
       fs.unlink(file.path, (err) => {
@@ -154,9 +180,9 @@ async function addProduct(req, res) {
       });
     }
 
-    return res.status(201).json({ message: "product is created successfully" });
+    return res.status(201).json({ success:true,message: "product is created successfully" });
   } catch (error) {
-    console.log(error);
+   
     for (const file of files) {
       fs.unlink(file.path, (err) => {
         if (err) {
@@ -176,17 +202,19 @@ async function addProduct(req, res) {
 
 // to update a product
 async function updateProduct(req, res) {
+  const sellerId = req.userId
   const files = req.files;
   try {
     const {productId} = req.params;
+    
 
     if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
       return res.status(400).json({success:false, message:"invalid ProductId"})
     }
 
-    const product = await Product.findById(productId);
-    const { productImgUrls, ...rest } = req.body;
-
+    const product = await Product.findOne({_id:productId,sellerId:sellerId});
+    const { productImgUrls,...rest } = req.body;
+   
     if (files.length > 0) {
       const arrayOfReplacedImgs = product.productImgUrls.filter(
         (img) => !productImgUrls.includes(img)
@@ -227,11 +255,12 @@ async function updateProduct(req, res) {
         .json({ message: "product is updated successfully" });
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(productId, {
-      ...rest,
-    });
-
-    return res.status(200).json({ message: "product is updated successfully" });
+    const updatedProduct = await Product.findOneAndUpdate({_id:productId, sellerId:sellerId}, 
+      {...rest}
+    );
+  
+    console.log(updatedProduct)
+    return res.status(200).json({success: true, message: "product is updated successfully" });
   } catch (error) {
     console.log(error);
     for (const file of files) {
@@ -254,6 +283,7 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
   try {
     const {productId} = req.params;
+    const sellerId = req.userId;
 
     if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
       return res.status(400).json({success:false, message:"invalid ProductId"})
@@ -264,7 +294,7 @@ async function deleteProduct(req, res) {
     await cloudinary.api.delete_folder(
       `e-commerce-shop/product-page-images/${productId}`
     );
-    await Product.findByIdAndDelete(productId);
+    await Product.findOneAndDelete({_id:productId,sellerId:sellerId});
     return res.status(200).json({ message: "product deleted successfully" });
   } catch (error) {
     console.log(error);
@@ -277,8 +307,9 @@ async function deleteProduct(req, res) {
 export {
   getProduct,
   getProductById,
-  getProductsByCategory,
+  getfilteredProduct,
   addProduct,
   updateProduct,
   deleteProduct,
+  getProductCreatedBySeller
 };

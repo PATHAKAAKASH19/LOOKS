@@ -25,7 +25,7 @@ async function getAllCategory(req, res) {
       query.trending = trending;
     }
 
-    console.log("akash");
+  
 
     if (subCategory !== undefined && subCategoryValue.includes(subCategory)) {
       query.subCategory = subCategory;
@@ -53,6 +53,15 @@ async function getAllCategory(req, res) {
 // use to create an category
 async function createCategory(req, res) {
   try {
+
+    const sellerId = req.userId
+
+    const isCategoryAlreadyPresent = await Category.findOne({category:req.body.category})
+
+    if(isCategoryAlreadyPresent){
+      return res.status(400).json({success:false, message:"This category is already present"})
+    }
+    
     const imgDataFromCloudinary = await cloudinary.uploader.upload(
       req.file.path,
       { folder: "e-commerce-shop/home-page-images" }
@@ -60,6 +69,7 @@ async function createCategory(req, res) {
 
     const category = await Category.create({
       ...req.body,
+      sellerId:sellerId,
       imgUrl: imgDataFromCloudinary.secure_url,
     });
 
@@ -92,7 +102,12 @@ async function updateCategory(req, res) {
   try {
     const secure_url = req.body.imgUrl;
     const {categoryId} = req.params
+    const sellerId = req.userId
     if (secure_url) {
+
+
+      
+     
       const publicId = extractPublicId(secure_url);
 
       const imgDataFromCloudinary = await cloudinary.uploader.upload(
@@ -104,7 +119,7 @@ async function updateCategory(req, res) {
       );
 
       const category = await Category.findOneAndUpdate(
-        { _id:categoryId },
+        { _id:categoryId, sellerId:sellerId },
         {
           ...req.body,
           imgUrl: imgDataFromCloudinary.secure_url,
@@ -121,7 +136,7 @@ async function updateCategory(req, res) {
       });
     } else {
       const category = await Category.findOneAndUpdate(
-        { _id: categoryId},
+        { _id: categoryId, sellerId:sellerId },
         {
           ...req.body,
         }
@@ -146,6 +161,8 @@ async function updateCategory(req, res) {
 
 // use to delete an category
 async function deleteCategory(req, res) {
+
+  const sellerId = req.userId
   const secure_url = req.body.imgUrl;
 
   if (!secure_url) {
@@ -156,7 +173,7 @@ async function deleteCategory(req, res) {
   try {
     const publicId = extractPublicId(secure_url);
     const imgDataFromCloudinary = await cloudinary.uploader.destroy(publicId);
-    const deleteCategory = await Category.findOneAndDelete(req.body);
+    const deleteCategory = await Category.findOneAndDelete({...req.body, sellerId});
     return res
       .status(200)
       .json({ success: true, message: "category deleted successfully" });
@@ -165,4 +182,22 @@ async function deleteCategory(req, res) {
   }
 }
 
-export { getAllCategory, createCategory, updateCategory, deleteCategory };
+
+async function getSellerSpecificCategory(req, res){
+  try {
+    const sellerId = req.userId
+
+    const category = await Category.find({sellerId:sellerId})
+
+    if(!category || category.length === 0){
+      return res.status(404).json({success:false, message:"no category present"})
+    }
+
+    return res.status(200).json({success:true, message:"category present", category})
+  } catch (error) {
+    console.log("error ", error)
+    return res.status(500).json({success:false, message:"Internal server error"})
+  }
+}
+
+export { getAllCategory, createCategory, updateCategory, deleteCategory, getSellerSpecificCategory };

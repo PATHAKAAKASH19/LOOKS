@@ -4,6 +4,7 @@ import crypto from "crypto";
 import Cart from "../models/cart.model.js";
 import Payment from "../models/payment.model.js";
 import mongoose from "mongoose";
+import Product from "../models/products.model.js";
 
 async function createOrder(req, res) {
   try {
@@ -26,12 +27,30 @@ async function createOrder(req, res) {
 
     const totalPrice = cart[0].products.reduce((accumulator, product) => accumulator+product.productId.price,0)
     
+    const orderedItem = await Promise.all(
+      cart[0].products.map(async (productObj) =>  {
+
+        try {
+          const pdoc = await Product.findById(productObj.productId)
+      
+          return {
+            productId:productObj.productId,
+            quantity:productObj.quantity,
+            size:productObj.size,
+            sellerId:pdoc.sellerId, 
+            status: "pending"}
+        } catch (error) {
+          console.log("error",error)
+        }
+    }))
+
+    
 
     const deleteOrder = await Order.deleteMany({paymentStatus: false, userId: userId});
       const order = await Order.create({
         userId: userId,
         totalPrice: Number(totalPrice),
-        orderedItem: cart[0].products,
+        orderedItem: orderedItem,
         deliveryAddress: address,
       });
 
@@ -129,9 +148,23 @@ async function getOrder(req, res) {
 
 async function getAllOrder(req, res) {
   try {
-    const orders = await Order.find({}, { paymentId: 0 })
+
+    const sellerId = req.userId
+   
+    const orders = await Order.find(
+      {"orderedItem.sellerId":sellerId}, 
+      { 
+        userId: 1,
+       _id:1,
+        paymentStatus:1,
+       
+       'orderedItem.$': 1, // Only return matching items
+       createdAt: 1, 
+      })
       .populate("orderedItem.productId", "name productImgUrls price")
       .populate("userId", "firstName lastName");
+
+      console.log(orders)
 
     if (!orders || orders.length === 0) {
       return res
@@ -143,6 +176,7 @@ async function getAllOrder(req, res) {
       .status(200)
       .json({ success: true, message: "orders are present", orders });
   } catch (error) {
+    console.log(error)
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -156,7 +190,9 @@ async function cancelOrder(req, res) {
 
 async function updateOrder(req, res) {
   try {
-    const { orderStatus, orderId } = req.body;
+    const { productStatus, orderId} = req.body;
+    const sellerId = req.userId
+
 
     if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
       return res
@@ -164,28 +200,42 @@ async function updateOrder(req, res) {
         .json({ success: false, message: "Invalid orderId" });
     }
 
-    if (!orderStatus) {
+    if (!productStatus) {
       return res
         .status(400)
         .json({ success: false, message: "Order status is required" });
     }
 
-    const updateOrder = await Order.findByIdAndUpdate(
-      orderId,
+    const updatedOrder = await Order.findOneAndUpdate(
       {
-        orderStatus,
+        _id:orderId,
+        "orderedItem.sellerId":sellerId,
       },
-      { new: true }
+     {
+      $set: {
+           "orderedItem.$[ele].status":productStatus,       
+      }
+     },
+      {
+       arrayFilters: [{"ele.sellerId":sellerId}], 
+       new: true 
+      }
     );
 
-    if (!updateOrder) {
+
+    
+    
+
+    if (!updatedOrder) {
       return res
         .status(404)
         .json({ success: false, message: "error in updating order" });
     }
+
+  
     return res
       .status(200)
-      .json({ success: true, message: "Order Status updated" });
+      .json({ success: true, message: "Order Status updated" , updatedOrder});
   } catch (error) {
     console.log("error");
     return res

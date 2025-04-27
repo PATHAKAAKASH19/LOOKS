@@ -14,7 +14,7 @@ const router = express.Router();
 
 
 router.get("/seller", authenticate,authorization,getAllOrder);
-router.put("/seller", authenticate,authorization,updateOrder);
+router.put("/orderStatus", authenticate,authorization,updateOrder);
 
 router.delete("/", authenticate,cancelOrder);
 router.post("/checkout", authenticate,createOrder);

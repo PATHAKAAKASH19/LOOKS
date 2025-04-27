@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const productSchema = mongoose.Schema(
   {
+
+    sellerId:{
+      type:mongoose.Schema.Types.ObjectId,
+      required:true,
+    },
     name: {
       type: String,
       required: true,
