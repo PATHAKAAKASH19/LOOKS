@@ -4,16 +4,17 @@ import Container from "../../ui/container/Container";
 import moment from "moment";
 import { useSellerAuth } from "../../../context/SellerAuthContext";
 
+
 export default function ShowOrders() {
   const [orders, setOrders] = useState([])
 
-  const [orderStatus, setOrderStatus] = useState("");
+  const [ordersStatus, setOrdersStatus] = useState({});
 
   const {sellerToken} = useSellerAuth();
 
-  const handleOrderStatus = async (orderId, orderStatus) => {
+  const handleOrderStatus = async (orderId, productStatus ) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/seller`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/orderStatus`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -21,16 +22,19 @@ export default function ShowOrders() {
         },
 
         body: JSON.stringify({
-          orderStatus,
+          productStatus,
           orderId,
+         
         }),
       });
 
-      const data = res.json();
-
-      console.log(data);
+      const data = await res.json();
+     
+     
       if (res.status === 200) {
-        setOrderStatus(orderStatus);
+        console.log(data)
+        setOrdersStatus(prev  =>  ({...prev , [data.updatedOrder._id]:data.updatedOrder.orderedItem[0].status}));
+      
       }
     } catch (error) {
       toast.error(`${error}`);
@@ -50,9 +54,16 @@ export default function ShowOrders() {
         const data = await res.json();
 
         if (res.status === 200) {
+         
           setOrders(data.orders);
-          setOrderStatus(data.orders.orderStatus);
-        }
+          setOrdersStatus(prev  =>  { 
+            const newStatus = {};
+            data.orders.forEach(order => {
+              newStatus[order._id] = order.orderedItem[0].status;
+            });
+            return { ...prev, ...newStatus };
+        })}
+
       } catch (error) {
         
         toast.error(`${error}`);
@@ -103,13 +114,13 @@ export default function ShowOrders() {
                     <td>
                       <select
                         name="orderStatus"
-                        value={orderStatus}
+                        value={ordersStatus[order._id]}
                         onChange={(e) =>
-                          handleOrderStatus(order.id, e.target.value)
+                          handleOrderStatus(order._id, e.target.value)
                         }
                       >
                         {ORDER_STATUS.map((s, i) => (
-                          <option value={s} key={i}>
+                          <option value={`${s}`} key={i}>
                             {s}
                           </option>
                         ))}

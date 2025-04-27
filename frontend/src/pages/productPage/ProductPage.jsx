@@ -23,11 +23,12 @@ export default function ProductPage() {
 
 
 
+
   const { productName } = useParams() || "";
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { accessToken } = useAuth();
+  const { accessToken , setAccessToken} = useAuth();
   const {userInfo, setUserInfo} = useUserInfo()
   const {setCartInfo} = useCartInfo()
 
@@ -69,10 +70,10 @@ export default function ProductPage() {
       } 
        
       
-     if(data.cart !== null){
+     if(data.cart !== null && res.status === 200){
       setCartInfo(data.cart)
       toast.success(`Product added to the cart`)
-     }else{
+     }else if(res.status === 400){
       toast.success(`Product already added to cart `)
      }
     }else{
@@ -85,26 +86,30 @@ export default function ProductPage() {
 
   const addToWishlist = async (wishlistId) => {
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-             "Authorization":`Bearer ${accessToken}`
-          },
-          body: JSON.stringify({
-            wishlistId,
-            wishlistAction: "save",
-          }),
+      if(!accessToken){
+         navigate("/account/login", {state:{from : location}})
+      }else{
+        const res = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+               "Authorization":`Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+              wishlistId,
+              wishlistAction: "save",
+            }),
+          }
+        );
+  
+        const data = await res.json();
+     
+        if (res.status === 200) {
+          setUserInfo(data.userData)
+          toast.success(`Product added to wishlist`);
         }
-      );
-
-      const data = await res.json();
-   
-      if (res.status === 200) {
-        setUserInfo(data.userData)
-        toast.success(`Product added to wishlist`);
       }
     } catch (error) {
       toast.error("error : ", error);
@@ -124,13 +129,15 @@ export default function ProductPage() {
             `${import.meta.env.VITE_BACKEND_URL}/api/product?name=${name}`
           );
 
-          const productData = await res.json();
+          const data = await res.json();
          
-          if (productData) {
-            setSrcAttribute(productData[0].productImgUrls[0]);
-            setProduct(productData[0]);
+          if (res.status === 200) {
+            setSrcAttribute(data.products[0].productImgUrls[0]);
+            setProduct(data.products[0]);
 
-            setCategoryId(productData[0].categoryId);
+            setCategoryId(data.products[0].categoryId);
+            console.log("aka")
+            setIsLoading(false);
           }
         }
       } catch (error) {
@@ -139,8 +146,7 @@ export default function ProductPage() {
     };
   
     if(productName){
-   console.log("aja")
-    fetchProductData();
+     fetchProductData();
     }
   }, [productName]);
 
@@ -148,11 +154,12 @@ export default function ProductPage() {
     const fetchProductsData = async () => {
       try {
         if (categoryId) {
-          console.log(categoryId)
+         
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product/category/${categoryId._id}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?categoryId=${categoryId._id}`
           );
-
+       
+         
           const productList = await res.json();
         
           if (productList !== null) {
@@ -183,13 +190,27 @@ export default function ProductPage() {
     }else{
       setIsPresentInWishlist(false)
     }
+    }else{
+      setIsPresentInWishlist(false)
     }
   }, [userInfo, product])
 
 
+
+
+
+useEffect(() => {
+  if(!accessToken && localStorage.getItem("userAccessToken")){
+    setAccessToken(localStorage.getItem("userAccessToken"))
+   }
+}, [accessToken, setAccessToken])
+
+
+
+
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [productName]);
 
   return (
     <Container className="product-page-con">

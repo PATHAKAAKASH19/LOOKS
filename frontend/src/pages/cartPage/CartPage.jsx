@@ -47,7 +47,7 @@ export default function CartPage() {
   const [address,setAddress] = useState(null);
   const [addressArray, setAddressArray] = useState([]);
 
-  const {accessToken } = useAuth();
+  const {accessToken, setAccessToken } = useAuth();
   const {cartInfo, setCartInfo} = useCartInfo()
   const {userInfo, setUserInfo} = useUserInfo()
 
@@ -97,19 +97,21 @@ export default function CartPage() {
             order_id: order.razorpayOrderId, // This is the order_id created in the backend
             handler:async function(response) {
                 try {
-                  
-                  const res = await fetch(`/api/order/verify/${order.orderId}`, {
+                  console.log(order)
+                  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/verify/${order.orderId}`, {
                     method:"POST",
                     headers:{
                       "Content-Type":"application/json",
                        "Authorization":`Bearer ${accessToken}`
                     },
+
+                  
     
                     body:JSON.stringify(
                       {
                         order_id:response.razorpay_order_id,
                         payment_id:response.razorpay_payment_id,
-                        signature:response.razorpay_signature
+                        signature:response.razorpay_signature,
                       }
                     )
     
@@ -165,7 +167,7 @@ export default function CartPage() {
       const res = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
         {
-          method: "POST",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
              "Authorization":`Bearer ${accessToken}`
@@ -265,7 +267,20 @@ export default function CartPage() {
      setSelectedAddressId(userInfo?.address[0]?._id)  
      setIsLoading(false)
     
-   }}, [accessToken, cartInfo, userInfo,products])
+   }else{
+    setProducts([])
+    setUserData({
+      name: "",
+      email: "",
+      phoneNo: "",
+    })
+    setAddressArray([])
+    setSelectedAddressId(null)
+   }
+  
+  
+  
+  }, [accessToken, cartInfo, userInfo,products])
 
 
   const handleEdit = (field, address) => {
@@ -387,9 +402,14 @@ export default function CartPage() {
   }
 
 
+  useEffect(() => {
+    if(!accessToken && localStorage.getItem("userAccessToken")){
+      setAccessToken(localStorage.getItem("userAccessToken"))
+     }
+  }, [accessToken,  setAccessToken])
 
    useEffect(() => {
-      window.scrollTo(0, 0);
+     window.scrollTo(0, 0);
    }, []);
 
   return (
@@ -426,11 +446,9 @@ export default function CartPage() {
                           e.target.value)
                       }
                     >
-                      <option value="S">S</option>
-                      <option value="M">M</option>
-                      <option value="L">L</option>
-                      <option value="XL">XL</option>
-                      <option value="XLL">XXL</option>
+                     {
+                      product?.productId.sizes.map((s) =>  <option key={`${s}`} value={`${s.toUpperCase()}`}>{s}</option>)
+                      }
                     </select>
                   </Container>
 

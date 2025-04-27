@@ -3,8 +3,8 @@ import InputBox from "../../ui/inputBox/InputBox";
 import Container from "../../ui/container/Container";
 import Title from "../../ui/title/Title";
 import { MdDelete } from "react-icons/md";
-import toast, { Toaster } from "react-hot-toast";
 import { useSellerAuth } from "../../../context/SellerAuthContext";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function CreateCategory() {
   // this state stores all form data
@@ -43,7 +43,7 @@ export default function CreateCategory() {
     try {
       if (!update) {
         const formData = new FormData();
-        formData.append("category", form.category);
+        formData.append("category", form.category)
         formData.append("trending", form.trending);
         formData.append("subCategory", form.subCategory);
         formData.append("categoryImg", img);
@@ -55,10 +55,10 @@ export default function CreateCategory() {
           },
           body: formData,
         });
-        const msg = await res.json();
+        const data = await res.json();
 
         if (res.status === 201) {
-          setChange(msg);
+          setChange(data);
           setForm({
             category: "",
             trending: false,
@@ -66,7 +66,7 @@ export default function CreateCategory() {
           });
           setPreviewImg("");
           setImg(null);
-          toast.success(`${msg.message}`);
+          toast.success(`${data.message}`);
         }
       } else {
         const formData = new FormData();
@@ -89,10 +89,10 @@ export default function CreateCategory() {
           }
         );
 
-        const msg = await res.json();
+        const data = await res.json();
 
         if (res.status === 200) {
-          setChange(msg);
+          setChange(data);
           setForm({
             category: "",
             trending: false,
@@ -101,7 +101,7 @@ export default function CreateCategory() {
           setPreviewImg("");
           setImg(null);
           setUpdate(false);
-          toast.success(`${msg.message}`);
+          toast.success(`${data.message}`);
         }
       }
     } catch (error) {
@@ -117,6 +117,7 @@ export default function CreateCategory() {
 
   // delete category data
   const deleteCategory = async (category) => {
+    
     try {
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`, {
         method: "DELETE",
@@ -127,11 +128,11 @@ export default function CreateCategory() {
         body: JSON.stringify(category),
       });
 
-      const msg = await res.json();
+      const data = await res.json();
 
       if (res.status === 200) {
-        setChange(msg);
-        toast.success(`${msg.message}`);
+        setChange(data);
+        toast.success(`${data.message}`);
       }
     } catch (error) {
       toast.error(`${error.message}`);
@@ -142,11 +143,17 @@ export default function CreateCategory() {
   useEffect(() => {
     const getAllCategory = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
-        const {categoryValue} = await response.json();
-
-        if (categoryValue) {
-          setCategoryData(categoryValue);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/seller`, {
+          method:"GET",
+          headers:{
+            "Authorization":`Bearer ${sellerToken}`
+          }
+        });
+        const data = await res.json();
+        
+        if (res.status === 200) {
+         
+          setCategoryData(data.category);
         }
       } catch (error) {
         console.log("error", error);
@@ -154,7 +161,7 @@ export default function CreateCategory() {
     };
 
     getAllCategory();
-  }, [change]);
+  }, [change, sellerToken]);
 
   // update category
   const updateCategory = (category) => {
@@ -184,10 +191,13 @@ export default function CreateCategory() {
 
   return (
     <Container className="admin-panel">
+     <Toaster></Toaster>
       <Container className="create-category">
+      
         <h1>Create Category</h1>
+       
         <form onSubmit={handleFormSubmit}>
-         
+       
           <Container className="input">
             <label htmlFor="category" style={{ alignSelf: "center" }}>
               category
@@ -259,17 +269,17 @@ export default function CreateCategory() {
           {!update ? (
             <button type="submit">submit</button>
           ) : (
-            <Container className="btn">
+            <Container className="btn btn-con">
               <button
                 type="submit"
-                className="update"
+                className="update up"
                 onClick={handleFormSubmit}
               >
                 update
               </button>
               <button
                 type="button"
-                className="delete"
+                className="delete del"
                 onClick={() => cancleCategoryUpdate()}
               >
                 cancle
@@ -278,7 +288,8 @@ export default function CreateCategory() {
           )}
         </form>
       </Container>
-      <Container className="show-category">
+      {
+      (categoryData && categoryData.length > 0) && <Container className="show-category">
         <Container className="heading">
           <Title title="category" />
           <Title title="subCategory" />
@@ -317,8 +328,9 @@ export default function CreateCategory() {
               </Container>
             );
           })}
-           <Toaster />
+          
       </Container>
+      }
     </Container>
   );
 }

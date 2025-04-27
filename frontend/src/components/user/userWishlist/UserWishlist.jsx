@@ -5,20 +5,24 @@ import { Link } from "react-router-dom";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { Toaster, toast } from "react-hot-toast";
 import { useAuth } from "../../../context/AuthContext";
+import { useCartInfo } from "../../../context/cartContext";
+
 
 export default function Wishlist() {
 
   const {accessToken} = useAuth()
   const [wishlistArray, setWishlistArray] = useState([]);
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedSize, setSelectedSize] = useState({});
 
   const { userInfo, setUserInfo } = useUserInfo();
+  const {setCartInfo, cartInfo} = useCartInfo()
 
   const SIZES = ["S", "M", "L", "XL", "XXL"];
 
   
   useEffect(() => {
     if (userInfo && Object.keys(userInfo).length !== 0) {
+      console.log(userInfo.wishlist)
       setWishlistArray(userInfo.wishlist);
     }
   }, [userInfo]);
@@ -42,7 +46,7 @@ export default function Wishlist() {
       );
 
       const data = await res.json();
-      console.log(data)
+      
       if (res.status === 200) {
         setUserInfo(data.userData);
         toast.success("Product removed from wishlist");
@@ -54,11 +58,12 @@ export default function Wishlist() {
 
   const addToCart = async (productId, size) => {
     try {
+     
       if (size) {
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/cart/`,
           {
-            method: "PUT",
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Authorization":`Bearer ${accessToken}`
@@ -66,15 +71,15 @@ export default function Wishlist() {
 
             body: JSON.stringify({
               productId,
-              size,
+              size:size,
             }),
           }
         );
 
-        const data = res.json();
-
+        const data = await res.json();
+     
         if (res.status === 200) {
-          toast.success(`${data.message}`);
+          setCartInfo(data.cart)
           await removeFromWishlist(productId);
         }
       } else {
@@ -85,8 +90,8 @@ export default function Wishlist() {
     }
   };
 
-  const handleSize = (e) => {
-    setSelectedSize(e.target.value);
+  const handleSize = (e, productId) => {
+    setSelectedSize(prev => ({...prev, [productId]:e.target.value}));
   };
 
 
@@ -116,9 +121,9 @@ useEffect(() => {
               <h2>{product.name}</h2>
               <h3>{product.price}</h3>
 
-              <select value={selectedSize} onChange={handleSize}>
+              <select value={selectedSize[product._id]} onChange={(e)=> handleSize(e,product._id)} name="size">
                 <option value="">select size</option>
-                {SIZES.map((s, i) => (
+                {product.sizes.map((s, i) => (
                   <option value={s} key={`${i}`}>
                     {s}
                   </option>
@@ -127,7 +132,7 @@ useEffect(() => {
 
               <button
                 type="button"
-                onClick={() => addToCart(product._id, selectedSize)}
+                onClick={() => addToCart(product._id, selectedSize[product._id])}
                 className="wishlist-button"
               >
                 Add to cart

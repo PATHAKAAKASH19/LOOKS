@@ -25,75 +25,39 @@ export default function Header() {
 
   
 
-  const handleEnter = () => {
-    setShowDropDown(true)
-  }
+  
 
-  const handleLeave = () => {
-    setShowDropDown(false)
-  }
+  
 
-
-  const handleTouchStart = () => {
-    setShowDropDown(true);
-  };
-
-  const handleTouchEnd = () => {
-    setShowDropDown(false);
-  };
+  const handleDropDown = () => {
+    setShowDropDown(prev => !prev)
+  } 
 
  
   const navigateToUserDashboard = (route) => {
       navigate(`/user/${route}`)
+      handleDropDown()
+
   }
 
 
-  const logout = async() => {
+  
 
-    try {
-      
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
-        method:"DELETE",
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":`Bearer ${accessToken}`
-        }
-      })
-
-      const data = await res.json()
-
-      if(res.status === 200){
-        toast.success(`${data.message}`)
-        setAccessToken("")
-      }
-    } catch (error) {
-      console.log("error", error)
-      toast.error("error : ", error)
-    }
+  const logout = () => {
+      setAccessToken("")
+      setUserInfo(null)
+      setCartInfo(null)
+      localStorage.removeItem("userAccessToken")
+      toast.success(`user logout successfully`)
+      handleDropDown()
   }
 
 
-  const sellerLogout = async() => {
-    try {
-      
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {
-        method:"DELETE",
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":`Bearer ${sellerToken}`
-        }
-      })
-
-      const data = await res.json()
-
-      if(res.status === 200){
-        toast.success(`${data.message}`)
-        setSellerToken("")
-        
-      }
-    } catch (error) {
-      toast.error("error : ", error)
-    }
+  const sellerLogout = () => {
+      setSellerToken("")
+      localStorage.removeItem("sellerAccessToken")
+      toast.success(`seller logout successfully`)
+      handleDropDown()
   }
   
   
@@ -113,6 +77,8 @@ export default function Header() {
 
     if(userInfo){
      countWishlistProduct()
+    }else{
+      setWishlistProductCount("")
     }
   }, [userInfo])
 
@@ -133,6 +99,8 @@ export default function Header() {
 
     if(cartInfo){
       countCartProduct()
+    }else{
+      setCartProductCount("")
     }
   }, [cartInfo])
 
@@ -190,6 +158,7 @@ export default function Header() {
     if(accessToken){
       fetchCartInfo()
       fetchUserInfo()
+     
       
     }else if(sellerToken){
       setCartInfo(null)
@@ -198,6 +167,19 @@ export default function Header() {
 
   }, [accessToken, sellerToken,setCartInfo, setUserInfo])
 
+
+
+ const navigateToLoginPage =  () => {
+  navigate("/account/login")
+  handleDropDown()
+ }
+ 
+
+
+
+ 
+
+ 
   return (
     <div className="navbar">
       <div>
@@ -217,7 +199,7 @@ export default function Header() {
 
       <div className="subnav2" >
        
-      <div onMouseEnter={handleEnter}  onMouseLeave={handleLeave} onTouchStart={handleTouchStart}>
+      <div onClick={handleDropDown}>
     
      {(!sellerToken ) && (<FiUser className="icon"/>)}
      
@@ -226,15 +208,17 @@ export default function Header() {
       (showDropDown&& !sellerToken) && (
      
         
-        <div className="dropDown-box" onClick={handleLeave}>
+        <div className="dropDown-box" onClick={handleDropDown}>
 
         <ul>
           {
             DROPDOWN_NAME.map((name, i) => <li key={i} onClick={() => navigateToUserDashboard(name)}>{name}</li>)
           }
-          <li onClick={logout}>LogOut</li>
+         {
+          accessToken ?  <li onClick={logout}>Logout</li>:<li onClick={navigateToLoginPage}>Login</li>
+         }
           
-         {(window.innerWidth <= 700) &&( <li className="go-back-btn1" onClick={handleTouchEnd}><div>
+         {(window.innerWidth <= 700) &&( <li className="go-back-btn1" onClick={handleDropDown}><div>
          <BsArrowRight className="go-back-icon"/> </div></li>)}
         </ul>
 
@@ -250,7 +234,7 @@ export default function Header() {
          (sellerToken) && (
            
            
-              <button onClick={sellerLogout} className="seller-btn">LogOut</button>
+              <button onClick={sellerLogout} className="seller-btn">Logout</button>
           
          
           )

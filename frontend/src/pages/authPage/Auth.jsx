@@ -63,6 +63,7 @@ export default function Auth() {
       } else if (res.status === 200) {
       
         setAccessToken(data.accessToken);
+        localStorage.setItem("userAccessToken", data.accessToken)
         setSellerToken("")
         navigate(`${from}`);
       }

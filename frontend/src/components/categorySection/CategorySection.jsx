@@ -54,7 +54,7 @@ export default function CategorySection({
       <Button
         title="view all"
         className="button"
-        route={`collections/${filterType}`}
+        route={`/collections/${filterType}`}
       ></Button>
     </Container>
   );

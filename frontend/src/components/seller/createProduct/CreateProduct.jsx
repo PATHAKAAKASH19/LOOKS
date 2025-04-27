@@ -112,6 +112,7 @@ export default function CreateProduct() {
           toast.success(`${msg.message}`);
         }
       } else {
+      
         const formData = new FormData();
 
         formData.append("name", productDetail.name);
@@ -119,7 +120,7 @@ export default function CreateProduct() {
         formData.append("stock", productDetail.stock);
 
         formData.append("price", productDetail.price);
-        formData.append("categoryId", productDetail.categoryId);
+        formData.append("categoryId", productDetail.categoryId._id);
         formData.append("materialType", productDetail.materialType);
         formData.append("styleType", productDetail.styleType);
         formData.append("color", productDetail.color);
@@ -127,6 +128,8 @@ export default function CreateProduct() {
         size.forEach((obj, index) => {
           formData.append(`sizes[${index}]`, obj);
         });
+
+        console.log(formData)
 
         if (productImages) {
           const productImgUrlsArray = productDetail.productImgUrls.filter(
@@ -225,8 +228,9 @@ export default function CreateProduct() {
  
     // get the product data  from showProduct components and insert to the data into state
      const updateProductDetail = () => {
+     
       const categoryData = category.find(
-        (ctgObj) => ctgObj._id === data.categoryId
+        (ctgObj) => ctgObj._id === data.categoryId._id
       );
   
       setProductDetail({ ...data, category: categoryData.category });
@@ -255,9 +259,10 @@ export default function CreateProduct() {
         }
       );
 
-      const msg = res.json();
+      const msg = await res.json();
 
       toast.success(`${msg.message}`);
+      navigate("/seller-dashboard/products")
     } catch (error) {
       toast.error(`${error.message}`);
     }
@@ -361,9 +366,10 @@ export default function CreateProduct() {
               name="category"
               onChange={handleInput}
               value={productDetail.category}
+            
             >
               <option value="" disabled>
-                Select an option
+                select product category
               </option>
               {category &&
                 category.map((ctg, i) =>

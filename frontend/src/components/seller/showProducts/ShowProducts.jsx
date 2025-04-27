@@ -2,35 +2,49 @@ import React, { useEffect, useState } from "react";
 import Container from "../../ui/container/Container.jsx";
 import createSlug from "../../../utils/createSlug.js";
 import ProductCard from "../../productCard/ProductCard.jsx";
+import { useSellerAuth } from "../../../context/SellerAuthContext.jsx";
 
 
 export default function ShowProducts() {
   const [productList, setProductList] = useState([]);
+  const {sellerToken} = useSellerAuth()
+  
 
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product`);
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/seller`, {
+          method:"GET",
+          headers:{
+           "Authorization":`Bearer ${sellerToken}`
+          }
+        });
 
         const data = await res.json();
-
+       
         if (res.status === 200) {
-          setProductList(data);
+          setProductList(data.products);
         }
       } catch (error) {
-        console.log("err : ", error);
+        console.log(`${error}`)
+      
+      
       }
     };
 
     fetchProductList();
-  }, []);
+  }, [sellerToken]);
 
   useEffect(() => {
      window.scrollTo(0, 0);
   }, []);
 
   return (
+    
+         
+  
     <Container className="admin-panel">
+
     <Container className="title1">
       <h1>All Products</h1>
     </Container>
@@ -61,5 +75,6 @@ export default function ShowProducts() {
       )}
     </Container>
   </Container>
+
   );
 }

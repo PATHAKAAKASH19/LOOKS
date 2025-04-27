@@ -6,16 +6,18 @@ import { useSellerAuth } from "../../context/SellerAuthContext";
 export default function SellerPage() {
 
 
-  const {sellerToken} = useSellerAuth()
+  const {sellerToken, setSellerToken} = useSellerAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
-    if(!sellerToken){
-      navigate(`/seller/signup` ,{state:{from : location, sellerAuth:true}} )
+    if(!sellerToken && !localStorage.getItem("sellerAccessToken")){
+      navigate(`/seller/login` ,{state:{from : location, sellerAuth:true}} )
+    }else if(!sellerToken && localStorage.getItem("sellerAccessToken")){
+       setSellerToken(localStorage.getItem("sellerAccessToken"))
     }
    
-  }, [sellerToken, location, navigate])
+  }, [sellerToken, location, navigate, setSellerToken])
 
 
    useEffect(() => {

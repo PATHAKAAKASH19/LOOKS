@@ -12,7 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 
 export default function UserPage() {
  
-  const {accessToken} = useAuth();
+  const {accessToken, setAccessToken} = useAuth();
   const navigate = useNavigate();
   const location = useLocation()
 
@@ -20,11 +20,13 @@ export default function UserPage() {
   useEffect(() => {
    
 
-   if(!accessToken){
+   if(!accessToken && !localStorage.getItem("userAccessToken")){
     navigate(`/account/login`, {state:{from: location}})
+   }else if(!accessToken && localStorage.getItem("userAccessToken")){
+    setAccessToken(localStorage.getItem("userAccessToken"))
    }
    
-  }, [accessToken, navigate,location]);
+  }, [accessToken, navigate,location, setAccessToken]);
 
 
    useEffect(() => {

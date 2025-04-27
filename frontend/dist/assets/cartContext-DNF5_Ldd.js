@@ -1,1 +1,0 @@
-import{r as t,j as s}from"./index-qZzDzbZj.js";const o=t.createContext(),x=({children:r})=>{const[e,n]=t.useState(null);return s.jsx(o.Provider,{value:{cartInfo:e,setCartInfo:n},children:r})},C=()=>t.useContext(o);export{x as C,C as u};

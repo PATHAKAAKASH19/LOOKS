@@ -8,6 +8,7 @@ import slugToStr from "../../utils/slugToStr";
 import Spinner from "../../components/ui/spinner/Spinner";
 import { CgArrowsExchangeV } from "react-icons/cg";
 import { FiFilter } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 
 
 export default function ProductListPage() {
@@ -30,26 +31,31 @@ export default function ProductListPage() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   
+  
+ const {accessToken,  setAccessToken} = useAuth()
 
 
 
 
-
-
- 
+  
 
   useEffect(() => {
     
+
+    const subCategoryArray = ["topwear", "bottomwear", "trending"]
+
     const fetchCategoryId = async () => {
       try {
+
         setIsLoading(true);
+      
         const slugToNormal = slugToStr(category);
   
-        const categoryRes = await fetch(
+        const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/category?category=${slugToNormal}`
         );
   
-        const { categoryValue } = await categoryRes.json();
+        const { categoryValue } = await res.json();
   
         if (categoryValue) {
           setCategoryId(categoryValue[0]._id);
@@ -59,8 +65,37 @@ export default function ProductListPage() {
       }
     };
 
-    if(category){
+
+
+    const fetchAllProducts = async() => {
+      try {
+        setIsLoading(true)
+         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/`)
+  
+         const data = await res.json()
+  
+         if(res.status === 200 && category !== "trending"){
+         const p  = data.products.filter((product) => product.categoryId.subCategory === category)
+         setProducts(p)
+         setIsLoading(false)
+         }else{
+          const p  = data.products.filter((product) => product.categoryId.trending)
+          setProducts(p)
+          setIsLoading(false)
+         }
+      } catch (error) {
+        console.log("error , ", error)
+      }
+    }
+  
+   
+
+    if(!subCategoryArray.includes(category)){
+  
+   
       fetchCategoryId();
+    }else if(subCategoryArray.includes(category)) {
+      fetchAllProducts()
     }
    
   
@@ -69,6 +104,8 @@ export default function ProductListPage() {
   useEffect(() => {
     const fetchProductsImage = async () => {
       try {
+
+       
         let queryString;
 
         if (searchParams) {
@@ -77,7 +114,7 @@ export default function ProductListPage() {
 
         if (categoryId) {
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product/category/${categoryId}?${queryString}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?categoryId=${categoryId}&${queryString}`
           );
 
           const productsData = await res.json();
@@ -139,7 +176,11 @@ const handleSorting = (typeOfSorting) => {
 }
 
 
-
+useEffect(() => {
+  if(!accessToken && localStorage.getItem("userAccessToken")){
+    setAccessToken(localStorage.getItem("userAccessToken"))
+   }
+}, [accessToken,  setAccessToken])
 
 
   return (

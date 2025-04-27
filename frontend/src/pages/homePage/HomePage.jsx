@@ -6,11 +6,15 @@ import Container from "../../components/ui/container/Container";
 import CategorySection from "../../components/categorySection/CategorySection";
 import Spinner from "../../components/ui/spinner/Spinner";
 
+import { useAuth } from "../../context/AuthContext";
+
 
 export default function HomePage() {
   const [images, setImages] = useState(null);
 
   const [isLoading , setIsLoading] = useState(true);
+
+  const {accessToken,  setAccessToken} = useAuth()
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -21,9 +25,9 @@ export default function HomePage() {
       
 
         setIsLoading(true)
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
-        const {categoryValue} = await response.json();
-       
+        const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`);
+        const {categoryValue} = await res.json();
+       console.log(categoryValue)
         setImages(categoryValue);
 
         setIsLoading(false)
@@ -59,7 +63,16 @@ export default function HomePage() {
     },
   ];
 
+
+
   useEffect(() => {
+     if(!accessToken && localStorage.getItem("userAccessToken")){
+       setAccessToken(localStorage.getItem("userAccessToken"))
+      }
+   }, [accessToken,  setAccessToken])
+
+  useEffect(() => {
+   
    window.scrollTo(0, 0);
   }, []);
 

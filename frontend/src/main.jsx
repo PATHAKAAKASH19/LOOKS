@@ -6,7 +6,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Spinner from "./components/ui/spinner/Spinner.jsx";
 
-const App = lazy(() => import("./App.jsx"));
+
+import App from "./App.jsx"
 const HomePage = lazy(() => import("./pages/homePage/HomePage.jsx"));
 const ProductListPage = lazy(() => import("./pages/productListPage/ProductListPage.jsx"));
 const ProductPage = lazy(() => import("./pages/productPage/ProductPage.jsx"));
@@ -27,7 +28,7 @@ const UserProfile = lazy(() =>import("./components/user/userProfile/UserProfile.
 const UserAddress = lazy(() =>import("./components/user/userAddress/UserAddress.jsx")) ;
 const UserWishlist = lazy(() =>import("./components/user/userWishlist/UserWishlist.jsx")) ;
 const UserOrders = lazy(() =>import("./components/user/userOrders/UserOrders.jsx")) ;
-import  ChangePassword from "./components/user/changePassword/ChangePassword.jsx"
+const ChangePassword = lazy(() => import("./components/user/changePassword/ChangePassword.jsx"))
 const OrderPage= lazy(() =>import("./pages/orderPage/OrderPage.jsx"));
 const SellerAuth = lazy(() =>import("./pages/authPage/SellerAuth.jsx")) ;
 
