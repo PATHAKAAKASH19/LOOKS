@@ -1,0 +1,1 @@
+import{j as x}from"./index-DlYTwukh.js";function i({className:t,type:n,name:u=null,defaultValue:o,required:r,onChange:p,...s}){return x.jsx("input",{type:n,className:t,name:u,onChange:p,value:o,required:r,...s})}export{i as I};
