@@ -50,7 +50,7 @@ export default function ProductListPage() {
         setIsLoading(true);
       
         const slugToNormal = slugToStr(category);
-  
+      
         const res = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/category?category=${slugToNormal}`
         );
@@ -58,6 +58,7 @@ export default function ProductListPage() {
         const { categoryValue } = await res.json();
   
         if (categoryValue) {
+         
           setCategoryId(categoryValue[0]._id);
         }
       } catch (error) {
@@ -69,7 +70,7 @@ export default function ProductListPage() {
 
     const fetchAllProducts = async() => {
       try {
-        setIsLoading(true)
+         setIsLoading(true)
          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/`)
   
          const data = await res.json()
@@ -91,7 +92,7 @@ export default function ProductListPage() {
    
 
     if(!subCategoryArray.includes(category)){
-  
+    
    
       fetchCategoryId();
     }else if(subCategoryArray.includes(category)) {
@@ -122,6 +123,8 @@ export default function ProductListPage() {
           if (res.status === 200) {
             setProducts(productsData);
             setIsLoading(false);
+          }else if(res.status === 404){
+            setIsLoading(false)
           }
         }
       } catch (error) {

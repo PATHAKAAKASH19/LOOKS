@@ -158,7 +158,7 @@ export default function ShowOrders() {
                         </Container>
                         <Container>
                           <h2 className="i">Price</h2>
-                          <h2 className="info">{item.productId.price}</h2>
+                          <h2 className="info">{item.productId.price} Inr</h2>
                         </Container>
                       </Container>
                     </Container>

@@ -203,7 +203,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 5vmin 0% 8vmin 0%;
+    margin: 5vmin 0% 5vmin 0%;
     padding: 0% 8%;
 
 }
@@ -224,47 +224,90 @@ body {
 }
 
 .button {
-    width: 6vw;
+    width: 8vmin;
     height: 4.5vh;
     font-size: 1.9vmin;
-    border-radius: 1em;
-    margin: 4vh 0vh;
+    border-radius: 0.9em;
+    margin: 5vh 0vh 5vh 0vh;
     border: 1px solid;
     font-weight: 400;
 }
 
 .categoryImage {
- 
+   
     width: 100%;
     height: 90%;
     display: flex;
     justify-content: space-between;
+    gap: 14px;
+   overflow-y: scroll;
+}
 
-
+.categoryImage::-webkit-scrollbar {
+    width: 0px;
 }
 
 
-.BannerSection {
-    width: 100vmax;
-    /* Desired crop width */
-    height: 90vmin;
-    /* Desired crop height */
-    overflow: hidden;
-    /* Hide anything outside this box */
-    display: flex;
+
+
+/* Banner Slider Container */
+.banner-slider {
+    position: relative;
+    width: 100%;
    
-}
-
-.banner {
-
-    border-radius: 0em;
-    width: 50%;
-    /* Adjust image width */
+    overflow: hidden;
+  }
+  
+  /* Slides Container */
+  .slider-container {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s ease;
+  }
+  
+  /* Individual Slide */
+  .slide {
+    height: 83vh;
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+  
+  /* Banner Image */
+  .banner-image {
     height: 100%;
-    object-fit: cover;
-    bottom: 20%;
-
-}
+    width: 100%;
+   border-radius: 0em;
+    display: block;
+  }
+  
+  /* Dots Navigation */
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ccc;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dot.active {
+    background: #333;
+  }
+  
+  /* Desktop Styles */
+  @media (min-width: 1024px) {
+    .slide {
+      flex: 0 0 50%;
+      min-width: 50%;
+    }
+  }
 
 
 .container img {
@@ -2756,13 +2799,14 @@ table td {
     }
 
     .section {
-        margin: 15vmin 0px 10vmin 0px;
+        margin: 10vmin 0px 10vmin 0px;
     }
 
     .section .button {
         width: 20vmin;
-        font-size: 4vmin;
-        margin-top: 8vmin;
+        font-size: 3.2vmin;
+        margin-top: 4vmin;
+        
     }
 
     .categoryImage {

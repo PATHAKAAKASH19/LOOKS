@@ -19,7 +19,7 @@ export default function CreateCategory() {
   const [img, setImg] = useState(null);
   const [previewImg, setPreviewImg] = useState("");
   const [categoryData, setCategoryData] = useState(null);
-  const [change, setChange] = useState(null);
+  const [change, setChange] = useState(false);
   const [update, setUpdate] = useState(false);
   const {sellerToken} = useSellerAuth()
 
@@ -131,7 +131,8 @@ export default function CreateCategory() {
       const data = await res.json();
 
       if (res.status === 200) {
-        setChange(data);
+        
+        setChange(true);
         toast.success(`${data.message}`);
       }
     } catch (error) {
@@ -152,15 +153,21 @@ export default function CreateCategory() {
         const data = await res.json();
         
         if (res.status === 200) {
-         
+        console.log(data)
           setCategoryData(data.category);
+          setChange(false)
+        }else if (res.status === 404){
+        
+          setCategoryData(null);
         }
       } catch (error) {
         console.log("error", error);
       }
     };
 
+  
     getAllCategory();
+  
   }, [change, sellerToken]);
 
   // update category
@@ -168,6 +175,8 @@ export default function CreateCategory() {
     setUpdate(true);
     setPreviewImg(category.imgUrl);
     setForm(category);
+
+    window.scrollTo(0, 0);
   };
 
   const cancleCategoryUpdate = () => {
