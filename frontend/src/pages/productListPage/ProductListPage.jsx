@@ -116,7 +116,7 @@ export default function ProductListPage() {
         if (categoryId) {
           console.log(categoryId)
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?${queryString}&categoryId=${categoryId}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?${queryString? queryString+"&":""}categoryId=${categoryId}`
           );
 
           const productsData = await res.json();
