@@ -58,7 +58,7 @@ export default function ProductListPage() {
         const { categoryValue } = await res.json();
   
         if (categoryValue) {
-         
+         console.log(categoryValue)
           setCategoryId(categoryValue[0]._id);
         }
       } catch (error) {
@@ -74,7 +74,7 @@ export default function ProductListPage() {
          const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/`)
   
          const data = await res.json()
-  
+      
          if(res.status === 200 && category !== "trending"){
          const p  = data.products.filter((product) => product.categoryId.subCategory === category)
          setProducts(p)
@@ -114,13 +114,15 @@ export default function ProductListPage() {
         }
 
         if (categoryId) {
+          console.log(categoryId)
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?categoryId=${categoryId}&${queryString}`
+            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?${queryString}&categoryId=${categoryId}`
           );
 
           const productsData = await res.json();
 
           if (res.status === 200) {
+            console.log(productsData)
             setProducts(productsData);
             setIsLoading(false);
           }else if(res.status === 404){
