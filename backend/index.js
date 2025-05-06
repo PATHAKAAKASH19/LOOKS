@@ -1,6 +1,6 @@
 import express from "express"
 import mongoose from "mongoose"
-import cors from "cors"
+
 import cookieParser from "cookie-parser"
 import  dotenv  from "dotenv"
 import productRoute from "./routes/product.route.js"
