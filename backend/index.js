@@ -1,5 +1,6 @@
 import express from "express"
 import mongoose from "mongoose"
+import cors from "cors"
 import cookieParser from "cookie-parser"
 import  dotenv  from "dotenv"
 import productRoute from "./routes/product.route.js"
@@ -8,6 +9,8 @@ import cartRoute from "./routes/cart.route.js"
 import authRoute from "./routes/auth.route.js"
 import orderRoute from "./routes/order.route.js"
 import userRoute from "./routes/user.route.js"
+
+
 
  
 

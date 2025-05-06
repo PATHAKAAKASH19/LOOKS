@@ -59,8 +59,8 @@ async function getfilteredProduct(req, res) {
 
     const { price, color, sizes, material, style , categoryId} = req.query;
     
-
-    if(!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)){
+   console.log(!mongoose.Types.ObjectId.isValid(categoryId))
+    if(!categoryId){
       return res.status(400).json({success:false, message:"invalid ProductId"})
     }
 
