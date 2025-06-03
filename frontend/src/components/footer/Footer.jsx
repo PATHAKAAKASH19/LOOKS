@@ -16,18 +16,18 @@ export default function Footer() {
       </div>
       <Container className="footer">
         <Container className="sub-footer">
-          <h2>details</h2>
+          <h2>Details</h2>
           <Link to="/seller/signup" className="link-con" >
-            admin signup
+            Admin Signup
           </Link>
           <Link to="/" className="link-con">
-            contact us
+            Contact Us
           </Link>
           <Link to="/" className="link-con">
-            faqs
+            FAQs
           </Link>
           <Link to="/" className="link-con">
-            customer care
+            Customer Care
           </Link>
         </Container>
 
@@ -35,24 +35,24 @@ export default function Footer() {
           <h2 >Socials</h2>
 
           <a href="https://github.com/PATHAKAAKASH19/e-commerce-App" target="_blank" rel="noopener noreferrer">
-            <FaGithub style={{ color: "white", fontSize: "25px" }} />
+            <FaGithub style={{ color: "white", fontSize: "18px" }} />
           </a>
           
           <a href="https://x.com/PathakAkash_10" target="_blank" rel="noopener noreferrer">
-            <FaXTwitter style={{ color: "white", fontSize: "25px" }} />
+            <FaXTwitter style={{ color: "white", fontSize: "18px" }} />
           </a>
          
 
 
           <a href="https://www.linkedin.com/in/akash-pathak-48026a221/" target="_blank" rel="noopener noreferrer">
-            <FaLinkedinIn style={{ color: "white", fontSize: "25px" }} />
+            <FaLinkedinIn style={{ color: "white", fontSize: "18px" }} />
           </a>
 
          
         
 
           <a href="https://github.com/PATHAKAAKASH19" target="_blank" rel="noopener noreferrer">
-            <FaInstagram style={{ color: "white", fontSize: "25px" }} />
+            <FaInstagram style={{ color: "white", fontSize: "18px" }} />
           </a>
         </Container>
       </Container>

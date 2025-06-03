@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback , useRef, useState, useEffect} from "react";
 import Button from "../ui/button/Button";
 import Container from "../ui/container/Container";
 import { Card } from "../ui/card/Card";
 import Title from "../ui/title/Title";
 import createSlug from "../../utils/createSlug";
+import Spinner from "../ui/spinner/Spinner";
 
 export default function CategorySection({
   images,
@@ -37,25 +38,53 @@ export default function CategorySection({
     [filterType]
   );
 
+
+  const imgRef = useRef()
+
+  const [isVisible, setIsVisible] = useState(false)
+
+
+  useEffect(() => {
+     
+   const observer = new IntersectionObserver(([entry]) => {
+     
+    if(entry.isIntersecting){
+      setIsVisible(true)
+      observer.disconnect()
+    }
+   })
+
+
+    if(imgRef.current){
+      observer.observe(imgRef.current)
+    }
+
+  }, [])
  
 
   return (
-    <Container className="section">
-      <Title className="category" reactIcon={reactIcon} title={title} />
-      <Container className="categoryImage">
-        {images.filter(filterImage).map((image) => (
-          <Card
-            key={`${image._id}`}
-            image={image}
-            route={`collections/${createSlug(image.category)}`}
-          />
-        ))}
-      </Container>
-      <Button
-        title="view all"
-        className="button"
-        route={`/collections/${filterType}`}
-      ></Button>
-    </Container>
+    <div className="section" ref={imgRef}>
+     {
+      isVisible?(
+        <>
+        <Title className="category" reactIcon={reactIcon} title={title} />
+        <Container className="categoryImage">
+          {images.filter(filterImage).map((image) => (
+            <Card
+              key={`${image._id}`}
+              image={image}
+              route={`collections/${createSlug(image.category)}`}
+            />
+          ))}
+        </Container>
+        <Button
+          title="view all"
+          className="button"
+          route={`/collections/${filterType}`}
+        ></Button>
+        </>
+      ):(<Spinner></Spinner>)
+     }
+    </div>
   );
 }

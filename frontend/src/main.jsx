@@ -45,84 +45,90 @@ const LazyComponent = ({component:Component}) => {
 const router = createBrowserRouter([
   {
     path: "/",
+    errorElement: <LazyComponent component={ErrorPage} />,
     element: <App />,
-    errorElement:<LazyComponent component={ErrorPage}/>,
+
     children: [
       {
         path: "",
-        element:<LazyComponent component={HomePage}/>,
-       
+        errorElement: <LazyComponent component={ErrorPage} />,
+        element: <LazyComponent component={HomePage} />,
       },
 
       {
         path: "product",
+        errorElement: <LazyComponent component={ErrorPage} />,
         children: [
           {
             path: ":productName",
-            element: <LazyComponent component={ProductPage}/>,
+            element: <LazyComponent component={ProductPage} />,
           },
         ],
       },
 
       {
         path: "cart",
-        element: <LazyComponent component={CartPage}/>,
+        errorElement: <LazyComponent component={ErrorPage} />,
+        element: <LazyComponent component={CartPage} />,
       },
 
       {
-        path:"paymentsuccess",
-        element: <LazyComponent component={OrderPage}/>,
-        
-       
+        path: "paymentsuccess",
+        errorElement: <LazyComponent component={ErrorPage} />,
+        element: <LazyComponent component={OrderPage} />,
       },
 
       {
         path: "account",
+
+        errorElement: <LazyComponent component={ErrorPage} />,
         children: [
           {
             path: ":auth",
-            element:  <LazyComponent component={Auth}/>,
+            element: <LazyComponent component={Auth} />,
           },
         ],
       },
 
       {
         path: "seller",
+        errorElement: <LazyComponent component={ErrorPage} />,
         children: [
           {
             path: ":auth",
-            element:  <LazyComponent component={SellerAuth}/>,
+            element: <LazyComponent component={SellerAuth} />,
           },
         ],
       },
 
       {
         path: "user",
-        element:  <LazyComponent component={UserPage}/>,
+        errorElement: <LazyComponent component={ErrorPage} />,
+        element: <LazyComponent component={UserPage} />,
         children: [
           {
             index: true,
-            element: <LazyComponent component={UserProfile }/>,
+            element: <LazyComponent component={UserProfile} />,
           },
 
           {
             path: "profile",
-            element:  <LazyComponent component={UserProfile }/>,
+            element: <LazyComponent component={UserProfile} />,
           },
 
           {
             path: "address",
-            element: <LazyComponent component={UserAddress}/>,
+            element: <LazyComponent component={UserAddress} />,
           },
 
           {
             path: "wishlist",
-            element:  <LazyComponent component={UserWishlist}/>,
+            element: <LazyComponent component={UserWishlist} />,
           },
 
           {
             path: "orders",
-            element:  <LazyComponent component={UserOrders}/>,
+            element: <LazyComponent component={UserOrders} />,
           },
 
           {
@@ -134,29 +140,30 @@ const router = createBrowserRouter([
 
       {
         path: "seller-dashboard",
-        element: <LazyComponent component={SellerPage}/>,
+        errorElement: <LazyComponent component={ErrorPage} />,
+        element: <LazyComponent component={SellerPage} />,
         children: [
           {
             index: true,
-            element: <LazyComponent component={ShowProducts}/>,
+            element: <LazyComponent component={ShowProducts} />,
           },
           {
             path: "create-category",
-            element: <LazyComponent component={CreateCategory}/>,
+            element: <LazyComponent component={CreateCategory} />,
           },
           {
             path: "create-product",
-            element: <LazyComponent component={CreateProduct}/>,
+            element: <LazyComponent component={CreateProduct} />,
           },
 
           {
             path: "products",
-            element: <LazyComponent component={ShowProducts}/>,
+            element: <LazyComponent component={ShowProducts} />,
           },
 
           {
             path: "orders",
-            element:  <LazyComponent component={ShowOrders}/>,
+            element: <LazyComponent component={ShowOrders} />,
           },
 
           {
@@ -164,7 +171,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: ":productName",
-                element: <LazyComponent component={CreateProduct}/>,
+                element: <LazyComponent component={CreateProduct} />,
               },
             ],
           },
@@ -173,16 +180,14 @@ const router = createBrowserRouter([
 
       {
         path: "collections",
+        errorElement: <LazyComponent component={ErrorPage} />,
         children: [
           {
             path: ":category",
-            element: <LazyComponent component={ProductListPage}/> ,
+            element: <LazyComponent component={ProductListPage} />,
           },
         ],
       },
-
-    
-
     ],
   },
 ]);

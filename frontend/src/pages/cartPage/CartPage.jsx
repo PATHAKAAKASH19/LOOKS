@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCartInfo } from "../../context/cartContext";
 import { useUserInfo } from "../../context/UserInfoContext";
 
+
 export default function CartPage() {
 
 
@@ -49,7 +50,9 @@ export default function CartPage() {
 
   const {accessToken, setAccessToken } = useAuth();
   const {cartInfo, setCartInfo} = useCartInfo()
-  const {userInfo, setUserInfo} = useUserInfo()
+  const { userInfo, setUserInfo } = useUserInfo()
+  
+ 
 
 
   const addressObjToString = (address) => {
@@ -97,7 +100,7 @@ export default function CartPage() {
             order_id: order.razorpayOrderId, // This is the order_id created in the backend
             handler:async function(response) {
                 try {
-                  console.log(order)
+                
                   const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/order/verify/${order.orderId}`, {
                     method:"POST",
                     headers:{
@@ -114,15 +117,21 @@ export default function CartPage() {
                         signature:response.razorpay_signature,
                       }
                     )
+
+
     
                     
                   })
+
+
+
 
                  
     
                   const data = await res.json()
                
-                  if(res.status === 200){
+                  if (res.status === 200) {
+                    setCartInfo(null)
                     navigate(`/paymentSuccess?reference=${data.orderId}`)
                   }else{
                     toast.error("Payment failed, retry")
@@ -280,7 +289,7 @@ export default function CartPage() {
   
   
   
-  }, [accessToken, cartInfo, userInfo,products])
+  }, [accessToken, cartInfo, userInfo])
 
 
   const handleEdit = (field, address) => {
@@ -411,255 +420,251 @@ export default function CartPage() {
    useEffect(() => {
      window.scrollTo(0, 0);
    }, []);
+  
+  
+   useEffect(() => {
+     if (editUserData.editAddress) {
+       document.body.style.overflow = "hidden";
+
+       return () => {
+         document.body.style.overflow = "";
+       };
+     }
+   }, [editUserData]);
 
   return (
     <>
       {isLoading ? (
         <Spinner />
-      ) : 
-      products && products.length > 0 ?( <Container className="cart-con">
-           <Toaster></Toaster>
-        <Container className="cart">
-         
-
-     
-
-          <Container className="product-con">
-            {products.map((product) => (
-              <Container className="product" key={`${product?._id}`}>
-                <Container className="imgBox">
-                <img src={`${product?.productId?.productImgUrls[0]}`} alt={`${product?.productId?.name}`}/>
-                </Container>
-                <Container className="product-info">
-                <Title
-                    title={`${product?.productId?.name.toUpperCase()}`}
-                  ></Title>
-
-                  <Container className="size">
-                    <label htmlFor="size">SIZE - </label>
-                    <select
-                      name="size"
-                      id="size"
-                      value={product?.size?.toUpperCase()}
-                      onChange={(e) => changeProductSize(
-                          product?._id,
-                          e.target.value)
-                      }
-                    >
-                     {
-                      product?.productId.sizes.map((s) =>  <option key={`${s}`} value={`${s.toUpperCase()}`}>{s}</option>)
-                      }
-                    </select>
-                  </Container>
-
-                  <Container className="cloth-color">
-                    <h3 className="dark">COLOR -</h3>
-                    <h3>{product?.productId?.color?.toUpperCase()}</h3>
-                  </Container>
-                  <Container className="p">
-                    <RiDeleteBin6Line
-                      className="delete"
-                      onClick={() => deleteProduct(product?._id)}
+      ) : products && products.length > 0 ? (
+        <Container className="cart-con">
+          <Toaster></Toaster>
+          <Container className="cart">
+            <Container className="product-con">
+              {products.map((product) => (
+                <Container className="product" key={`${product?._id}`}>
+                  <Container className="imgBox">
+                    <img
+                      src={`${product?.productId?.productImgUrls[0]}`}
+                      alt={`${product?.productId?.name}`}
                     />
+                  </Container>
+                  <Container className="product-info">
+                    <Title title={`${product?.productId?.name}`}></Title>
 
-                    <h3>INR {product?.productId?.price}</h3>
+                    <Container className="size">
+                      <label htmlFor="size">size - </label>
+                      <select
+                        name="size"
+                        id="size"
+                        value={product?.size}
+                        onChange={(e) =>
+                          changeProductSize(product?._id, e.target.value)
+                        }
+                      >
+                        {product?.productId.sizes.map((s) => (
+                          <option key={`${s}`} value={`${s}`}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </Container>
+
+                    <Container className="cloth-color">
+                      <h3 className="dark">color -</h3>
+                      <h3>{product?.productId?.color}</h3>
+                    </Container>
+                    <Container className="p">
+                      <RiDeleteBin6Line
+                        className="delete"
+                        onClick={() => deleteProduct(product?._id)}
+                      />
+                      <h3>INR {product?.productId?.price}</h3>
+                    </Container>
                   </Container>
                 </Container>
-              </Container>
-            ))}
-          </Container>
-           <Container className="user-info-container">
-            <Container className="price-con">
-              <Container className="price-sub-div">
-                <form className="user-info-con">
-                   <Container className="user-info-field-con">
-                    <label htmlFor="email-Id">Email</label>
-                    <Container className="user-info-field">
-                      <InputBox
-                        type="text"
-                        name="email"
-                        value={userData.email}
-                        onChange={handleInput}
-                        placeholder="enter your email"
-                        id="email-Id"
-                        disabled={!editUserData.editEmail}
-                      ></InputBox>
-                      {editUserData.editEmail ? (
-                        <button
-                          type="button"
-                          onClick={() => saveUserInfo()}
-                          className="cart-btn"
-                        >
-                          save
-                        </button>
-                      ) : (
-                        <CiEdit
-                          onClick={() => {
-                            return handleEdit("editEmail");
-                          }}
-                          className="cart-icon"
-                        />
-                      )}
-                    </Container>
-                  </Container>
-
-
-
-
-
-                  <Container className="user-info-field-con">
-                    <label htmlFor="phoneNo">Phone No</label>
-                    <Container className="user-info-field">
-                      <InputBox
-                        type="text"
-                        name="phoneNo"
-                        value={userData.phoneNo}
-                        onChange={handleInput}
-                        placeholder="enter 10 digit phone no"
-                        id="phoneNo"
-                        disabled={!editUserData.editPhoneNo}
-                      />
-
-                      {editUserData.editPhoneNo ? (
-                        <button
-                          type="button"
-                          onClick={() => saveUserInfo()}
-                          className="cart-btn"
-                        >
-                          save
-                        </button>
-                      ) : (
-                        <CiEdit
-                          onClick={() => {
-                            return handleEdit("editPhoneNo");
-                          }}
-                          className="cart-icon"
-                        />
-                      )}
-                    </Container>
-                  </Container>
-
-                  <Container className="user-info-field-con">
-                 <Container className="address-label-con" >
-                 <label htmlFor="address">delivery Address</label>
-                 <IoAdd className="icon" onClick={() => {
-                            return handleEdit("editAddress");
-                          }}/>
-                 </Container>
-                  
-                    {
-                      (addressArray &&  addressArray.length > 0)? (
-                      addressArray.map((address) => (
-                        <Container className="user-info-field" key={address._id}>
+              ))}
+            </Container>
+            <Container className="user-info-container">
+              <Container className="price-con">
+                <Container className="price-sub-div">
+                  <form className="user-info-con">
+                    <Container className="user-info-field-con">
+                      <label htmlFor="email-Id">Email</label>
+                      <Container className="user-info-field">
                         <InputBox
                           type="text"
-                          name="address"
-                          value={addressObjToString(address)}
-                          placeholder="enter your address"
-                          disabled={true}
-                          id="address"
+                          name="email"
+                          value={userData.email}
+                          onChange={handleInput}
+                          placeholder="enter your email"
+                          id="email-Id"
+                          disabled={!editUserData.editEmail}
                         ></InputBox>
-                        <CiEdit
+                        {editUserData.editEmail ? (
+                          <button
+                            type="button"
+                            onClick={() => saveUserInfo()}
+                            className="cart-btn"
+                          >
+                            save
+                          </button>
+                        ) : (
+                          <CiEdit
+                            onClick={() => {
+                              return handleEdit("editEmail");
+                            }}
+                            className="cart-icon"
+                          />
+                        )}
+                      </Container>
+                    </Container>
+
+                    <Container className="user-info-field-con">
+                      <label htmlFor="phoneNo">Phone No</label>
+                      <Container className="user-info-field">
+                        <InputBox
+                          type="text"
+                          name="phoneNo"
+                          value={userData.phoneNo}
+                          onChange={handleInput}
+                          placeholder="enter 10 digit phone no"
+                          id="phoneNo"
+                          disabled={!editUserData.editPhoneNo}
+                        />
+
+                        {editUserData.editPhoneNo ? (
+                          <button
+                            type="button"
+                            onClick={() => saveUserInfo()}
+                            className="cart-btn"
+                          >
+                            save
+                          </button>
+                        ) : (
+                          <CiEdit
+                            onClick={() => {
+                              return handleEdit("editPhoneNo");
+                            }}
+                            className="cart-icon"
+                          />
+                        )}
+                      </Container>
+                    </Container>
+
+                    <Container className="user-info-field-con">
+                      <Container className="address-label-con">
+                        <label htmlFor="address">Delivery Address</label>
+                        <IoAdd
+                          className="icon"
                           onClick={() => {
-                            return handleEdit("editAddress", address);
+                            return handleEdit("editAddress");
                           }}
-                          className="cart-icon"
-                        />
-
-
-                      <Container className="radio">
-
-                         <InputBox
-      
-                           type="radio"
-                           name="deliveryAddress"
-                           checked={address._id === selectedAddressId}
-                           value={address._id}
-                           onChange={(e) => setSelectedAddressId(e.target.value)}
-
                         />
                       </Container>
 
-                     
-                      </Container>
-                      ))
-                      ):null
-                    }
+                      {addressArray && addressArray.length > 0
+                        ? addressArray.map((address) => (
+                            <Container
+                              className="user-info-field"
+                              key={address._id}
+                            >
+                              <InputBox
+                                type="text"
+                                name="address"
+                                value={addressObjToString(address)}
+                                placeholder="enter your address"
+                                disabled={true}
+                                id="address"
+                              ></InputBox>
+                              <CiEdit
+                                onClick={() => {
+                                  return handleEdit("editAddress", address);
+                                }}
+                                className="cart-icon"
+                              />
+
+                              <Container className="radio">
+                                <InputBox
+                                  type="radio"
+                                  name="deliveryAddress"
+                                  checked={address._id === selectedAddressId}
+                                  value={address._id}
+                                  onChange={(e) =>
+                                    setSelectedAddressId(e.target.value)
+                                  }
+                                />
+                              </Container>
+                            </Container>
+                          ))
+                        : null}
+                    </Container>
+                  </form>
+                </Container>
+
+                <Container className="sub-con">
+                  <Container className="discount-box">
+                    <InputBox
+                      type="text"
+                      placeholder="add discount code"
+                      name="discount"
+                      required={true}
+                    ></InputBox>
+
+                    <button className="discount-btn">apply</button>
                   </Container>
-                </form>
-              </Container>
 
-              <Container className="sub-con">
-                <Container className="discount-box">
-                  <InputBox
-                    type="text"
-                    placeholder="add discount code"
-                    name="discount"
-                    required={true}
-                  ></InputBox>
+                  <Container className="sub-total">
+                    <h3>subtotal</h3>
+                    <h3>inr {amount.productAmount}</h3>
+                  </Container>
 
+                  <Container className="shipping-cost">
+                    <h3>shipping cost</h3>
+                    <h3>{amount.shippingAmount}</h3>
+                  </Container>
+
+                  <Container className="total">
+                    <h2>total</h2>
+                    <h2>inr {amount.productAmount}</h2>
+                  </Container>
+                </Container>
+
+                {
                   <button
-                    
-                    
-                    className="discount-btn"
-                  >apply</button>
-                </Container>
-
-                <Container className="sub-total">
-                  <h3>subtotal</h3>
-                  <h3>inr {amount.productAmount}</h3>
-                </Container>
-
-                <Container className="shipping-cost">
-                  <h3>shipping cost</h3>
-                  <h3>{amount.shippingAmount}</h3>
-                </Container>
-
-                <Container className="total">
-                  <h2>total</h2>
-                  <h2>inr {amount.productAmount}</h2>
-                </Container>
+                    type="button"
+                    className="checkout-btn"
+                    onClick={() => checkoutHandler(userData, addressArray)}
+                  >
+                    CHECKOUT
+                  </button>
+                }
               </Container>
-
-              {
-                <button
-                  type="button"
-                  className="checkout-btn"
-                  onClick={() => checkoutHandler(userData, addressArray)}
-                >
-                  CHECKOUT
-                </button>
-              }
             </Container>
           </Container>
-         
+
+          {editUserData.editAddress && (
+            <Container className="address-form-con1">
+              <AddressForm
+                handleEdit={handleEdit}
+                saveAddress={
+                  prevAddressId !== "" ? updateAddress : createAddress
+                }
+                editAddress={prevAddressId !== ""}
+                addressObj={address}
+                setAddress={setAddress}
+              />
+            </Container>
+          )}
         </Container>
-
-        {editUserData.editAddress && (
-          <Container className="address-form-con1">
-            <AddressForm
-              handleEdit={handleEdit}
-              saveAddress={prevAddressId !== ""?updateAddress:createAddress}
-              editAddress={prevAddressId !== ""}
-              addressObj={address}
-              setAddress={setAddress}
-            />
-          </Container>
-        )}
-      </Container>) : (
+      ) : (
         <Container className="empty-cart">
-
-         
           <h2>Cart is empty add exciting products</h2>
           <Link to="/" className="empty-cart-link">
-           <h2>Go to home page </h2>
-           
+            <h2>Go to home page </h2>
           </Link>
-
-         
         </Container>
-      )
-      }
+      )}
     </>
   );
 }

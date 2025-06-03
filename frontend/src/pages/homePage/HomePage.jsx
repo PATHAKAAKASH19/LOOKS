@@ -5,7 +5,7 @@ import { MdSunny } from "react-icons/md";
 import Container from "../../components/ui/container/Container";
 import CategorySection from "../../components/categorySection/CategorySection";
 import Spinner from "../../components/ui/spinner/Spinner";
-
+import {Carousel} from "nuka-carousel"
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -19,61 +19,77 @@ export default function HomePage() {
   const navigate = useNavigate()
 
 
+
+
+  const IS_MOBILE = window.innerWidth <= 768
+  
   const BANNER_IMG = [
-   
-
     {
-      id:1,
-      img:"image1.webp",
-      alt:"shirts",
-      link:"/collections/shirts"
-    },
-
-    
-    {
-      id:2,
-      img:"image2.webp",
-      alt:"jeans",
-      link:"/collections/jeans"
+      id: 1,
+      img: "image1.webp",
+      alt: "shirts",
+      link: "/collections/casual-shirts",
     },
 
     {
-      id:3,
-      img:"image3.webp",
-      alt:"oversized-tees",
-      link:"/collections/oversized-tees"
+      id: 2,
+      img: "image2.webp",
+      alt: "jeans",
+      link: "/collections/jeans",
     },
 
     {
-      id:4,
-      img:"image4.webp",
-      alt:"polos",
-      link:"/collections/polos"
+      id: 3,
+      img: "image3.webp",
+      alt: "oversized-tees",
+      link: "/collections/oversized-tees",
     },
-    
-  ]
+
+    {
+      id: 4,
+      img: "image4.webp",
+      alt: "polos",
+      link: "/collections/polos",
+    },
+  ];
 
   const CATEGORY_SECTION = [
     {
       filterType: "trending",
       title: "SEASONAL TREND",
-      reactIcon: <MdSunny style={{ color: "orange", fontSize: "50px" }} />,
-      
+      reactIcon: (
+        <MdSunny
+          style={{
+            color: "orange",
+            fontSize: `${IS_MOBILE ? "28px" : "50px"}`,
+          }}
+        />
+      ),
     },
     {
       filterType: "bottomwear",
       title: "BOTTOM WEAR",
-      reactIcon: <PiPantsLight style={{ color: "orange", fontSize: "40px" }} />,
-      
+      reactIcon: (
+        <PiPantsLight
+          style={{
+            color: "orange",
+            fontSize: `${IS_MOBILE ? "28px" : "50px"}`,
+          }}
+        />
+      ),
     },
 
     {
       filterType: "topwear",
       title: "TOP WEAR",
       reactIcon: (
-        <IoShirtOutline style={{ color: "orange", fontSize: "30px" }} />
+        <IoShirtOutline
+          style={{
+            color: "orange",
+            fontSize: `${IS_MOBILE ? "25px" : "50px"}`,
+          }}
+        />
       ),
-
     },
   ];
 
@@ -96,9 +112,9 @@ export default function HomePage() {
           setImages([]);
         }
 
+        setIsLoading(false);
       
-      
-        setIsLoading(false)
+       
       } catch (error) {
         console.log("error:", error);
       }
@@ -128,29 +144,9 @@ export default function HomePage() {
   
 
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-  // Calculate visible slides based on screen width
-  const [visibleSlides, setVisibleSlides] = useState(1);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setVisibleSlides(window.innerWidth >= 1024 ? 2 : 1);;
-    };
 
-    handleResize(); // Set initial value
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Auto-rotate slides
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % (BANNER_IMG.length - visibleSlides +1));
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [BANNER_IMG.length, visibleSlides]);
-
+ 
 
 
 
@@ -160,55 +156,40 @@ export default function HomePage() {
 
   return (
     <Container className="home">
-      {isLoading ? (<Spinner></Spinner>):(
+      {isLoading ? (
+        <Spinner></Spinner>
+      ) : (
         <Container>
-           <div className="banner-slider">
-          <div 
-        className="slider-container"
-        style={{ 
-          transform: `translateX(-${currentSlide * (100 / visibleSlides)}%)`,
-        
-        
-        }}
-      >
-        {BANNER_IMG.map((banner,i) => (
-          <div key={i} className="slide">
-          <img 
-              
-              src={banner.img} 
-              alt={banner.alt}
-              className="banner-image"
-             onClick={() =>  navigateToProductPage(banner.link)}
-            />
-         </div>
-        ))}
-      </div>
-      
-      <div className="slider-dots">
-        {Array.from({ length: BANNER_IMG.length - visibleSlides+1  }).map((_, index) => (
-          <button
-            key={index}
-            className={`dot ${index === currentSlide ? 'active' : ''}`}
-            onClick={() => setCurrentSlide(index)}
-          />
-        ))}
-      </div>
-        </div>
-  ;
+          <Carousel
+            showArrows={IS_MOBILE ? false : "always"}
+            wrapMode="wrap"
+            showDots
+            autoplay={true}
+            autoplayInterval={4000}
+          >
+            {BANNER_IMG.map((banner, i) => (
+              <div key={i} className="slide">
+                <img
+                  src={banner.img}
+                  alt={banner.alt}
+                  className="banner-image"
+                  onClick={() => navigateToProductPage(banner.link)}
+                />
+              </div>
+            ))}
+          </Carousel>
 
           {CATEGORY_SECTION.map((value, i) => (
-          
             <CategorySection
-               key={i}
+              key={i}
               images={images}
               filterType={value.filterType}
               title={value.title}
               reactIcon={value.reactIcon}
-             
             />
           ))}
         </Container>
-      ) }
+      )}
     </Container>
   );
 }

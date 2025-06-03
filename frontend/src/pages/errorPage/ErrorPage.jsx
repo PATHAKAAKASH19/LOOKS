@@ -18,7 +18,7 @@ export default function ErrorPage() {
 
       </Container>
       <Link to="/"  className="link">Go To Home Page</Link>
-      <Link to="https://storyset.com/web" className="reference" target="_blank">Web illustrations by Storyset</Link>
+     
     </Container>
   );
 }

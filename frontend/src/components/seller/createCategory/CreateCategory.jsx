@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import InputBox from "../../ui/inputBox/InputBox";
 import Container from "../../ui/container/Container";
 import Title from "../../ui/title/Title";
 import { MdDelete } from "react-icons/md";
 import { useSellerAuth } from "../../../context/SellerAuthContext";
 import { toast, Toaster } from "react-hot-toast";
+import Spinner from "../../ui/spinner/Spinner";
+
 
 export default function CreateCategory() {
   // this state stores all form data
@@ -21,7 +23,13 @@ export default function CreateCategory() {
   const [categoryData, setCategoryData] = useState(null);
   const [change, setChange] = useState(false);
   const [update, setUpdate] = useState(false);
-  const {sellerToken} = useSellerAuth()
+  const [isLoading, setIsLoading] = useState(false);
+ 
+  
+  const { sellerToken } = useSellerAuth()
+  
+
+
 
   // handle text input box
   const handleInput = (e) => {
@@ -41,6 +49,7 @@ export default function CreateCategory() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true)
       if (!update) {
         const formData = new FormData();
         formData.append("category", form.category)
@@ -66,6 +75,7 @@ export default function CreateCategory() {
           });
           setPreviewImg("");
           setImg(null);
+          setIsLoading(false)
           toast.success(`${data.message}`);
         }
       } else {
@@ -102,10 +112,12 @@ export default function CreateCategory() {
           setImg(null);
           setUpdate(false);
           toast.success(`${data.message}`);
+          setIsLoading(false)
         }
       }
     } catch (error) {
       toast.error(`${error.message}`);
+      setIsLoading(false)
     }
   };
 
@@ -119,6 +131,7 @@ export default function CreateCategory() {
   const deleteCategory = async (category) => {
     
     try {
+      setIsLoading(true)
       const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category`, {
         method: "DELETE",
         headers: {
@@ -131,12 +144,14 @@ export default function CreateCategory() {
       const data = await res.json();
 
       if (res.status === 200) {
-        
+     
         setChange(true);
         toast.success(`${data.message}`);
+        setIsLoading(false);
       }
     } catch (error) {
       toast.error(`${error.message}`);
+      setIsLoading(false);
     }
   };
 
@@ -144,6 +159,7 @@ export default function CreateCategory() {
   useEffect(() => {
     const getAllCategory = async () => {
       try {
+        setIsLoading(true)
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/category/seller`, {
           method:"GET",
           headers:{
@@ -156,12 +172,14 @@ export default function CreateCategory() {
         console.log(data)
           setCategoryData(data.category);
           setChange(false)
+          setIsLoading(false);
         }else if (res.status === 404){
-        
+          setIsLoading(false)
           setCategoryData(null);
         }
       } catch (error) {
         console.log("error", error);
+        setIsLoading(false)
       }
     };
 
@@ -200,146 +218,155 @@ export default function CreateCategory() {
 
   return (
     <Container className="admin-panel">
-     <Toaster></Toaster>
-      <Container className="create-category">
-      
-        <h1>Create Category</h1>
-       
-        <form onSubmit={handleFormSubmit}>
-       
-          <Container className="input">
-            <label htmlFor="category" style={{ alignSelf: "center" }}>
-              category
-            </label>
-            <InputBox
-              id="category"
-              type="text"
-              name="category"
-              value={form.category}
-              onChange={handleInput}
-              placeholder="enter category name"
-            ></InputBox>
-          </Container>
+      <Toaster></Toaster>
 
-          <Container className="input">
-            <label htmlFor="trending" style={{ alignSelf: "center" }}>
-              trending
-            </label>
-            <select
-              id="trending"
-              name="trending"
-              onChange={handleInput}
-              value={form.trending}
-            >
-              <option value={false}>false</option>
-              <option value={true}>true</option>
-            </select>
-          </Container>
+      {isLoading ? (
+        <Spinner width="100%" height="70vh"></Spinner>
+      ) : (
+        <>
+          <Container className="create-category">
+            <h1>Create Category</h1>
+            <form onSubmit={handleFormSubmit}>
+              <Container className="input">
+                <label htmlFor="category" style={{ alignSelf: "center" }}>
+                  category
+                </label>
+                <InputBox
+                  id="category"
+                  type="text"
+                  name="category"
+                  value={form.category}
+                  onChange={handleInput}
+                  placeholder="enter category name"
+                ></InputBox>
+              </Container>
 
-          <Container className="input">
-            <label htmlFor="sub-category" style={{ alignSelf: "center" }}>
-              subCategory
-            </label>
-            <select
-              id="sub-category"
-              name="subCategory"
-              value={form.subCategory}
-              onChange={handleInput}
-            >
-              <option value="topwear">topwear</option>
-              <option value="bottomwear">bottomwear</option>
-              <option value="accessories">accessories</option>
-              <option value="footwear">footwear</option>
-              <option value="watches">watches</option>
-            </select>
-          </Container>
+              <Container className="input">
+                <label htmlFor="trending" style={{ alignSelf: "center" }}>
+                  trending
+                </label>
+                <select
+                  id="trending"
+                  name="trending"
+                  onChange={handleInput}
+                  value={form.trending}
+                >
+                  <option value={false}>false</option>
+                  <option value={true}>true</option>
+                </select>
+              </Container>
 
-          <Container className="upload upload1" style={{ alignSelf: "center" }}>
-            <label className="label">
-              upload image
-              <InputBox
-                type="file"
-                name="image"
-                accept="image/*"
-                onChange={handleImg}
-                className="uploadbox"
-                key={img ? img.name : "file-input"}
-              ></InputBox>
-            </label>
-          </Container>
+              <Container className="input">
+                <label htmlFor="sub-category" style={{ alignSelf: "center" }}>
+                  subCategory
+                </label>
+                <select
+                  id="sub-category"
+                  name="subCategory"
+                  value={form.subCategory}
+                  onChange={handleInput}
+                >
+                  <option value="topwear">topwear</option>
+                  <option value="bottomwear">bottomwear</option>
+                  <option value="accessories">accessories</option>
+                  <option value="footwear">footwear</option>
+                  <option value="watches">watches</option>
+                </select>
+              </Container>
 
-          {previewImg ? (
-            <Container className="prevImg">
-              <img src={previewImg} />
-              <MdDelete onClick={handleImgDelete} className="icon" />
-            </Container>
-          ) : null}
-
-          {!update ? (
-            <button type="submit">submit</button>
-          ) : (
-            <Container className="btn btn-con">
-              <button
-                type="submit"
-                className="update up"
-                onClick={handleFormSubmit}
+              <Container
+                className="upload upload1"
+                style={{ alignSelf: "center" }}
               >
-                update
-              </button>
-              <button
-                type="button"
-                className="delete del"
-                onClick={() => cancleCategoryUpdate()}
-              >
-                cancle
-              </button>
-            </Container>
-          )}
-        </form>
-      </Container>
-      {
-      (categoryData && categoryData.length > 0) && <Container className="show-category">
-        <Container className="heading">
-          <Title title="category" />
-          <Title title="subCategory" />
-          <Title title="trending" />
-          <Title title="categoryImg" />
-          <Title title="Action"></Title>
-        </Container>
+                <label className="label">
+                  upload image
+                  <InputBox
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleImg}
+                    className="uploadbox"
+                    key={img ? img.name : "file-input"}
+                  ></InputBox>
+                </label>
+              </Container>
 
-        {categoryData &&
-          categoryData.map((category, index) => {
-            return (
-              <Container className="row" key={index}>
-                <h3>{category.category}</h3>
-
-                <h3>{category.subCategory}</h3>
-                <h3>{`${category.trending}`}</h3>
-                <Container className="category-img">
-                  <img src={`${category.imgUrl}`} />
+              {previewImg ? (
+                <Container className="prevImg">
+                  <img src={previewImg} />
+                  <MdDelete onClick={handleImgDelete} className="icon" />
                 </Container>
-                <Container className="btn">
+              ) : null}
+
+              {!update ? (
+                <button type="submit">submit</button>
+              ) : (
+                <Container className="btn btn-con">
                   <button
                     type="submit"
-                    className="update"
-                    onClick={() => updateCategory(category)}
+                    className="update up"
+                    onClick={handleFormSubmit}
                   >
                     update
                   </button>
                   <button
-                    type="submit"
-                    onClick={() => deleteCategory(category)}
+                    type="button"
+                    className="delete del"
+                    onClick={() => cancleCategoryUpdate()}
                   >
-                    delete
+                    cancle
                   </button>
                 </Container>
+              )}
+            </form>
+          </Container>
 
+          {categoryData && categoryData.length > 0 && (
+            <Container className="show-category">
+              <Container className="heading">
+                <Title title="category" />
+                <Title title="subCategory" />
+                <Title title="trending" />
+                <Title title="categoryImg" />
+                <Title title="Action"></Title>
               </Container>
-            );
-          })}
-          
-      </Container>
-      }
+
+              {categoryData &&
+                categoryData.map((category, index) => {
+                  return (
+                    <div className="row" key={index}>
+                      
+                      
+                          <h3>{category.category}</h3>
+
+                          <h3>{category.subCategory}</h3>
+                          <h3>{`${category.trending}`}</h3>
+                          <Container className="category-img">
+                            <img src={`${category.imgUrl}`} />
+                          </Container>
+                          <Container className="btn">
+                            <button
+                              type="submit"
+                              className="update"
+                              onClick={() => updateCategory(category)}
+                            >
+                              update
+                            </button>
+                            <button
+                              type="submit"
+                              onClick={() => deleteCategory(category)}
+                            >
+                              delete
+                            </button>
+                          </Container>
+                       
+                    </div>
+                  );
+                })}
+            </Container>
+          )}
+        </>
+      )}
     </Container>
   );
 }

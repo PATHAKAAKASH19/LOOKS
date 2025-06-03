@@ -7,10 +7,9 @@ import toast, { Toaster } from "react-hot-toast";
 import AddressForm from "../../addressForm/AddressForm";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
+import Spinner from "../../ui/spinner/Spinner";
 
 export default function UserAddress() {
-
- 
   const [address, setAddress] = useState({
     addressLine: "",
     locality: "",
@@ -24,14 +23,19 @@ export default function UserAddress() {
   const [hideAndShow, setHideAndShow] = useState(false);
   const [editAddress, setEditAddress] = useState(false);
   const [prevAddressId, setPrevAddressId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { userInfo, setUserInfo } = useUserInfo();
 
-  const {accessToken} = useAuth();
+  const IS_MOBILE = window.innerWidth <= 786;
+
+  const { accessToken } = useAuth();
 
   useEffect(() => {
     if (userInfo && Object.keys(userInfo).length !== 0) {
+      setIsLoading(true);
       setAddressArray(userInfo.address);
+      setIsLoading(false);
     }
   }, [userInfo]);
 
@@ -45,7 +49,6 @@ export default function UserAddress() {
       state: "",
       country: "",
       zipCode: "",
-      
     });
 
     setEditAddress(false);
@@ -53,53 +56,50 @@ export default function UserAddress() {
 
   const saveAddress = async (e) => {
     try {
+      setIsLoading(true);
       e.preventDefault();
 
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization":`Bearer ${accessToken}`
-          },
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
 
-          body: JSON.stringify({ address, addressAction: "save" }),
-        }
-      );
+        body: JSON.stringify({ address, addressAction: "save" }),
+      });
 
       const data = await res.json();
 
       if (res.status === 200) {
         setUserInfo(data.userData);
         handleHideAndShow();
-
         toast.success(`${"address created successfully"}`);
+        setIsLoading(false);
       }
     } catch (error) {
-      console.log("error", error)
+      
       toast.error(`${error}`);
+      setIsLoading(false);
     }
   };
 
   const updateAddress = async (e) => {
     try {
+      setIsLoading(true);
       e.preventDefault();
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization":`Bearer ${accessToken}`
-          },
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
 
-          body: JSON.stringify({
-            prevAddressId,
-            address,
-          }),
-        }
-      );
+        body: JSON.stringify({
+          prevAddressId,
+          address,
+        }),
+      });
 
       const data = await res.json();
 
@@ -107,9 +107,11 @@ export default function UserAddress() {
         setUserInfo(data.userData);
         handleHideAndShow();
         toast.success(`${"address created successfully"}`);
+        setIsLoading(false);
       }
     } catch (error) {
       toast.error("error : ", error);
+      setIsLoading(false);
     }
   };
 
@@ -123,30 +125,29 @@ export default function UserAddress() {
 
   const deleteAddress = async (e, address) => {
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization":`Bearer ${accessToken}`
-          },
+      setIsLoading(true);
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/user/`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
 
-          body: JSON.stringify({
-            address,
-            addressAction: "delete",
-          }),
-        }
-      );
+        body: JSON.stringify({
+          address,
+          addressAction: "delete",
+        }),
+      });
 
       const data = await res.json();
 
       if (res.status === 200) {
-        toast.success("address deleted successfully");
         setUserInfo(data.userData);
+        setIsLoading(false);
+        toast.success("address deleted successfully");
       }
     } catch (error) {
-      console.log("error", error )
+      setIsLoading(false);
       toast.error("unable to delete!! Please try again");
     }
   };
@@ -158,53 +159,64 @@ export default function UserAddress() {
     setPrevAddressId(addressObj._id);
   };
 
-
   useEffect(() => {
-       window.scrollTo(0, 0);
-    }, []);
-  
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <Container className="user-address-box">
-      <Toaster></Toaster>
-      {!hideAndShow && (
-        <>
-          <Container className="address-icon-box">
-            <LuMapPin onClick={handleHideAndShow} className="address-icon" />
-            <h1 onClick={handleHideAndShow}>Add new address</h1>
-          </Container>
+    <>
+      {isLoading ? (
+        <Container className="user-address-box2">
+          <Spinner height={IS_MOBILE ? "60vh" : "100%"} width="100%"></Spinner>
+        </Container>
+      ) : (
+        <Container className="user-address-box">
+          <Toaster></Toaster>
 
-          {addressArray &&
-            addressArray.map((addressObj, i) => (
-              <Container
-                className="address-icon-box"
-                key={`${addressObj.zipCode}_${i}`}
-              >
-                <AiOutlineCloseCircle
-                  onClick={(e) => deleteAddress(e, addressObj)}
-                  className="address-icon2"
+          {!hideAndShow && (
+            <>
+              <Container className="address-icon-box">
+                <LuMapPin
+                  onClick={handleHideAndShow}
+                  className="address-icon"
                 />
-                <h4 className="address-info">
-                  {convertAddressToString(addressObj)}
-                </h4>
-
-                <CiEdit
-                  className="edit-button"
-                  onClick={(e) => editAddressData(e, addressObj)}
-                />
+                <h1 onClick={handleHideAndShow}>Add new address</h1>
               </Container>
-            ))}
-        </>
-      )}
 
-      {hideAndShow && (
-        <AddressForm
-          handleHideAndShow={handleHideAndShow}
-          setAddress={setAddress}
-          saveAddress={editAddress ? updateAddress : saveAddress}
-          addressObj={address}
-          editAddress={editAddress}
-        />
+              {addressArray &&
+                addressArray.map((addressObj, i) => (
+                  <Container
+                    className="address-icon-box"
+                    key={`${addressObj.zipCode}_${i}`}
+                  >
+                    <AiOutlineCloseCircle
+                      onClick={(e) => deleteAddress(e, addressObj)}
+                      className="address-icon2"
+                    />
+                    <h4 className="address-info">
+                      {convertAddressToString(addressObj)}
+                    </h4>
+
+                    <CiEdit
+                      className="edit-button"
+                      onClick={(e) => editAddressData(e, addressObj)}
+                    />
+                  </Container>
+                ))}
+            </>
+          )}
+
+          {hideAndShow && (
+            <AddressForm
+              handleHideAndShow={handleHideAndShow}
+              setAddress={setAddress}
+              saveAddress={editAddress ? updateAddress : saveAddress}
+              addressObj={address}
+              editAddress={editAddress}
+            />
+          )}
+        </Container>
       )}
-    </Container>
+    </>
   );
 }

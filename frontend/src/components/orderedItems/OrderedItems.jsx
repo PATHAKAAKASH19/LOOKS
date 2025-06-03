@@ -1,7 +1,7 @@
 import React from "react";
 import Container from "../ui/container/Container";
 
-export default function OrderedItems({ Items, status }) {
+export default function OrderedItems({ Items }) {
   return (
     <>
       {Items.length > 0 &&
@@ -18,7 +18,7 @@ export default function OrderedItems({ Items, status }) {
             </h1>
 
             <h1>Quantity : {item.quantity}</h1>
-            <h1>Status : {status}</h1>
+            <h1>Status : {item.status}</h1>
           </Container>
         ))}
     </>

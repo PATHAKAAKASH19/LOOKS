@@ -23,7 +23,7 @@ import { FaMinus } from "react-icons/fa6";
       "blue",
       "brown",
       "black",
-      "navy",
+      "navy blue",
       "purple",
       "dark green",
       "red",
@@ -99,6 +99,8 @@ import { FaMinus } from "react-icons/fa6";
       }
 
       setSearchParams(params);
+    } else {
+      setSearchParams()
     }
   }, [filter]);
 

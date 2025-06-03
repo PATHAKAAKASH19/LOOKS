@@ -5,6 +5,7 @@ import { LiaUserLockSolid } from "react-icons/lia";
 import { Toaster, toast } from "react-hot-toast";
 import { validatePassword } from "../../../utils/validate";
 import { useAuth } from "../../../context/AuthContext";
+import Spinner from "../../ui/spinner/Spinner";
 
 export default function ChangePassword() {
 
@@ -19,6 +20,9 @@ export default function ChangePassword() {
     password1: "",
     password2: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false)
+  const IS_MOBILE = window.innerWidth <= 786
 
   const handlePassword = (e) => {
     setPassword((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -59,6 +63,7 @@ export default function ChangePassword() {
   const updatePassword = async (e) => {
     e.preventDefault();
     try {
+
       if (!password.newPassword) {
         toast.error("Please provide new password");
         return;
@@ -74,6 +79,8 @@ export default function ChangePassword() {
 
       if (isPassword1Valid && isPassword2Valid) {
         if (password.newPassword === password.confirmNewPassword) {
+
+          setIsLoading(true);
           const res = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/api/auth/change-password/`,
             {
@@ -89,18 +96,22 @@ export default function ChangePassword() {
           const data = await res.json();
 
           if (res.status === 200) {
+            setIsLoading(false);
             toast.success(`${data.message}`);
             clearState();
             return
+              }
+            } else {
+              toast.error("both password must be same");
+              return
+            }
+          } else {
+            handleValidation(isPassword1Valid, isPassword2Valid);
           }
-        } else {
-          toast.error("both password must be same");
-          return
         }
-      } else {
-        handleValidation(isPassword1Valid, isPassword2Valid);
-      }
-    } catch (error) {
+      catch (error) {
+      setIsLoading(false)
+      toast.error(`Please try again`)
       console.log(error);
     }
   };
@@ -112,46 +123,55 @@ export default function ChangePassword() {
  }, []);
 
   return (
-    <Container className="user-address-box password-con">
-      <Toaster></Toaster>
-      <form onSubmit={updatePassword} className="password-form-box">
-        <Container className="password-form-title">
-          <LiaUserLockSolid style={{ fontSize: "25px" }} />
-          <label>Update your password for</label>
-          <label>pathakaakash8900@gmail.com</label>
+    <>
+      {isLoading ? (
+
+        <Container className="user-address-box2">
+                 <Spinner height={IS_MOBILE ? "60vh" : "100%"} width="100%"></Spinner>
+         </Container>
+      ) : (
+        <Container className="user-address-box password-con">
+          <Toaster></Toaster>
+          <form onSubmit={updatePassword} className="password-form-box">
+            <Container className="password-form-title">
+              <LiaUserLockSolid style={{ fontSize: "25px" }} />
+              <label>Update your password for</label>
+              <label>pathakaakash8900@gmail.com</label>
+            </Container>
+
+            <Container className="password-form-field">
+              <Container className="field">
+                <label htmlFor="newPassword">New Password</label>
+                <InputBox
+                  type="text"
+                  id="newPassword"
+                  name="newPassword"
+                  value={password.newPassword}
+                  onChange={handlePassword}
+                  placeholder="Enter New Password"
+                />
+
+                <div>{error.password1}</div>
+              </Container>
+
+              <Container className="field">
+                <label htmlFor="confirmNewPassword">Confirm New Password</label>
+                <InputBox
+                  type="text"
+                  id="confirmNewPassword"
+                  name="confirmNewPassword"
+                  value={password.confirmNewPassword}
+                  onChange={handlePassword}
+                  placeholder="Confirm New Password"
+                />
+                <div>{error.password2}</div>
+              </Container>
+            </Container>
+
+            <button type="submit">update password</button>
+          </form>
         </Container>
-
-        <Container className="password-form-field">
-          <Container className="field">
-            <label htmlFor="newPassword">New Password</label>
-            <InputBox
-              type="text"
-              id="newPassword"
-              name="newPassword"
-              value={password.newPassword}
-              onChange={handlePassword}
-              placeholder="Enter New Password"
-            />
-
-            <div>{error.password1}</div>
-          </Container>
-
-          <Container className="field">
-            <label htmlFor="confirmNewPassword">Confirm New Password</label>
-            <InputBox
-              type="text"
-              id="confirmNewPassword"
-              name="confirmNewPassword"
-              value={password.confirmNewPassword}
-              onChange={handlePassword}
-              placeholder="Confirm New Password"
-            />
-            <div>{error.password2}</div>
-          </Container>
-        </Container>
-
-        <button type="submit">update password</button>
-      </form>
-    </Container>
+      )}
+    </>
   );
 }
