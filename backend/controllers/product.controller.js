@@ -57,7 +57,7 @@ async function getfilteredProduct(req, res) {
    
     let query = {};
 
-    const { price, color, sizes, material, style , categoryId} = req.query;
+    const { price, color, sizes, material, style , categoryId, subCategory} = req.query;
    
 
     if (sizes) query.sizes = { $in: Array.isArray(sizes) ? sizes : [sizes] };

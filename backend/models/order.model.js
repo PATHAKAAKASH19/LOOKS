@@ -13,10 +13,10 @@ const orderSchema = mongoose.Schema(
       ref: "Payment",
     },
 
-    paymentStatus:{
-      type:Boolean,
-      required:true,
-      default:false
+    paymentStatus: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
 
     totalPrice: {
@@ -43,47 +43,40 @@ const orderSchema = mongoose.Schema(
           required: true,
         },
 
-        sellerId: { 
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true
+        sellerId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
         },
-        
-        status: {  
-            type: String,
-            enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-            default: 'pending'
-        }
+
+        status: {
+          type: String,
+          enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+          default: "pending",
+        },
       },
     ],
 
     deliveryAddress: {
       addressLine: {
         type: String,
-        required: true,
       },
       locality: {
         type: String,
       },
       city: {
         type: String,
-        required: true,
       },
       state: {
         type: String,
-        required: true,
       },
       zipCode: {
         type: String,
-        required: true,
       },
       country: {
         type: String,
-        required: true,
       },
     },
-
-    
   },
   { timestamps: true }
 );

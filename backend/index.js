@@ -1,14 +1,20 @@
 import express from "express"
 import mongoose from "mongoose"
-import cookieParser from "cookie-parser"
-import  dotenv  from "dotenv"
-import productRoute from "./routes/product.route.js"
+import cors from "cors"
 import categoryRoute from "./routes/category.route.js"
 import cartRoute from "./routes/cart.route.js"
 import authRoute from "./routes/auth.route.js"
 import orderRoute from "./routes/order.route.js"
 import userRoute from "./routes/user.route.js"
+import productRoute from "./routes/product.route.js"
+import dotenv from "dotenv"
+import cookieParser from "cookie-parser"
+import {fileURLToPath} from "url";
+import path from "path"
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+ 
 
 
 
@@ -16,7 +22,13 @@ dotenv.config()
 const app = express()
 const mongodbURI = process.env.MONGODB_URI
 
-
+app.use(cors({
+    origin:["http://192.168.0.104:5173", "http://localhost:5173"], 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+    allowedHeaders: ['Authorization', 'Content-Type']
+    
+}))
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))

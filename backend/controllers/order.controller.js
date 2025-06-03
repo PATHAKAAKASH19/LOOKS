@@ -28,13 +28,14 @@ async function createOrder(req, res) {
     const totalPrice = cart[0].products.reduce((accumulator, product) => accumulator+product.productId.price,0)
     
     const orderedItem = await Promise.all(
-      cart[0].products.map(async (productObj) =>  {
+      cart[0].products.map(async (productObj) => {
+       
 
         try {
           const pdoc = await Product.findById(productObj.productId)
       
           return {
-            productId:productObj.productId,
+            productId:productObj.productId._id,
             quantity:productObj.quantity,
             size:productObj.size,
             sellerId:pdoc.sellerId, 
@@ -42,11 +43,13 @@ async function createOrder(req, res) {
         } catch (error) {
           console.log("error",error)
         }
-    }))
-
+      }))
     
 
-    const deleteOrder = await Order.deleteMany({paymentStatus: false, userId: userId});
+    
+   
+    const deleteOrder = await Order.deleteMany({ paymentStatus: false, userId: userId });
+   
       const order = await Order.create({
         userId: userId,
         totalPrice: Number(totalPrice),
@@ -54,17 +57,18 @@ async function createOrder(req, res) {
         deliveryAddress: address,
       });
 
-      
+    
       const options = {
         amount: Number(totalPrice * 100),
         currency: "INR",
         receipt: order._id.toString(),
       };
 
+     
       
       const razorpayOrder = await instance.orders.create(options);
    
-     
+    
       return res.status(200).json({
         orderId: order._id,
         razorpayOrderId: razorpayOrder.id,
