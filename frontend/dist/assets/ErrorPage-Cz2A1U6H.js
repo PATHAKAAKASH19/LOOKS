@@ -1,0 +1,1 @@
+import{r as o,j as s,C as r,L as e}from"./index-Npg09nsS.js";function i(){return o.useEffect(()=>{window.scrollTo(0,0)},[]),s.jsxs(r,{className:"error-con",children:[s.jsx(r,{className:"illustration",children:s.jsx("img",{src:"../../public/pageNotFound.gif"})}),s.jsx(e,{to:"/",className:"link",children:"Go To Home Page"})]})}export{i as default};
