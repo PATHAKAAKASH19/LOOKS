@@ -66,4 +66,4 @@ ehthumbs.db
 Thumbs.db
 
 .env
-.dist
+frontend/dist
