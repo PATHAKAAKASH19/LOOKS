@@ -17,18 +17,17 @@ const Auth = lazy(() => import("./pages/authPage/Auth.jsx"));
 const ErrorPage = lazy(() => import("./pages/errorPage/ErrorPage.jsx"));
 
 const SellerPage = lazy(() => import("./pages/sellerPage/SellerPage.jsx"));
-const CreateCategory = lazy(() =>import("./components/seller/createCategory/CreateCategory.jsx"))
-const CreateProduct = lazy(() =>import("./components/seller/createProduct/CreateProduct.jsx"));
-const ShowProducts = lazy(() =>import("./components/seller/showProducts/ShowProducts.jsx")) ;
-const ShowOrders = lazy(() =>import("./components/seller/showOrders/ShowOrders.jsx")) ;
+import CreateCategory from "./components/seller/createCategory/CreateCategory.jsx";
+import CreateProduct from "./components/seller/createProduct/CreateProduct.jsx";
+import ShowProducts from "./components/seller/showProducts/ShowProducts.jsx";
+import ShowOrders from "./components/seller/showOrders/ShowOrders.jsx";
 
-
-const UserPage = lazy(() =>import("./pages/userPage/UserPage.jsx"));
-const UserProfile = lazy(() =>import("./components/user/userProfile/UserProfile.jsx")) ;
-const UserAddress = lazy(() =>import("./components/user/userAddress/UserAddress.jsx")) ;
-const UserWishlist = lazy(() =>import("./components/user/userWishlist/UserWishlist.jsx")) ;
-const UserOrders = lazy(() =>import("./components/user/userOrders/UserOrders.jsx")) ;
-const ChangePassword = lazy(() => import("./components/user/changePassword/ChangePassword.jsx"))
+const UserPage = lazy(() => import("./pages/userPage/UserPage.jsx"));
+import UserProfile from "./components/user/userProfile/UserProfile.jsx";
+import UserAddress from "./components/user/userAddress/UserAddress.jsx";
+import UserWishlist from "./components/user/userWishlist/UserWishlist.jsx"
+import UserOrders from "./components/user/userOrders/UserOrders.jsx";
+import ChangePassword from "./components/user/changePassword/ChangePassword.jsx";
 const OrderPage= lazy(() =>import("./pages/orderPage/OrderPage.jsx"));
 const SellerAuth = lazy(() =>import("./pages/authPage/SellerAuth.jsx")) ;
 
@@ -108,27 +107,27 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <LazyComponent component={UserProfile} />,
+            element:<UserProfile/>,
           },
 
           {
             path: "profile",
-            element: <LazyComponent component={UserProfile} />,
+            element: <UserProfile/>,
           },
 
           {
             path: "address",
-            element: <LazyComponent component={UserAddress} />,
+            element: <UserAddress/>,
           },
 
           {
             path: "wishlist",
-            element: <LazyComponent component={UserWishlist} />,
+            element: <UserWishlist/>,
           },
 
           {
             path: "orders",
-            element: <LazyComponent component={UserOrders} />,
+            element: <UserOrders/>,
           },
 
           {
@@ -145,25 +144,25 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <LazyComponent component={ShowProducts} />,
+            element: <ShowProducts/>,
           },
           {
             path: "create-category",
-            element: <LazyComponent component={CreateCategory} />,
+            element: <CreateCategory/>,
           },
           {
             path: "create-product",
-            element: <LazyComponent component={CreateProduct} />,
+            element: <CreateProduct/>,
           },
 
           {
             path: "products",
-            element: <LazyComponent component={ShowProducts} />,
+            element: <ShowProducts/>,
           },
 
           {
             path: "orders",
-            element: <LazyComponent component={ShowOrders} />,
+            element: <ShowOrders/>,
           },
 
           {
@@ -171,7 +170,7 @@ const router = createBrowserRouter([
             children: [
               {
                 path: ":productName",
-                element: <LazyComponent component={CreateProduct} />,
+                element: <CreateProduct/>,
               },
             ],
           },

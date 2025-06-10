@@ -53,7 +53,6 @@ export default function ProductListPage() {
         const { categoryValue } = await res.json();
 
         if (categoryValue) {
-          console.log(categoryValue);
           setCategoryId(categoryValue[0]._id);
         }
       } catch (error) {
@@ -85,6 +84,7 @@ export default function ProductListPage() {
         }
       } catch (error) {
         console.log("error , ", error);
+        setIsLoading(false);
       }
     };
 
@@ -98,20 +98,24 @@ export default function ProductListPage() {
   useEffect(() => {
     const fetchProductsImage = async () => {
       try {
-
-        const subCategoryArray = ["topwear", "bottomwear", "trending"];
+        const subCategoryArray = ["topwear", "bottomwear"];
         let queryString;
 
         if (searchParams) {
           queryString = searchParams ? searchParams.toString() : null;
         }
 
-        if (categoryId || subCategoryArray.includes(category)) {
-          console.log(queryString)
+        if (
+          categoryId ||
+          subCategoryArray.includes(category) ||
+          category === "trending"
+        ) {
           const res = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/product/filter?${
+            `${
+              import.meta.env.VITE_BACKEND_URL
+            }/api/product/filter?categoryId=${categoryId}&subCategory=${category}&${
               queryString ? queryString + "&" : ""
-            }categoryId=${categoryId}&subCategory=${category}`
+            }`
           );
 
           const productsData = await res.json();
@@ -129,8 +133,10 @@ export default function ProductListPage() {
       }
     };
 
-    fetchProductsImage();
-  }, [searchParams, categoryId]);
+    if (searchParams) {
+      fetchProductsImage();
+    }
+  }, [searchParams, categoryId, category]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -186,7 +192,7 @@ export default function ProductListPage() {
   return (
     <Container className="product-list-container">
       {isLoading ? (
-        <Spinner></Spinner>
+        <Spinner height="100vh" width="100%"></Spinner>
       ) : (
         <Container className="productList">
           {isMobile && !isFilterVisible && (

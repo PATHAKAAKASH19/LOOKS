@@ -112,7 +112,7 @@ export default function ChangePassword() {
       catch (error) {
       setIsLoading(false)
       toast.error(`Please try again`)
-      console.log(error);
+     
     }
   };
 

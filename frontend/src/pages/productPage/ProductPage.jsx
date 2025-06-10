@@ -136,7 +136,7 @@ export default function ProductPage() {
             setProduct(data.products[0]);
 
             setCategoryId(data.products[0].categoryId);
-            console.log("aka");
+           
             setIsLoading(false);
           }
         }
@@ -229,7 +229,7 @@ export default function ProductPage() {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log(window.innerWidth)
+    
       setIsMobile(window.innerWidth <= 567);
     };
     window.addEventListener("resize", handleResize);
@@ -242,7 +242,7 @@ export default function ProductPage() {
   return (
     <Container className="product-page-con">
       {isLoading ? (
-        <Spinner></Spinner>
+        <Spinner height="90vh" width="100%"></Spinner>
       ) : (
         <>
           <Container className="productPage">
@@ -265,23 +265,15 @@ export default function ProductPage() {
                 </Container>
               </Container>
             ) : (
-           
-                <Carousel
-                  showDots={true}
-                  wrapMode="wrap"
-                 
-                 
-                >
-                      {product.productImgUrls.map((productImage, index) => {
-                    
-                    return (
-                      <div key={index} className="slide">
-                        <img src={productImage}/>
-                     </div>
-                    );
-                  })}
-                </Carousel>
-            
+              <Carousel showDots={true} wrapMode="wrap">
+                {product.productImgUrls.map((productImage, index) => {
+                  return (
+                    <div key={index} className="slide">
+                      <img src={productImage} />
+                    </div>
+                  );
+                })}
+              </Carousel>
             )}
 
             <Container className="product-info-sec">

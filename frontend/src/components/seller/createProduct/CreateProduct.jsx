@@ -33,7 +33,7 @@ export default function CreateProduct() {
   const [isLoading, setIsLoading] = useState(false)
 
   const sizesArray = ["S", "M", "L", "XL", "XXL"];
-  const colorArray = []
+
   const MAX_IMAGES = 5;
 
   const handleInput = (e) => {

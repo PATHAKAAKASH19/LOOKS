@@ -115,7 +115,7 @@ export default function Wishlist() {
           <Spinner height={IS_MOBILE ? "60vh" : "100%"} width="100%"></Spinner>
         </Container>
       ) : (
-        <Container className="user-address-box ">
+        <Container className="user-address-box">
           <Toaster></Toaster>
           {wishlistArray.length > 0 ? (
             wishlistArray.map((product) => {

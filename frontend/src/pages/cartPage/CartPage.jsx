@@ -137,7 +137,7 @@ export default function CartPage() {
                     toast.error("Payment failed, retry")
                   }
                 } catch (error) {
-                  console.log("Error", error)
+                 
                   toast.error(`Please try again`)
                 }
             
@@ -164,7 +164,7 @@ export default function CartPage() {
           toast.error("Please fill email, phoneNo and address")
         }
     } catch (error) {
-      console.log("error", error)
+    
       toast.error("Could not initiate payment. Please try again.");
     }
   };
@@ -230,7 +230,7 @@ export default function CartPage() {
       toast.success(`${data.message}`);
     }
     } catch (error) {
-      console.log("error", error)
+     
       toast.error("please delete again");
    
     }
@@ -435,7 +435,7 @@ export default function CartPage() {
   return (
     <>
       {isLoading ? (
-        <Spinner />
+        <Spinner height="100vh" width="100%" />
       ) : products && products.length > 0 ? (
         <Container className="cart-con">
           <Toaster></Toaster>

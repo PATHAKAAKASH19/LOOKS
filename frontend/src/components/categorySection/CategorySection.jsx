@@ -7,7 +7,7 @@ import createSlug from "../../utils/createSlug";
 import Spinner from "../ui/spinner/Spinner";
 
 export default function CategorySection({
-  images,
+  images=[],
   filterType,
   title,
   reactIcon,
@@ -52,13 +52,21 @@ export default function CategorySection({
       setIsVisible(true)
       observer.disconnect()
     }
-   })
+   }, 
+    {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.2
+    }
+   )
 
 
     if(imgRef.current){
       observer.observe(imgRef.current)
     }
 
+
+ 
   }, [])
  
 

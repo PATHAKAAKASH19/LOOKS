@@ -169,7 +169,7 @@ export default function CreateCategory() {
         const data = await res.json();
         
         if (res.status === 200) {
-        console.log(data)
+     
           setCategoryData(data.category);
           setChange(false)
           setIsLoading(false);

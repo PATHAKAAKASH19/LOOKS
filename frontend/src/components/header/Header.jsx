@@ -77,7 +77,7 @@ export default function Header() {
   };
 
   const navigateToWishlist = () => {
-    console.log(location);
+   
     navigate("/user/wishlist", { state: { from: location } });
   };
 

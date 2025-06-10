@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Container from "../ui/container/Container";
 
@@ -8,16 +8,19 @@ export default function ProductListCard({ route, data }) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        const timer = setTimeout(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
           setIsVisible(true);
-        }, 100); //
-        observer.disconnect();
-
-        return () => clearTimeout(timer);
+          observer.disconnect();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 0.3,
       }
-    });
+    );
 
     if (imgRef.current) {
       observer.observe(imgRef.current);

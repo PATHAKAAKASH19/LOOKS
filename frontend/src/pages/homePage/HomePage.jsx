@@ -111,12 +111,13 @@ export default function HomePage() {
         }else if(res.status === 404){
           setImages([]);
         }
-
+       
         setIsLoading(false);
       
        
       } catch (error) {
         console.log("error:", error);
+        setIsLoading(false);
       }
     };
 
@@ -157,7 +158,7 @@ export default function HomePage() {
   return (
     <Container className="home">
       {isLoading ? (
-        <Spinner></Spinner>
+        <Spinner height="90vh" width="100%"></Spinner>
       ) : (
         <Container>
           <Carousel

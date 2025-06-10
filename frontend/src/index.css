@@ -3,6 +3,7 @@
     padding: 0px;
     margin: 0px;
     font-family: "Inter", sans-serif;
+    
 }
 
 
@@ -349,6 +350,7 @@ body {
     font-weight: 400;
     text-align: center;
     letter-spacing: 0.2em;
+    font-size: 20px;
 }
 
 img {
@@ -426,14 +428,21 @@ img {
 
 }
 
+.filterCon {
+    position: relative;
+
+}
+
+
 
 
 
 .filter-sec {
-
+    position: sticky;
+        top: 200px;
     width: 220px;
-    height: fit-content;
-
+    height: 42vh;
+   overflow-y: auto;
     display: flex;
     flex-direction: column;
     border-radius: 1.2em;
@@ -447,9 +456,10 @@ img {
 
 
 .filterBox {
+ 
     display: flex;
     flex-direction: column;
-
+ 
     width: 80%;
     margin: 0px auto;
     justify-content: space-between;
@@ -683,7 +693,7 @@ img {
 }
 
 .product-page-con {
-  margin-top: 4px;
+    margin-top: 4px;
     overflow: hidden;
 }
 
@@ -2118,6 +2128,9 @@ table td {
     overflow: hidden;
 }
 
+
+
+
 .address-icon2 {
     position: absolute;
     top: 15px;
@@ -2422,6 +2435,7 @@ table td {
     font-weight: 400;
 
 }
+
 
 @media screen and (max-width:786px) {
 
@@ -2844,12 +2858,12 @@ table td {
 
     .wishlist-con h2,
     .wishlist-con h3 {
-        font-size: 15px;
+        font-size: 13px;
     }
 
     .wishlist-con select {
         height: 4vh;
-        font-size: 14px;
+        font-size: 13px;
         border: 1px solid;
         border-radius: 0.2em;
     }
@@ -2859,8 +2873,9 @@ table td {
     }
 
     .wishlist-con button {
-        font-size: 14px;
-        height: 4vmin;
+      
+        font-size: 13px;
+        height: 30px;
         border: none;
     }
 
@@ -2988,7 +3003,7 @@ table td {
     }
 
     .container h2 {
-        font-size: 4vmin;
+        font-size: 13px;
         font-weight: 400;
         top: 40%;
         bottom: 40%;
@@ -3057,11 +3072,12 @@ table td {
 
     .user-address-box {
         width: 85%;
-        gap: 0px;
+        gap: 12px;
     }
 
 
     .address-icon-box {
+        
         justify-content: center;
     }
 
@@ -3185,11 +3201,12 @@ table td {
     }
 
     .address-icon-box h1 {
-        font-size: 14px;
+  
+        font-size: 13px;
         font-weight: 400;
-        height: 6vmin;
+        height: 40px;
         border-radius: 0.5em;
-        padding: 1vmin 2vmin;
+        padding: 12px 2vmin;
         width: fit-content;
         cursor: default;
     }
@@ -3630,18 +3647,19 @@ table td {
     }
 
     .filter-sec {
-
-        height: 65vh;
+       position: static;
+        height: 72vh;
         width: 100vw;
         right: 0px;
         margin: 0%, 0% 0% 0%;
-        overflow: scroll;
+        overflow: auto;
         background-color: white;
 
     }
 
     .filterBox {
-        margin: 20px 0px 7vh 0px;
+        
+        margin: 0px 0px 16vh 0px;
     }
 
 
@@ -3705,7 +3723,7 @@ table td {
         margin: 0px 0px 0px 0px;
         font-size: 12px;
         width: 90%;
-
+      
     }
 
     .productList-icon-con {
@@ -3769,11 +3787,7 @@ table td {
     }
 
 
-     .producPage .carousel img{
-      
-     }
-        
-
+     
 
     .product-info-sec {
         width: 100vw;
@@ -3829,7 +3843,7 @@ table td {
     }
 
     .product-page-con {
-        margin-top: 5px;
+        margin-top: 0px;
         overflow: unset;
     }
 
