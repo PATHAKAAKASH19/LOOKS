@@ -168,7 +168,7 @@ async function getAllOrder(req, res) {
       .populate("orderedItem.productId", "name productImgUrls price")
       .populate("userId", "firstName lastName");
 
-      console.log(orders)
+      
 
     if (!orders || orders.length === 0) {
       return res

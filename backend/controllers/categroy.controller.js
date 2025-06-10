@@ -7,7 +7,7 @@ import fs from "fs";
 async function getAllCategory(req, res) {
   try {
     const { category, trending, subCategory } = req.query;
-   console.log(req.query)
+   
     const query = {};
     const subCategoryValue = [
       "topwear",
@@ -31,9 +31,8 @@ async function getAllCategory(req, res) {
       query.subCategory = subCategory;
     }
 
-   console.log(query)
     const categoryValue = await Category.find(query);
-  console.log(categoryValue)
+ 
     if (categoryValue.length !== 0) {
       return res
         .status(200)
@@ -187,7 +186,7 @@ async function deleteCategory(req, res) {
 async function getSellerSpecificCategory(req, res){
   try {
     const sellerId = req.userId
-   console.log(sellerId)
+   
     const category = await Category.find({sellerId:sellerId})
 
     if(!category || category.length === 0){

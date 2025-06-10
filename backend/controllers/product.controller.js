@@ -6,20 +6,25 @@ import {
 } from "../utils/uploadMultipleImagesToClodinary.util.js";
 import fs from "fs";
 import mongoose from "mongoose";
+import Category from "../models/category.model.js";
 
 // get all the products created by seller
 async function getProduct(req, res) {
   try {
- 
-
-  
-    const products = await Product.find(req.query).populate("categoryId", "category trending subCategory");
-   console.log(products)
+    const products = await Product.find(req.query).populate(
+      "categoryId",
+      "category trending subCategory"
+    );
+   
     if (products.length > 0) {
-      return res.status(200).json({success:true, message:"Product present", products});
+      return res
+        .status(200)
+        .json({ success: true, message: "Product present", products });
     }
 
-    return res.status(404).json({success:false, message:"No product is present"})
+    return res
+      .status(404)
+      .json({ success: false, message: "No product is present" });
   } catch (error) {
     console.log(error);
     return res
@@ -30,19 +35,23 @@ async function getProduct(req, res) {
 
 async function getProductCreatedBySeller(req, res) {
   try {
+    const sellerId = req.userId;
 
-    const sellerId = req.userId
-  
-    console.log(req.sellerId)
-    const products = await Product.find({sellerId:sellerId}).populate("categoryId", "category trending subCategory");
-
-  
+   
+    const products = await Product.find({ sellerId: sellerId }).populate(
+      "categoryId",
+      "category trending subCategory"
+    );
 
     if (products.length > 0) {
-      return res.status(200).json({success:true, message:"Product present", products});
+      return res
+        .status(200)
+        .json({ success: true, message: "Product present", products });
     }
 
-    return res.status(404).json({success:false, message:"No product is present"})
+    return res
+      .status(404)
+      .json({ success: false, message: "No product is present" });
   } catch (error) {
     console.log(error);
     return res
@@ -54,11 +63,18 @@ async function getProductCreatedBySeller(req, res) {
 //  get all the products by category
 async function getfilteredProduct(req, res) {
   try {
-   
     let query = {};
 
-    const { price, color, sizes, material, style , categoryId, subCategory} = req.query;
-   
+    const {
+      price,
+      color,
+      sizes,
+      material,
+      style,
+      categoryId,
+      subCategory,
+      trending,
+    } = req.query;
 
     if (sizes) query.sizes = { $in: Array.isArray(sizes) ? sizes : [sizes] };
     if (style)
@@ -77,17 +93,48 @@ async function getfilteredProduct(req, res) {
         $in: Array.isArray(material) ? material : [material],
       };
 
-    const product = await Product.find({
-      categoryId: categoryId,
-      ...query,
-    }).populate("categoryId", "category trending subCategory");
+    if (categoryId) {
+      const product = await Product.find({
+        categoryId: categoryId,
+        ...query,
+      }).populate("categoryId", "category trending subCategory");
 
-    if (product.length !== 0) {
+      if (product.length !== 0) {
+        return res.status(200).json(product);
+      } else {
+        return res
+          .status(200)
+          .json({ success: false, message: "this category has no product" });
+      }
+    } else if (subCategory !== "trending") {
+      const category = await Category.find({
+        subCategory: subCategory,
+        trending: false,
+      });
+
+      const productPromises = category.map(async (element) => {
+        return await Product.find({ categoryId: element._id, ...query });
+      });
+      
+      const productsArrays = await Promise.all(productPromises);
+      const product = productsArrays.flat();
+
       return res.status(200).json(product);
-    } else {
-      return res
-        .status(200)
-        .json({ success: false, message: "this category has no product" });
+    } else if (subCategory === "trending") {
+
+      const category = await Category.find({
+         trending: true,
+      });
+
+      const productPromises = category.map(async (element) => {
+        return await Product.find({ categoryId: element._id, ...query });
+      });
+
+      const productsArrays = await Promise.all(productPromises);
+      const product = productsArrays.flat();
+
+      return res.status(200).json(product);
+      
     }
   } catch (error) {
     console.log(error);
@@ -102,14 +149,16 @@ async function getfilteredProduct(req, res) {
 //  get one product at a time
 async function getProductById(req, res) {
   try {
-    const {productId} = req.params;
+    const { productId } = req.params;
 
-    if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
-      return res.status(400).json({success:false, message:"invalid ProductId"})
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "invalid ProductId" });
     }
 
     const product = await Product.findById(productId);
-   
+
     if (product.length !== 0) {
       return res.status(200).json(product);
     } else {
@@ -128,7 +177,7 @@ async function getProductById(req, res) {
 // use to create a product
 async function addProduct(req, res) {
   const files = req.files;
-  const sellerId = req.userId
+  const sellerId = req.userId;
 
   try {
     const {
@@ -163,8 +212,6 @@ async function addProduct(req, res) {
       sellerId,
     });
 
-   
-
     for (const file of files) {
       fs.unlink(file.path, (err) => {
         if (err) {
@@ -176,9 +223,10 @@ async function addProduct(req, res) {
       });
     }
 
-    return res.status(201).json({ success:true,message: "product is created successfully" });
+    return res
+      .status(201)
+      .json({ success: true, message: "product is created successfully" });
   } catch (error) {
-   
     for (const file of files) {
       fs.unlink(file.path, (err) => {
         if (err) {
@@ -198,19 +246,23 @@ async function addProduct(req, res) {
 
 // to update a product
 async function updateProduct(req, res) {
-  const sellerId = req.userId
+  const sellerId = req.userId;
   const files = req.files;
   try {
-    const {productId} = req.params;
-    
+    const { productId } = req.params;
 
-    if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
-      return res.status(400).json({success:false, message:"invalid ProductId"})
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "invalid ProductId" });
     }
 
-    const product = await Product.findOne({_id:productId,sellerId:sellerId});
-    const { productImgUrls,...rest } = req.body;
-   
+    const product = await Product.findOne({
+      _id: productId,
+      sellerId: sellerId,
+    });
+    const { productImgUrls, ...rest } = req.body;
+
     if (files.length > 0) {
       const arrayOfReplacedImgs = product.productImgUrls.filter(
         (img) => !productImgUrls.includes(img)
@@ -251,12 +303,14 @@ async function updateProduct(req, res) {
         .json({ message: "product is updated successfully" });
     }
 
-    const updatedProduct = await Product.findOneAndUpdate({_id:productId, sellerId:sellerId}, 
-      {...rest}
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: productId, sellerId: sellerId },
+      { ...rest }
     );
-  
-    console.log(updatedProduct)
-    return res.status(200).json({success: true, message: "product is updated successfully" });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "product is updated successfully" });
   } catch (error) {
     console.log(error);
     for (const file of files) {
@@ -278,11 +332,13 @@ async function updateProduct(req, res) {
 // to delete a product
 async function deleteProduct(req, res) {
   try {
-    const {productId} = req.params;
+    const { productId } = req.params;
     const sellerId = req.userId;
 
-    if(!productId || !mongoose.Types.ObjectId.isValid(productId)){
-      return res.status(400).json({success:false, message:"invalid ProductId"})
+    if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "invalid ProductId" });
     }
     await cloudinary.api.delete_resources_by_prefix(
       `e-commerce-shop/product-page-images/${productId}`
@@ -290,7 +346,7 @@ async function deleteProduct(req, res) {
     await cloudinary.api.delete_folder(
       `e-commerce-shop/product-page-images/${productId}`
     );
-    await Product.findOneAndDelete({_id:productId,sellerId:sellerId});
+    await Product.findOneAndDelete({ _id: productId, sellerId: sellerId });
     return res.status(200).json({ message: "product deleted successfully" });
   } catch (error) {
     console.log(error);
@@ -307,5 +363,5 @@ export {
   addProduct,
   updateProduct,
   deleteProduct,
-  getProductCreatedBySeller
+  getProductCreatedBySeller,
 };

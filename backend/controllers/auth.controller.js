@@ -127,7 +127,7 @@ async function logOut(req, res) {
   try {
  
     const {userId} = req
-    console.log(userId)
+   
     const removeUserInfo = await User.findByIdAndDelete(userId);
     return res.status(200).json({success:true, message: "user logout successfully" });
   } catch (error) {
