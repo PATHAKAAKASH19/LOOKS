@@ -1,4 +1,4 @@
-# 🏷️ LOOKS
+#  LOOKS
 LOOKS is a fully responsive e-commerce Platform with integrated payment gateway built on mern stack . Looks contain features like user dashboard, admin dashboard, cart, whislist, user authentication, seller authentication, payment-gateway, product filtering.  
 
 
