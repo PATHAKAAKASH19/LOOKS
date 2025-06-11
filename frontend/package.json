@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "vite eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "install_frontend":"npm i"
   },
   "dependencies": {
     "moment": "^2.30.1",
